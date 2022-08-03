@@ -3,8 +3,7 @@
     "strict": true,
     "outDir": "./dist",
     "removeComments": true,
-    "moduleResolution": "node",
-    "downlevelIteration": true
+    "moduleResolution": "node"
   },
   "include": [
     "./src/**/*",
