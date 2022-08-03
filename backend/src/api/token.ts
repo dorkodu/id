@@ -18,8 +18,8 @@ export async function token(req: ReqType, res: ResType, data: ApiReq[ApiCode.Tok
 }
 
 async function verifyClient(clientId: string, clientSecret: string) {
-  clientId = convertEncoding(clientId, "ascii", "binary");
-  clientSecret = convertEncoding(clientSecret, "ascii", "binary");
+  clientId = convertEncoding(clientId, "base64", "binary");
+  clientSecret = convertEncoding(clientSecret, "base64", "binary");
 
   const { result, err } = await DB.query(`SELECT client_Secret FROM app WHERE client_id=?`, [clientId]);
 
@@ -28,7 +28,7 @@ async function verifyClient(clientId: string, clientSecret: string) {
 }
 
 async function fetchToken(token: string): Promise<null | number> {
-  token = Buffer.from(token, "base64url").toString("binary");
+  token = sha256(convertEncoding(token, "base64url", "binary"), "binary");
 
   const { result, err } = await DB.query(`SELECT user_id, expires FROM temporary_token WHERE token=?`, [token]);
   console.log(result);
@@ -41,6 +41,7 @@ async function fetchToken(token: string): Promise<null | number> {
 export async function createToken(userId: number): Promise<string | null> {
   const token = randomBytes(32, "binary");
   const hash = sha256(token, "binary");
+
   const expires = utcTimestamp() + 60;
 
   const { result, err } = await DB.query(`
