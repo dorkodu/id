@@ -2,7 +2,7 @@ import { ApiCode, ApiReq, ApiRes, ApiError } from "../../../shared/types";
 import { ReqType, ResType } from "../../types";
 
 import { DB } from "../db";
-import { base64urlDecode, sha256 } from "../utilty";
+import { base64urlDecode, sha256, utcTimestamp } from "../utilty";
 
 export async function auth(req: ReqType, res: ResType, data: ApiReq[ApiCode.Auth]): Promise<ApiRes[ApiCode.Auth]> {
   const token = data.token.split(":");
@@ -15,8 +15,16 @@ export async function auth(req: ReqType, res: ResType, data: ApiReq[ApiCode.Auth
 
   if (result.length === 0 || err) return res.send({ err: ApiError.AuthFail });
 
-  if (Date.now() > result[0].expires) return res.send({ err: ApiError.AuthFail });
+  if (utcTimestamp() > result[0].expires) return res.send({ err: ApiError.AuthFail });
   if (sha256(validator, "binary") !== result[0].validator) return res.send({ err: ApiError.AuthFail });
 
   return res.send({ data: { userId: result[0].user_id } });
+}
+
+async function createAuthToken() {
+
+}
+
+async function deleteAuthToken() {
+
 }

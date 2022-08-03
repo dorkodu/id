@@ -31,7 +31,7 @@ export interface ApiReq {
   [ApiCode.Signup]: { email: string, password: string }
 
   [ApiCode.Token]: {
-    code: string;
+    token: string;
     clientId: string,
     clientSecret: string
   }
