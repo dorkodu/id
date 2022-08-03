@@ -7,6 +7,7 @@ import * as path from "path";
 
 import { Api } from "./api";
 import { DB } from "./db";
+import { convertEncoding } from "./utilty";
 
 async function main() {
   config();

@@ -18,8 +18,10 @@ export async function token(req: ReqType, res: ResType, data: ApiReq[ApiCode.Tok
 }
 
 async function verifyClient(clientId: string, clientSecret: string) {
+  clientId = convertEncoding(clientId, "binary");
+  clientSecret = convertEncoding(clientId, "binary");
+
   const { result, err } = await DB.query(`SELECT client_Secret FROM app WHERE client_id=?`, [clientId]);
-  console.log(result);
 
   if (result.length === 0 || err) return false;
   return sha256(clientSecret, "binary") === result[0].client_secret;
