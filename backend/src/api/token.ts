@@ -3,13 +3,18 @@ import { ReqType, ResType } from "../../types";
 
 import { DB } from "../db";
 import { randomBytes, sha256, utcTimestamp } from "../utilty";
+import { createAuthToken } from "./auth";
 
 export async function token(req: ReqType, res: ResType, data: ApiReq[ApiCode.Token]) {
   if (!verifyClient(data.clientId, data.clientSecret)) return res.send({ err: ApiError.TokenFail });
 
-  const userId = fetchToken(data.token);
+  const userId = await fetchToken(data.token);
   if (userId === null) return res.send({ err: ApiError.TokenFail });
 
+  const authToken = await createAuthToken(userId);
+  if (authToken === null) return res.send({ err: ApiError.TokenFail });
+
+  return res.send({ data: { token: authToken } });
 }
 
 async function verifyClient(clientId: string, clientSecret: string) {
@@ -27,7 +32,7 @@ async function fetchToken(token: string): Promise<null | number> {
   return result[0].user_id;
 }
 
-async function createToken(userId: number): Promise<string | null> {
+export async function createToken(userId: number): Promise<string | null> {
   const token = randomBytes(32, "binary");
   const hash = sha256(token, "binary");
   const expires = utcTimestamp() + 60;
@@ -39,8 +44,4 @@ async function createToken(userId: number): Promise<string | null> {
 
   if (err) return null;
   return token;
-}
-
-async function deleteToken(token: string) {
-
 }

@@ -5,6 +5,7 @@ import * as bcrypt from "bcrypt";
 import { validate } from "email-validator";
 import { DB } from "../db";
 import { sha256, utcTimestamp } from "../utilty";
+import { createToken } from "./token";
 
 export async function signup(req: ReqType, res: ResType, data: ApiReq[ApiCode.Signup]) {
   if (!validate(data.email)) return res.send({ err: ApiError.SignupFail });
@@ -21,8 +22,7 @@ export async function signup(req: ReqType, res: ResType, data: ApiReq[ApiCode.Si
 
   if (err) return res.send({ err: ApiError.SignupFail });
 
+  const token = createToken(result.insertId);
   const redirectURI: string = (req.query as any)["redirect_uri"];
-  res.redirect(`${redirectURI}?token=${}`)
-
-  return res.send({});
+  res.redirect(`${redirectURI}?token=${token}`);
 }

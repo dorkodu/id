@@ -5,6 +5,7 @@ import * as bcrypt from "bcrypt";
 import { validate } from "email-validator";
 import { DB } from "../db";
 import { sha256 } from "../utilty";
+import { createToken } from "./token";
 
 export async function login(req: ReqType, res: ResType, data: ApiReq[ApiCode.Login]) {
   if (!validate(data.email)) return res.send({ err: ApiError.SignupFail });
@@ -18,5 +19,7 @@ export async function login(req: ReqType, res: ResType, data: ApiReq[ApiCode.Log
   if (result.length === 0 || err) return res.send({ err: ApiError.LoginFail });
   if (!(await bcrypt.compare(sha256(password, "base64"), result[0].password))) return res.send({ err: ApiError.LoginFail });
 
-  return res.send({});
+  const token = createToken(result.insertId);
+  const redirectURI: string = (req.query as any)["redirect_uri"];
+  res.redirect(`${redirectURI}?token=${token}`);
 }
