@@ -3,8 +3,11 @@
     "strict": true,
     "outDir": "./dist",
     "removeComments": true,
+    "moduleResolution": "node"
   },
   "include": [
-    "./src/**/*"
+    "./src/**/*",
+    "../shared/**/*",
+    "./types.d.ts"
   ]
 }
