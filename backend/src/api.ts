@@ -15,7 +15,7 @@ export class Api {
     switch (schema.type) {
       case ApiCode.Auth: return await auth(req, res, schema.data);
       case ApiCode.Login: return await login(req, res, schema.data);
-      case ApiCode.Login: return await signup(req, res, schema.data);
+      case ApiCode.Signup: return await signup(req, res, schema.data);
       case ApiCode.Token: return await token(req, res, schema.data);
       default: break;
     }
