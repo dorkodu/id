@@ -1,0 +1,24 @@
+POST http://localhost:8888/api HTTP/1.1
+Content-Type: application/json
+
+{
+  "type": "signup",
+  "data": {
+    "email": "berkkkk@berkkkkkkkkkkkk.com",
+    "password": "1234567890"
+  }
+}
+
+###
+
+POST http://localhost:8888/api HTTP/1.1
+Content-Type: application/json
+
+{
+  "type": "token",
+  "data": {
+    "token": "wrLDucOsw4rDv8OLM8KoM8OvSHTDh8KyWcKZwrTDn8KAwow4F8OMLj3Dl1TDlQoXSU0",
+    "clientId": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "clientSecret": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  }
+}

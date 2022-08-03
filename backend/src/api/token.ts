@@ -2,7 +2,7 @@ import { ApiCode, ApiError, ApiReq } from "../../../shared/types";
 import { ReqType, ResType } from "../../types";
 
 import { DB } from "../db";
-import { randomBytes, sha256, utcTimestamp } from "../utilty";
+import { convertEncoding, randomBytes, sha256, utcTimestamp } from "../utilty";
 import { createAuthToken } from "./auth";
 
 export async function token(req: ReqType, res: ResType, data: ApiReq[ApiCode.Token]) {
@@ -19,6 +19,7 @@ export async function token(req: ReqType, res: ResType, data: ApiReq[ApiCode.Tok
 
 async function verifyClient(clientId: string, clientSecret: string) {
   const { result, err } = await DB.query(`SELECT client_Secret FROM app WHERE client_id=?`, [clientId]);
+  console.log(result);
 
   if (result.length === 0 || err) return false;
   return sha256(clientSecret, "binary") === result[0].client_secret;
@@ -43,5 +44,5 @@ export async function createToken(userId: number): Promise<string | null> {
   `, [hash, expires, userId]);
 
   if (err) return null;
-  return token;
+  return convertEncoding(token, "base64url");
 }
