@@ -4,11 +4,14 @@ export enum ApiCode {
   Login = "login",
   Signup = "signup",
 
-  GetAuthToken = "get_auth_token",
+  Token = "token",
 }
 
 export enum ApiError {
-
+  AuthFail,
+  LoginFail,
+  SignupFail,
+  TokenFail,
 }
 
 export interface ApiReqSchema<T> {
@@ -27,8 +30,8 @@ export interface ApiReq {
   [ApiCode.Login]: { email: string, password: string }
   [ApiCode.Signup]: { email: string, password: string }
 
-  [ApiCode.GetAuthToken]: {
-    redirectURI: string,
+  [ApiCode.Token]: {
+    code: string;
     clientId: string,
     clientSecret: string
   }
@@ -40,7 +43,7 @@ export interface ApiRes {
   [ApiCode.Login]: ApiResSchema<{}>
   [ApiCode.Signup]: ApiResSchema<{}>
 
-  [ApiCode.GetAuthToken]: ApiResSchema<{
+  [ApiCode.Token]: ApiResSchema<{
     token: string
   }>
 }
