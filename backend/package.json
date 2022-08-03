@@ -21,6 +21,7 @@
     "bcrypt": "^5.0.1",
     "crypto-hash": "^2.0.1",
     "dotenv": "^16.0.1",
+    "email-validator": "^2.0.4",
     "fastify": "^3.29.0",
     "mysql": "^2.18.1"
   }
