@@ -19,7 +19,7 @@ export async function login(req: ReqType, res: ResType, data: ApiReq[ApiCode.Log
   if (result.length === 0 || err) return res.send({ err: ApiError.LoginFail });
   if (!(await bcrypt.compare(sha256(password, "base64"), result[0].password))) return res.send({ err: ApiError.LoginFail });
 
-  const token = createToken(result.insertId);
+  const token = await createToken(result.insertId);
   const redirectURI: string = (req.query as any)["redirect_uri"];
   res.redirect(`${redirectURI}?token=${token}`);
 }

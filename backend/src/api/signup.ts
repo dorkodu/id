@@ -22,7 +22,7 @@ export async function signup(req: ReqType, res: ResType, data: ApiReq[ApiCode.Si
 
   if (err) return res.send({ err: ApiError.SignupFail });
 
-  const token = createToken(result.insertId);
+  const token = await createToken(result.insertId);
   const redirectURI: string = (req.query as any)["redirect_uri"];
   res.redirect(`${redirectURI}?token=${token}`);
 }
