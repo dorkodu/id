@@ -33,7 +33,7 @@ export async function createAuthToken(userId: number): Promise<string | null> {
   `, [userId, selector, validatorHash, expires]);
 
   if (err) return null;
-  return convertEncoding(selector, "base64url") + ":" + convertEncoding(validator, "base64url");
+  return convertEncoding(selector, "binary", "base64url") + ":" + convertEncoding(validator, "binary", "base64url");
 }
 
 async function deleteAuthToken() {

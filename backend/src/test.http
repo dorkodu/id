@@ -4,7 +4,7 @@ Content-Type: application/json
 {
   "type": "signup",
   "data": {
-    "email": "krebbbbbbbb@kreb.com",
+    "email": "krebbbbbbbbbbbbbbb@kreb.com",
     "password": "1234567890"
   }
 }
@@ -17,7 +17,7 @@ Content-Type: application/json
 {
   "type": "token",
   "data": {
-    "token": "w6jCqmjDi1FPZcOkwpZ8c1LDq8Kla1I-bMOYSCUwwpXCiGHDn8OCw6bCl8OTM1U",
+    "token": "_fhfZmoocxQ78T8J-6XBjHI1nnrHF-5wtA_VYYn1dFk",
     "clientId": "a",
     "clientSecret": "a"
   }

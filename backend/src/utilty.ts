@@ -20,6 +20,6 @@ export function randomBytes(length: number, encoding?: BufferEncoding) {
   return crypto.randomBytes(length).toString(encoding);
 }
 
-export function convertEncoding(input: string, to: BufferEncoding) {
-  return Buffer.from(input).toString(to);
+export function convertEncoding(input: string, from: BufferEncoding, to: BufferEncoding) {
+  return Buffer.from(input, from).toString(to);
 }
