@@ -15,3 +15,7 @@ export function base64urlDecode(input: string) {
 export function utcTimestamp() {
   return Math.floor(Date.now() / 1000);
 }
+
+export function randomBytes(length: number, encoding?: BufferEncoding) {
+  return crypto.randomBytes(length).toString(encoding);
+}

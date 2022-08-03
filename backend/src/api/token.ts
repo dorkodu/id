@@ -2,7 +2,7 @@ import { ApiCode, ApiError, ApiReq } from "../../../shared/types";
 import { ReqType, ResType } from "../../types";
 
 import { DB } from "../db";
-import { sha256, utcTimestamp } from "../utilty";
+import { randomBytes, sha256, utcTimestamp } from "../utilty";
 
 export async function token(req: ReqType, res: ResType, data: ApiReq[ApiCode.Token]) {
   if (!verifyClient(data.clientId, data.clientSecret)) return res.send({ err: ApiError.TokenFail });
@@ -27,10 +27,20 @@ async function fetchToken(token: string): Promise<null | number> {
   return result[0].user_id;
 }
 
-async function createToken() {
+async function createToken(userId: number): Promise<string | null> {
+  const token = randomBytes(32, "binary");
+  const hash = sha256(token, "binary");
+  const expires = utcTimestamp() + 60;
 
+  const { result, err } = await DB.query(`
+    INSERT INTO temporary_token (token, expires, user_id)
+    VALUES (?, ?, ?)
+  `, [hash, expires, userId]);
+
+  if (err) return null;
+  return token;
 }
 
-async function deleteToken() {
+async function deleteToken(token: string) {
 
 }

@@ -12,7 +12,7 @@ export async function signup(req: ReqType, res: ResType, data: ApiReq[ApiCode.Si
 
   const email = data.email;
   const password = await bcrypt.hash(sha256(data.password, "base64"), 10);
-  const date = utcTimestamp()
+  const date = utcTimestamp();
 
   const { result, err } = await DB.query(`
     INSERT INTO user  (email, password, date)
@@ -20,6 +20,9 @@ export async function signup(req: ReqType, res: ResType, data: ApiReq[ApiCode.Si
   `, [email, password, date]);
 
   if (err) return res.send({ err: ApiError.SignupFail });
+
+  const redirectURI: string = (req.query as any)["redirect_uri"];
+  res.redirect(`${redirectURI}?token=${}`)
 
   return res.send({});
 }
