@@ -4,14 +4,6 @@ export function sha256(input: crypto.BinaryLike) {
   return crypto.createHash("sha256").update(input).digest();
 }
 
-export function base64urlEncode(input: string) {
-  return Buffer.from(input).toString("base64url");
-}
-
-export function base64urlDecode(input: string) {
-  return Buffer.from(input).toString("binary");
-}
-
 export function utcTimestamp() {
   return Math.floor(Date.now() / 1000);
 }
