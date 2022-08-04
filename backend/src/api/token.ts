@@ -2,7 +2,7 @@ import { ApiCode, ApiError, ApiReq } from "../../../shared/types";
 import { ReqType, ResType } from "../../types";
 
 import { DB } from "../db";
-import { convertEncoding, randomBytes, sha256, utcTimestamp } from "../utilty";
+import { convertEncoding, fromBinary, randomBytes, sha256, toBinary, utcTimestamp } from "../utilty";
 import { createAuthToken } from "./auth";
 
 export async function token(req: ReqType, res: ResType, data: ApiReq[ApiCode.Token]) {
@@ -18,20 +18,19 @@ export async function token(req: ReqType, res: ResType, data: ApiReq[ApiCode.Tok
 }
 
 async function verifyClient(clientId: string, clientSecret: string) {
-  clientId = convertEncoding(clientId, "base64", "binary");
-  clientSecret = convertEncoding(clientSecret, "base64", "binary");
+  const clientIdBuffer = toBinary(clientId, "base64");
+  const clientSecretBuffer = toBinary(clientSecret, "base64");
 
-  const { result, err } = await DB.query(`SELECT client_Secret FROM app WHERE client_id=?`, [clientId]);
+  const { result, err } = await DB.query(`SELECT client_Secret FROM app WHERE client_id=?`, [clientIdBuffer]);
 
   if (result.length === 0 || err) return false;
-  return sha256(clientSecret, "binary") === result[0].client_secret;
+  return sha256(clientSecretBuffer) === result[0].client_secret;
 }
 
 async function fetchToken(token: string): Promise<null | number> {
-  token = sha256(convertEncoding(token, "base64url", "binary"), "binary");
+  const tokenBuffer = sha256(Buffer.from(token, "base64url"));
 
-  const { result, err } = await DB.query(`SELECT user_id, expires FROM temporary_token WHERE token=?`, [token]);
-  console.log(result);
+  const { result, err } = await DB.query(`SELECT user_id, expires FROM temporary_token WHERE token=?`, [tokenBuffer]);
 
   if (result.length === 0 || err) return null;
   if (utcTimestamp() > result[0].expires) return null;
@@ -39,8 +38,8 @@ async function fetchToken(token: string): Promise<null | number> {
 }
 
 export async function createToken(userId: number): Promise<string | null> {
-  const token = randomBytes(32, "binary");
-  const hash = sha256(token, "binary");
+  const token = randomBytes(32);
+  const hash = sha256(token);
 
   const expires = utcTimestamp() + 60;
 
@@ -50,5 +49,6 @@ export async function createToken(userId: number): Promise<string | null> {
   `, [hash, expires, userId]);
 
   if (err) return null;
-  return convertEncoding(token, "binary", "base64url");
+  return fromBinary(token, "base64url");
+
 }

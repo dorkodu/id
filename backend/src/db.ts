@@ -10,6 +10,7 @@ export class DB {
       database: process.env.DB_NAME,
       user: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
+      charset: "utf8mb4_unicode_ci"
     });
 
     return new Promise<void>((resolve, reject) => {

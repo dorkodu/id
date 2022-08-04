@@ -12,7 +12,7 @@ export async function signup(req: ReqType, res: ResType, data: ApiReq[ApiCode.Si
   if (data.password.length < 10) return res.send({ err: ApiError.SignupFail });
 
   const email = data.email;
-  const password = await bcrypt.hash(sha256(data.password, "base64"), 10);
+  const password = await bcrypt.hash(sha256(data.password).toString("base64"), 10);
   const date = utcTimestamp();
 
   const { result, err } = await DB.query(`
