@@ -2,9 +2,22 @@ POST http://localhost:8888/api HTTP/1.1
 Content-Type: application/json
 
 {
+  "type": "login",
+  "data": {
+    "email": "a@a.com",
+    "password": "1234567890"
+  }
+}
+
+###
+
+POST http://localhost:8888/api HTTP/1.1
+Content-Type: application/json
+
+{
   "type": "signup",
   "data": {
-    "email": "krebbbbbbbbbbbbbbb@kreb.com",
+    "email": "bb@a.com",
     "password": "1234567890"
   }
 }
@@ -17,8 +30,20 @@ Content-Type: application/json
 {
   "type": "token",
   "data": {
-    "token": "_fhfZmoocxQ78T8J-6XBjHI1nnrHF-5wtA_VYYn1dFk",
-    "clientId": "a",
-    "clientSecret": "a"
+    "token": "-Qjs4KF5M5dB8E2OjGM3L84WoJeL1j7mkW4ECUBoEGE",
+    "clientId": "CgAAAAAAAAAAAAAAAAAAAA==",
+    "clientSecret": "CgAAAAAAAAAAAAAAAAAAAA=="
+  }
+}
+
+###
+
+POST http://localhost:8888/api HTTP/1.1
+Content-Type: application/json
+
+{
+  "type": "auth",
+  "data": {
+    "token": "7_EkP9n8QTHv5SGTP9XBqg:0Xb5NKyyQHsgT9R3sEFGAk96HaFAiD8MevrnsAuQLoQ"
   }
 }
