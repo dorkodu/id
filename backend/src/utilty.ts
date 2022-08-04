@@ -30,3 +30,7 @@ export function toBinary(input: string, encoding: BufferEncoding) {
 export function fromBinary(input: Buffer, encoding: BufferEncoding) {
   return input.toString(encoding);
 }
+
+export function compareBinary(a: Buffer, b: Buffer) {
+  return a.compare(b) === 0;
+}
