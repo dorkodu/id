@@ -49,6 +49,21 @@ export async function createAuthToken(userId: number): Promise<string | null> {
   return fromBinary(selector, "base64url") + ":" + fromBinary(validator, "base64url");
 }
 
-async function deleteAuthToken() {
+async function deleteAuthToken(token: string) {
+  // Split the token by ":" since the format of the auth token is selector:validator which is a base64url
+  const tokenParts = token.split(":");
+  const selector = toBinary(tokenParts[0], "base64url");
+  const validator = toBinary(tokenParts[1], "base64url");
 
+  // Get the id and validator using selector
+  const { result, err } = await DB.query(`SELECT id, validator FROM auth_token WHERE selector=?`, [selector]);
+
+  // If no result or there is an error
+  if (result.length === 0 || err) return;
+
+  // Validator from the base64url is unhashed, so hash it and compare with the one from the query
+  if (compareBinary(sha256(validator), result[0].validator)) return;
+
+  // Delete the token from the database using id
+  DB.query(`DELETE FROM auth_token WHERE id=?`, result[0].id);
 }
