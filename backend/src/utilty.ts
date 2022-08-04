@@ -12,6 +12,13 @@ export function randomBytes(length: number) {
   return crypto.randomBytes(length);
 }
 
+/**
+ * Converts encodings. Do not use to convert from or to binary.
+ * @param input 
+ * @param from 
+ * @param to 
+ * @returns 
+ */
 export function convertEncoding(input: string, from: BufferEncoding, to: BufferEncoding) {
   return Buffer.from(input, from).toString(to);
 }
