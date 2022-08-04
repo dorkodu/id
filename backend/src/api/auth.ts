@@ -49,7 +49,7 @@ export async function createAuthToken(userId: number): Promise<string | null> {
   return fromBinary(selector, "base64url") + ":" + fromBinary(validator, "base64url");
 }
 
-async function deleteAuthToken(token: string) {
+export async function deleteAuthToken(token: string) {
   // Split the token by ":" since the format of the auth token is selector:validator which is a base64url
   const tokenParts = token.split(":");
   const selector = toBinary(tokenParts[0], "base64url");
