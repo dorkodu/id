@@ -39,10 +39,14 @@ async function fetchToken(token: string): Promise<null | number> {
   // Convert token to binary from base64url and sha256 hash it since it's stored as a hash in the database
   const tokenBuffer = sha256(toBinary(token, "base64url"));
 
-  const { result, err } = await DB.query(`SELECT user_id, expires FROM temporary_token WHERE token=?`, [tokenBuffer]);
+  const { result, err } = await DB.query(`SELECT id, user_id, expires FROM temporary_token WHERE token=?`, [tokenBuffer]);
 
   // If no result or there is an error
   if (result.length === 0 || err) return null;
+
+  // After validating that the token exists, since this token is meant to be used only once, 
+  // delete the token. No need to use await since it's nothing to do with other logic.
+  deleteToken(result[0].id);
 
   // Check if the token is expired
   if (utcTimestamp() > result[0].expires) return null;
@@ -70,4 +74,8 @@ export async function createToken(userId: number): Promise<string | null> {
 
   // Convert the token to base64url since it will be sent as query parameter in the url
   return fromBinary(token, "base64url");
+}
+
+export async function deleteToken(tokenId: number) {
+  await DB.query(`DELETE FROM temporary_token WHERE id=?`, [tokenId]);
 }
