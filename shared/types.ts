@@ -10,14 +10,14 @@ export enum ApiCode {
 }
 
 export enum ApiError {
-  AuthFail,
+  AuthFail = "auth_fail",
 
-  LoginFail,
-  SignupFail,
+  LoginFail = "login_fail",
+  SignupFail = "signup_fail",
 
-  LogoutFail,
+  LogoutFail = "logout_fail",
 
-  TokenFail,
+  TokenFail = "token_fail",
 }
 
 export interface ApiReqSchema<T> {
