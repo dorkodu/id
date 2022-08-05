@@ -3,6 +3,7 @@ import { ReqType, ResType } from "../types";
 
 import { auth } from "./api/auth";
 import { login } from "./api/login";
+import { logout } from "./api/logout";
 import { signup } from "./api/signup";
 import { token } from "./api/token";
 
@@ -17,6 +18,7 @@ export class Api {
       case ApiCode.Login: return await login(req, res, schema.data);
       case ApiCode.Signup: return await signup(req, res, schema.data);
       case ApiCode.Token: return await token(req, res, schema.data);
+      case ApiCode.Logout: return await logout(req, res, schema.data);
       default: break;
     }
 
