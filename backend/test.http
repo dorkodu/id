@@ -30,7 +30,7 @@ Content-Type: application/json
 {
   "type": "token",
   "data": {
-    "token": "-Qjs4KF5M5dB8E2OjGM3L84WoJeL1j7mkW4ECUBoEGE",
+    "token": "1bktFM65mDN-GA04lW116oOSJcBvkQ-GQR5kgQo-DYY",
     "clientId": "CgAAAAAAAAAAAAAAAAAAAA==",
     "clientSecret": "CgAAAAAAAAAAAAAAAAAAAA=="
   }
