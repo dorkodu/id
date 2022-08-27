@@ -6,10 +6,11 @@ async function auth(req: Request, res: Response, next: NextFunction) {
   const data: Partial<{ token: string | any }> = req.body;
 
   // Check if data is undefined
-  if (data.token === undefined && typeof data.token === "string")
+  if (data.token === undefined || typeof data.token !== "string")
     return res.status(404).send({});
 
   const userId = await checkAuthToken(data.token);
+  if (userId === null) return res.status(404).send({});
   return res.status(200).send({ userId });
 }
 
@@ -17,17 +18,32 @@ async function temporaryAuth(req: Request, res: Response, next: NextFunction) {
   const data: Partial<{ token: string | any }> = req.body;
 
   // Check if data is undefined
-  if (data.token === undefined && typeof data.token === "string")
+  if (data.token === undefined || typeof data.token !== "string")
     return res.status(404).send({});
 
   const userId = await checkTemporaryAuthToken(data.token);
   if (userId === null) return res.status(404).send({});
   const token = await createAuthToken(userId);
+  if (token === null) return res.status(404).send({});
   return res.status(200).send({ token });
 }
 
 async function refreshAuth(req: Request, res: Response, next: NextFunction) {
+  const data: Partial<{ token: string | any }> = req.body;
 
+  // Check if data is undefined
+  if (data.token === undefined || typeof data.token !== "string")
+    return res.status(404).send({});
+
+  const userId = await checkAuthToken(data.token);
+  if (userId === null) return res.status(404).send({});
+
+  await deleteAuthToken(data.token);
+
+  const token = await createAuthToken(userId);
+  if (token === null) return res.status(404).send({});
+
+  return res.status(200).send({ token });
 }
 
 async function login(req: Request, res: Response, next: NextFunction) {
