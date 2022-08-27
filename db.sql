@@ -1,6 +1,7 @@
 CREATE TABLE `user` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `date` bigint(20) NOT NULL,
+  `displayname` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
   `username` varchar(16) COLLATE utf8mb4_unicode_ci NOT NULL,
   `email` varchar(320) COLLATE utf8mb4_unicode_ci NOT NULL,
   `password` binary(60) NOT NULL,

@@ -12,8 +12,9 @@ POST http://localhost:8888/api/auth/signup?redirect_uri=localhost HTTP/1.1
 Content-Type: application/json
 
 {
-  "username": "aaaaaa",
-  "email": "aaaaaa@a.com",
+  "displayname": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "username": "aaaaaaaa",
+  "email": "aaaaaaaa@a.com",
   "password": "12345678"
 }
 

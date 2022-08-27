@@ -88,12 +88,15 @@ async function login(req: Request, res: Response, next: NextFunction) {
 
 async function signup(req: Request, res: Response, next: NextFunction) {
   const data: Partial<{
+    displayname: string | any,
     username: string | any,
     email: string | any,
     password: string | any
   }> = req.body;
 
   // Check if data is undefined
+  if (data.displayname === undefined || typeof data.displayname !== "string")
+    return res.status(404).send({});
   if (data.username === undefined || typeof data.username !== "string")
     return res.status(404).send({});
   if (data.email === undefined || typeof data.email !== "string")
@@ -101,12 +104,14 @@ async function signup(req: Request, res: Response, next: NextFunction) {
   if (data.password === undefined || typeof data.password !== "string")
     return res.status(404).send({});
 
+  const displayname = data.displayname.trim();
+  const username = data.username;
+  const email = data.email;
+
+  if (displayname.length < 1 || displayname.length > 32) return res.status(404).send({});
   if (!checkUsername(data.username)) return res.status(404).send({});
   if (!validate(data.email)) return res.status(404).send({});
   if (data.password.length < 8) return res.status(404).send({});
-
-  const username = data.username;
-  const email = data.email;
 
   // Since bcrypt only accepts first 72 bytes and stops at the null bytes,hash the
   // password to get a fixed length of 32 bytes and base64 encode to avoid null bytes
@@ -116,8 +121,8 @@ async function signup(req: Request, res: Response, next: NextFunction) {
   const date = utcTimestamp();
 
   const { result, err } = await db.query(`
-    INSERT INTO user (username, email, password, date) VALUES (?, ?, ?, ?)
-  `, [username, email, password, date]);
+    INSERT INTO user (displayname, username, email, password, date) VALUES (?, ?, ?, ?, ?)
+  `, [displayname, username, email, password, date]);
 
   if (err) return res.status(404).send({});
 
