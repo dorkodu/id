@@ -1,27 +1,14 @@
-import { ApiCode, ApiReq, ApiRes } from "../../shared/types";
-
 import * as crypto from "crypto";
 
 export class Oath {
-  private id: string;
-  private secret: string;
   private readonly oathURI = "https://oath.dorkodu.com/api";
 
-  constructor(clientId: string, clientSecret: string) {
-    this.id = clientId;
-    this.secret = clientSecret;
+  public async auth(token: string) {
+    return await this.request<{ userId: number }>("/api/auth/auth", { token });
   }
 
-  public async auth(token: string): Promise<number | null> {
-    const { data, err } = await this.request(ApiCode.Auth, { token });
-    if (!data || err) return null;
-    return data.userId;
-  }
-
-  public async token(token: string): Promise<string | null> {
-    const { data, err } = await this.request(ApiCode.Token, { clientId: this.id, clientSecret: this.secret, token });
-    if (!data || err) return null;
-    return data.token;
+  public async temporaryAuth(token: string) {
+    return await this.request<{ token: string }>("/api/auth/temporaryAuth", { token });
   }
 
   public generateXSRFToken() {
@@ -32,16 +19,16 @@ export class Oath {
     return fromCookie === fromBody;
   }
 
-  private async request<T extends ApiCode>(type: T, req: ApiReq[T]): Promise<ApiRes[T]> {
-    const res = await fetch(this.oathURI, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ type, data: req })
-    });
-    const json = await res.json();
+  private async request<T>(url: string, data?: any): Promise<{ data: Partial<T>, err: boolean }> {
+    const options: RequestInit = { method: "POST" }
+    if (data !== undefined) {
+      options.headers = { "Content-Type": "application/json" };
+      options.body = JSON.stringify(data)
+    }
 
-    return json;
+    const res = await fetch(this.oathURI + url, options);
+    const out = { data: await res.json(), err: !res.ok };
+
+    return out;
   }
 }
