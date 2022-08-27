@@ -10,6 +10,11 @@
   },
   "homepage": "https://github.com/dorkodu/oath#readme",
   "scripts": {
+    "installbackend": "cd ./backend && npm i",
+    "installfrontend": "cd ./frontend && npm i",
+    "installbackend_lib": "cd ./backend_lib && npm i",
+    "installfrontend_lib": "cd ./frontend_lib && npm i",
+    "installall": "npm-run-all --parallel installbackend installfrontend installbackend_lib installfrontend_lib",
     "buildbackend": "cd ./backend && npm run build",
     "buildfrontend": "cd ./frontend && npm run build",
     "buildbackend_lib": "cd ./backend_lib && npm run build",
