@@ -7,7 +7,6 @@
     "./dist"
   ],
   "scripts": {
-    "dev": "ts-node-dev --respawn --quiet src/index.ts",
     "build": "rimraf ./dist && tsc"
   },
   "devDependencies": {

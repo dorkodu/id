@@ -11,6 +11,14 @@ export class Oath {
     return await this.request<{ token: string }>("/api/auth/temporaryAuth", { token });
   }
 
+  public async refreshAuth(token: string) {
+    return await this.request<{ token: string }>("/api/auth/refreshAuth", { token });
+  }
+
+  public async logout(token: string) {
+    return await this.request<{ token: string }>("/api/auth/logout", { token });
+  }
+
   public generateXSRFToken() {
     return crypto.randomBytes(16).toString("base64url");
   }

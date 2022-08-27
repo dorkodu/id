@@ -1,16 +1,26 @@
 {
   "name": "oath",
   "description": "the official authentication service for dorkodu products.",
-  "scripts": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/dorkodu/oath.git"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "bugs": {
     "url": "https://github.com/dorkodu/oath/issues"
   },
-  "homepage": "https://github.com/dorkodu/oath#readme"
+  "homepage": "https://github.com/dorkodu/oath#readme",
+  "scripts": {
+    "buildbackend": "cd ./backend && npm run build",
+    "buildfrontend": "cd ./frontend && npm run build",
+    "buildbackend_lib": "cd ./backend_lib && npm run build",
+    "buildfrontend_lib": "cd ./frontend_lib && npm run build",
+    "buildall": "npm-run-all --parallel buildbackend buildfrontend buildbackend_lib buildfrontend_lib",
+    "backenddev": "cd ./backend && npm run dev",
+    "frontenddev": "cd ./frontend && npm run dev",
+    "dev": "npm-run-all --parallel backenddev frontenddev",
+    "start": "cd ./backend && npm run start"
+  },
+  "devDependencies": {
+    "npm-run-all": "^4.1.5"
+  }
 }
