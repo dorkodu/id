@@ -87,7 +87,47 @@ async function login(req: Request, res: Response, next: NextFunction) {
 }
 
 async function signup(req: Request, res: Response, next: NextFunction) {
+  const data: Partial<{
+    username: string | any,
+    email: string | any,
+    password: string | any
+  }> = req.body;
 
+  // Check if data is undefined
+  if (data.username === undefined || typeof data.username !== "string")
+    return res.status(404).send({});
+  if (data.email === undefined || typeof data.email !== "string")
+    return res.status(404).send({});
+  if (data.password === undefined || typeof data.password !== "string")
+    return res.status(404).send({});
+
+  if (!checkUsername(data.username)) return res.status(404).send({});
+  if (!validate(data.email)) return res.status(404).send({});
+  if (data.password.length < 8) return res.status(404).send({});
+
+  const username = data.username;
+  const email = data.email;
+
+  // Since bcrypt only accepts first 72 bytes and stops at the null bytes,hash the
+  // password to get a fixed length of 32 bytes and base64 encode to avoid null bytes
+  const password = await bcrypt.hash(sha256(data.password).toString("base64"), 10);
+
+  // Timestamp that the user has signed up
+  const date = utcTimestamp();
+
+  const { result, err } = await db.query(`
+    INSERT INTO user (username, email, password, date) VALUES (?, ?, ?, ?)
+  `, [username, , email, password, date]);
+
+  if (err) return res.status(404).send({});
+
+  const token = await createTemporaryAuthToken(result.insertId);
+  if (token === null) return res.status(404).send({});
+
+  const redirectURI = req.query["redirect_uri"];
+  if (typeof redirectURI !== "string") return res.status(404).send({});
+
+  res.redirect(`${redirectURI}?token=${token}`);
 }
 
 async function logout(req: Request, res: Response, next: NextFunction) {
