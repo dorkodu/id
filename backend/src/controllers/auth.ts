@@ -47,8 +47,24 @@ async function createAuthToken(userId: number): Promise<{ token: string, expires
   };
 }
 
-async function deleteAuthToken() {
+async function deleteAuthToken(token: string): Promise<void> {
+  // Split the token by ":" since the format of the auth token is selector:validator which is a base64url
+  const splitToken = token.split(":");
+  const selector = toBinary(splitToken[0], "base64url");
+  const validator = toBinary(splitToken[1], "base64url");
 
+  // Query using the selector to avoid timing attacks
+  const { result, err } = await db.query(`
+    SELECT id, validator FROM auth_token WHERE selector=?
+  `, [selector]);
+
+  // If no result or there is an error
+  if (result.length === 0 || err) return;
+
+  // Validator from the base64url is unhashed, so hash it and compare with the one from the query
+  if (!compareBinary(sha256(validator), result[0].validator)) return;
+
+  await db.query(`DELETE FROM auth_token WHERE id=?`, [result[0].id]);
 }
 
 async function checkAuthToken(token: string): Promise<number | null> {
@@ -70,7 +86,7 @@ async function checkAuthToken(token: string): Promise<number | null> {
 
   // Check if the token is expired, if so delete the token
   if (utcTimestamp() > result[0].expires) {
-    deleteAuthToken();
+    deleteAuthToken(token);
     return null;
   }
 
