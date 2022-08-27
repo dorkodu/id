@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { db } from "../db";
-import { fromBinary, randomBytes, sha256, utcTimestamp } from "../utilty";
+import { compareBinary, fromBinary, randomBytes, sha256, toBinary, utcTimestamp } from "../utilty";
 
 async function auth(req: Request, res: Response, next: NextFunction) {
 
@@ -51,8 +51,30 @@ async function deleteAuthToken() {
 
 }
 
-async function checkAuthToken() {
+async function checkAuthToken(token: string): Promise<number | null> {
+  // Split the token by ":" since the format of the auth token is selector:validator which is a base64url
+  const splitToken = token.split(":");
+  const selector = toBinary(splitToken[0], "base64url");
+  const validator = toBinary(splitToken[1], "base64url");
 
+  // Query using the selector to avoid timing attacks
+  const { result, err } = await db.query(`
+   SELECT user_id, validator, expires FROM auth_token WHERE selector=?
+ `, [selector]);
+
+  // If no result or there is an error
+  if (result.length === 0 || err) return null;
+
+  // Check if the token is expired, if so delete the token
+  if (utcTimestamp() > result[0].expires) {
+    deleteAuthToken();
+    return null;
+  }
+
+  // Validator from the base64url is unhashed, so hash it and compare with the one from the query
+  if (!compareBinary(sha256(validator), result[0].validator)) return null;
+
+  return result[0].user_id;
 }
 
 export default { auth, temporaryAuth, login, signup, logout };
