@@ -117,7 +117,7 @@ async function signup(req: Request, res: Response, next: NextFunction) {
 
   const { result, err } = await db.query(`
     INSERT INTO user (username, email, password, date) VALUES (?, ?, ?, ?)
-  `, [username, , email, password, date]);
+  `, [username, email, password, date]);
 
   if (err) return res.status(404).send({});
 
