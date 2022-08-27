@@ -1,35 +1,29 @@
 import * as mysql from "mysql";
 
 export class DB {
-  public static instance: mysql.Connection;
+  public pool!: mysql.Pool;
 
-  public static async init() {
-    DB.instance = mysql.createConnection({
+  public init() {
+    this.pool = mysql.createPool({
       host: process.env.DB_HOST,
-      port: parseInt(process.env.DB_PORT),
+      port: parseInt(process.env.DB_PORT as string),
       database: process.env.DB_NAME,
       user: process.env.DB_USER,
-      password: process.env.DB_PASSWORD
+      password: process.env.DB_PASSWORD,
+
+      multipleStatements: true,
+
+      connectionLimit: 1
     });
-
-    return new Promise<void>((resolve, reject) => {
-      DB.instance.connect((err) => {
-        if (err) {
-          console.log(err);
-          process.exit(1);
-        }
-
-        console.log("Connected to mysql database...");
-        resolve();
-      })
-    })
   }
 
-  public static async query(sql: string, values: any[]) {
+  public async query(sql: string, values: any[]) {
     return new Promise<{ err: mysql.MysqlError | null, result: any }>((resolve, reject) => {
-      DB.instance.query(sql, values, (err, result) => {
+      this.pool.query(sql, values, (err, result) => {
         resolve({ err, result });
       });
     })
   }
 }
+
+export const db = new DB();

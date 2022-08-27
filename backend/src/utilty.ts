@@ -1,11 +1,11 @@
 import * as crypto from "crypto";
 
-export function sha256(input: crypto.BinaryLike) {
-  return crypto.createHash("sha256").update(input).digest();
-}
-
 export function utcTimestamp() {
   return Math.floor(Date.now() / 1000);
+}
+
+export function sha256(input: crypto.BinaryLike) {
+  return crypto.createHash("sha256").update(input).digest();
 }
 
 export function randomBytes(length: number) {
@@ -23,12 +23,12 @@ export function convertEncoding(input: string, from: BufferEncoding, to: BufferE
   return Buffer.from(input, from).toString(to);
 }
 
-export function toBinary(input: string, encoding: BufferEncoding) {
-  return Buffer.from(input, encoding);
+export function toBinary(input: string, from: BufferEncoding) {
+  return Buffer.from(input, from);
 }
 
-export function fromBinary(input: Buffer, encoding: BufferEncoding) {
-  return input.toString(encoding);
+export function fromBinary(input: Buffer, to: BufferEncoding) {
+  return input.toString(to);
 }
 
 export function compareBinary(a: Buffer, b: Buffer) {

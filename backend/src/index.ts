@@ -1,33 +1,34 @@
 import { config } from "dotenv";
 
-import { fastify } from "fastify";
-import { fastifyCookie } from "@fastify/cookie";
-import { fastifyStatic } from "@fastify/static";
+import * as express from "express";
+import * as cookieParser from "cookie-parser";
+
 import * as path from "path";
 
-import { Api } from "./api";
-import { DB } from "./db";
-import { convertEncoding, fromBinary, randomBytes, sha256, toBinary } from "./utilty";
+import { db } from "./db";
+
+import authRoutes from "./routes/auth";
 
 async function main() {
-  config();
+  config({ path: path.join(__dirname, "../.env") })
+  db.init();
 
-  await DB.init();
+  const app = express();
 
-  const server = fastify();
-  server.register(fastifyCookie);
-  server.register(fastifyStatic, { root: path.join(__dirname, "./dist") });
+  app.use(cookieParser());
+  app.use(express.json());
+  app.use(express.static(path.join(__dirname, "../../frontend/dist")));
 
-  server.post("/api", (req, res) => { Api.handle(req, res); });
+  // Routes
+  app.use("/api/auth", authRoutes);
 
-  server.listen(process.env.PORT && parseInt(process.env.PORT) || 80, (err, addr) => {
-    if (err) {
-      console.log(err);
-      process.exit(1);
-    }
+  // Catch all other routes and send index.html
+  app.get("*", (req, res, next) => {
+    res.sendFile(path.join(__dirname, "../../frontend/dist/index.html"));
+  })
 
-    console.log(`Server has started on ${addr}`);
-  });
+  const port = (process.env.PORT !== undefined && parseInt(process.env.PORT)) || 80;
+  app.listen(port, () => { console.log(`Server has started on port ${port}`) })
 }
 
 main();
