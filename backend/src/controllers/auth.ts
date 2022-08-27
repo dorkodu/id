@@ -118,11 +118,11 @@ async function createTemporaryAuthToken(userId: number): Promise<string | null> 
   return fromBinary(token, "base64url");
 }
 
-async function deleteTemporaryAuthToken(tokenId: number) {
-
+async function deleteTemporaryAuthToken(tokenId: number): Promise<void> {
+  await db.query(`DELETE FROM temporary_token WHERE id=?`, [tokenId]);
 }
 
-async function checkTemporaryAuthToken(token: string) {
+async function checkTemporaryAuthToken(token: string): Promise<number | null> {
   // Convert token to binary from base64url and sha256 hash it since it's stored as a hash in the database
   const tokenHash = sha256(toBinary(token, "base64url"));
 
