@@ -10,6 +10,10 @@ async function temporaryAuth(req: Request, res: Response, next: NextFunction) {
 
 }
 
+async function refreshAuth(req: Request, res: Response, next: NextFunction) {
+
+}
+
 async function login(req: Request, res: Response, next: NextFunction) {
 
 }
@@ -93,4 +97,4 @@ async function checkAuthToken(token: string): Promise<number | null> {
   return result[0].user_id;
 }
 
-export default { auth, temporaryAuth, login, signup, logout };
+export default { auth, temporaryAuth, refreshAuth, login, signup, logout };
