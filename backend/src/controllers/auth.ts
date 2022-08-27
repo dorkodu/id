@@ -3,10 +3,11 @@ import { db } from "../db";
 import { compareBinary, fromBinary, randomBytes, sha256, toBinary, utcTimestamp } from "../utilty";
 
 async function auth(req: Request, res: Response, next: NextFunction) {
-  const data: Partial<{ token: string }> = req.body;
+  const data: Partial<{ token: string | any }> = req.body;
 
   // Check if data is undefined
-  if (data.token === undefined) return res.status(404).send({});
+  if (data.token === undefined && typeof data.token === "string")
+    return res.status(404).send({});
 
   const userId = await checkAuthToken(data.token);
   return res.status(200).send({ userId });
