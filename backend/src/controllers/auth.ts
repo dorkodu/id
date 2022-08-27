@@ -14,7 +14,16 @@ async function auth(req: Request, res: Response, next: NextFunction) {
 }
 
 async function temporaryAuth(req: Request, res: Response, next: NextFunction) {
+  const data: Partial<{ token: string | any }> = req.body;
 
+  // Check if data is undefined
+  if (data.token === undefined && typeof data.token === "string")
+    return res.status(404).send({});
+
+  const userId = await checkTemporaryAuthToken(data.token);
+  if (userId === null) return res.status(404).send({});
+  const token = await createAuthToken(userId);
+  return res.status(200).send({ token });
 }
 
 async function refreshAuth(req: Request, res: Response, next: NextFunction) {
@@ -33,7 +42,7 @@ async function logout(req: Request, res: Response, next: NextFunction) {
 
 }
 
-async function createAuthToken(userId: number): Promise<{ token: string, expires: number } | null> {
+async function createAuthToken(userId: number): Promise<string | null> {
   // Create selector (16 bytes) and validator (32 bytes)
   const selector = randomBytes(16);
   const validator = randomBytes(32);
@@ -52,10 +61,7 @@ async function createAuthToken(userId: number): Promise<{ token: string, expires
   if (err) return null;
 
   // Convert token to it's final form by base64url-ing both selector & validator
-  return {
-    token: fromBinary(selector, "base64url") + ":" + fromBinary(validator, "base64url"),
-    expires: expires
-  };
+  return fromBinary(selector, "base64url") + ":" + fromBinary(validator, "base64url");
 }
 
 async function deleteAuthToken(token: string): Promise<void> {
