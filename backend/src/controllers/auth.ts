@@ -97,4 +97,18 @@ async function checkAuthToken(token: string): Promise<number | null> {
   return result[0].user_id;
 }
 
+async function createTemporaryAuthToken() {
+
+}
+
+async function deleteTemporaryAuthToken() {
+
+}
+
+
+async function checkTemporaryAuthToken() {
+
+}
+
+
 export default { auth, temporaryAuth, refreshAuth, login, signup, logout };
