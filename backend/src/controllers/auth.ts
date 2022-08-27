@@ -3,7 +3,13 @@ import { db } from "../db";
 import { compareBinary, fromBinary, randomBytes, sha256, toBinary, utcTimestamp } from "../utilty";
 
 async function auth(req: Request, res: Response, next: NextFunction) {
+  const data: Partial<{ token: string }> = req.body;
 
+  // Check if data is undefined
+  if (data.token === undefined) return res.status(404).send({});
+
+  const userId = await checkAuthToken(data.token);
+  return res.status(200).send({ userId });
 }
 
 async function temporaryAuth(req: Request, res: Response, next: NextFunction) {
@@ -80,7 +86,7 @@ async function checkAuthToken(token: string): Promise<number | null> {
   // Query using the selector to avoid timing attacks
   const { result, err } = await db.query(`
    SELECT user_id, validator, expires FROM auth_token WHERE selector=?
- `, [selector]);
+  `, [selector]);
 
   // If no result or there is an error
   if (result.length === 0 || err) return null;
