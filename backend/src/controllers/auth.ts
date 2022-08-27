@@ -1,6 +1,8 @@
+import { validate } from "email-validator";
 import { NextFunction, Request, Response } from "express";
 import { db } from "../db";
-import { compareBinary, fromBinary, randomBytes, sha256, toBinary, utcTimestamp } from "../utilty";
+import { checkUsername, compareBinary, fromBinary, randomBytes, sha256, toBinary, utcTimestamp } from "../utilty";
+import * as bcrypt from "bcrypt";
 
 async function auth(req: Request, res: Response, next: NextFunction) {
   const data: Partial<{ token: string | any }> = req.body;
@@ -47,7 +49,41 @@ async function refreshAuth(req: Request, res: Response, next: NextFunction) {
 }
 
 async function login(req: Request, res: Response, next: NextFunction) {
+  const data: Partial<{ usernameOrEmail: string | any, password: string | any }> = req.body;
 
+  // Check if data is undefined
+  if (data.usernameOrEmail === undefined || typeof data.usernameOrEmail !== "string")
+    return res.status(404).send({});
+  if (data.password === undefined || typeof data.password !== "string")
+    return res.status(404).send({});
+
+  let username: string | null = null;
+  let email: string | null = null;
+
+  if (checkUsername(data.usernameOrEmail)) username = data.usernameOrEmail;
+  else if (validate(data.usernameOrEmail)) email = data.usernameOrEmail;
+
+  if (username === null && email === null) return res.status(404).send({});
+
+  const { result, err } = username !== null ?
+    await db.query(`SELECT id, password FROM user WHERE username=?`, [username]) :
+    await db.query(`SELECT id, password FROM user WHERE email=?`, [email]);
+
+  // If an account with the corresponding username/email is not found
+  if (result.length === 0 || err) return res.status(404).send({});
+
+  // Sha256 hash the pure password and then base64 encode it. Password from the database  
+  // is the bcrypt hashed password. Convert it to utf8 and check if they match.
+  if (!(await bcrypt.compare(sha256(data.password).toString("base64"), fromBinary(result[0].password, "utf8"))))
+    return res.status(404).send({});
+
+  const token = await createTemporaryAuthToken(result[0].id);
+  if (token === null) return res.status(404).send({});
+
+  const redirectURI = req.query["redirect_uri"];
+  if (typeof redirectURI !== "string") return res.status(404).send({});
+
+  res.redirect(`${redirectURI}?token=${token}`);
 }
 
 async function signup(req: Request, res: Response, next: NextFunction) {
