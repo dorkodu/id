@@ -131,7 +131,17 @@ async function signup(req: Request, res: Response, next: NextFunction) {
 }
 
 async function logout(req: Request, res: Response, next: NextFunction) {
+  const data: Partial<{ token: string | any }> = req.body;
 
+  // Check if data is undefined
+  if (data.token === undefined || typeof data.token !== "string")
+    return res.status(404).send({});
+
+  const userId = await checkAuthToken(data.token);
+  if (userId === null) return res.status(404).send({});
+
+  await deleteAuthToken(data.token);
+  return res.status(200).send({});
 }
 
 async function createAuthToken(userId: number): Promise<string | null> {
