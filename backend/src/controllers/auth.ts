@@ -97,17 +97,49 @@ async function checkAuthToken(token: string): Promise<number | null> {
   return result[0].user_id;
 }
 
-async function createTemporaryAuthToken() {
+async function createTemporaryAuthToken(userId: number): Promise<string | null> {
+  // Create the temporary token (32 bytes)
+  const token = randomBytes(32);
+
+  // Store the hash of the temporary token to be stored in the database
+  const hash = sha256(token);
+
+  // Set the expiration to 60 seconds from now since the token is for one-time use
+  const expires = utcTimestamp() + 60;
+
+  const { result, err } = await db.query(`
+    INSERT INTO temporary_token (token, expires, user_id)
+    VALUES (?, ?, ?)
+  `, [hash, expires, userId]);
+
+  if (err) return null;
+
+  // Convert the token to base64url since it will be sent as query parameter in the url
+  return fromBinary(token, "base64url");
+}
+
+async function deleteTemporaryAuthToken(tokenId: number) {
 
 }
 
-async function deleteTemporaryAuthToken() {
+async function checkTemporaryAuthToken(token: string) {
+  // Convert token to binary from base64url and sha256 hash it since it's stored as a hash in the database
+  const tokenHash = sha256(toBinary(token, "base64url"));
 
-}
+  const { result, err } = await db.query(`SELECT id, user_id, expires FROM temporary_token WHERE token=?`, [tokenHash]);
 
+  // If no result or there is an error
+  if (result.length === 0 || err) return null;
 
-async function checkTemporaryAuthToken() {
+  // After validating that the token exists, since this token is meant to be used only once, 
+  // delete the token. No need to use await since it's nothing to do with other logic.
+  deleteTemporaryAuthToken(result[0].id);
 
+  // Check if the token is expired
+  if (utcTimestamp() > result[0].expires) return null;
+
+  // Return the user id
+  return result[0].user_id;
 }
 
 
