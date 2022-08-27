@@ -7,7 +7,6 @@
     "outDir": "./dist"
   },
   "include": [
-    "./src/**/*",
-    "../shared/**/*"
+    "./src/**/*"
   ]
 }
