@@ -1,4 +1,4 @@
-import * as crypto from "crypto";
+import crypto from "crypto";
 
 export function utcTimestamp() {
   return Math.floor(Date.now() / 1000);

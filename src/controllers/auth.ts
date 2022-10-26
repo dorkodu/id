@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
+import bcrypt from "bcrypt";
 
 import { authSchema, loginSchema, logoutSchema, signupSchema } from "../schemas/auth";
-import * as bcrypt from "bcrypt";
 import { fromBinary, sha256 } from "../utils";
 import { config } from "../config";
 

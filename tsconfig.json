@@ -12,7 +12,8 @@
     
     "outDir": "./dist",
     "removeComments": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "esModuleInterop": true,
   },
   "include": [
     "./src/**/*"
