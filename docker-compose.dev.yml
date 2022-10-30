@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  oath_api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile.dev
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - ./api:/api
+      - /api/node_modules
+    ports:
+      - "8001:8001"
+    restart: always
+  oath_web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile.dev
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - ./web:/web
+      - /web/node_modules
+    ports:
+      - "8000:8000"
+    restart: always
+  oath_postgres:
+    image: postgres:14-alpine
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=oath
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: always
+
+volumes:
+  pgdata:
