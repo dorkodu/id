@@ -3,12 +3,13 @@ import { crypto } from "./crypto";
 import { date } from "./date";
 import { encoding } from "./encoding";
 
-function create(): { selector: Buffer, validator: Buffer, expires: number } {
+function create(): { selector: Buffer, validator: Buffer, full: string, expires: number } {
   const selector = crypto.bytes(16);
   const validator = crypto.bytes(32);
+  const full = `${encoding.fromBinary(selector, "base64url")}:${encoding.fromBinary(validator, "base64url")}`;
   const expires = date.utc() + 60 * 60 * 24 * 30;
 
-  return { selector, validator, expires };
+  return { selector, validator, full, expires };
 }
 
 function parse(token: string): undefined | { selector: string, validator: string } {

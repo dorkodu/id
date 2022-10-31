@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import { crypto } from "../lib/crypto";
 import { date } from "../lib/date";
 import { token } from "../lib/token";
 
@@ -29,14 +30,24 @@ async function auth(req: Request, res: Response<{ userId: number }>) {
   return void res.status(200).send({ userId: res.locals.userId as number })
 }
 
-async function signup(req: Request, res: Response) {
+async function signup(req: Request, res: Response<{ userId: number }>) {
   const parsed = signupSchema.safeParse(req.body);
   if (!parsed.success) return void res.status(500).send();
 
-  const result = await pg``;
+  const row = {
+    username: parsed.data.username,
+    email: parsed.data.email,
+    password: await crypto.encryptPassword(parsed.data.password),
+    joinedAt: date.utc(),
+  }
+
+  const [result]: [{ id: number }?] = await pg`INSERT INTO users ${pg(row)} RETURNING id`;
+  if (!result) return void res.status(500).send();
+  if (!queryCreateToken(res, result.id)) return void res.status(500).send();
+  return void res.status(200).send({ userId: result.id });
 }
 
-async function login(req: Request, res: Response) {
+async function login(req: Request, res: Response<{ userId: number }>) {
   const parsed = loginSchema.safeParse(req.body);
   if (!parsed.success) return void res.status(500).send();
   if (!parsed.data.username && !parsed.data.email) return void res.status(500).send();
@@ -67,9 +78,26 @@ async function queryGetToken(req: Request) {
   return result;
 }
 
+async function queryCreateToken(res: Response, userId: number): Promise<boolean> {
+  const tkn = token.create();
+
+  const row = {
+    userId: userId,
+    selector: tkn.selector,
+    validator: crypto.sha256(tkn.validator),
+    expires: tkn.expires,
+  }
+
+  const [result]: [{ id: number }?] = await pg`INSERT INTO auth ${pg(row)} RETURNING id`;
+  if (!result) return false;
+
+  token.attach(res, { value: tkn.full, expires: tkn.expires });
+  return true;
+}
+
 async function queryDeleteToken(res: Response, tokenId: number, userId: number) {
   await pg`DELETE FROM auth WHERE id=${tokenId} AND userId=${userId}`;
-  res.clearCookie("token");
+  token.detach(res);
 }
 
 export function getAuthInfo(res: Response): undefined | { tokenId: number, userId: number } {
