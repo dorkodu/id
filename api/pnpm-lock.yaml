@@ -11,12 +11,14 @@ specifiers:
   rimraf: ^3.0.2
   ts-node-dev: ^2.0.0
   typescript: ^4.8.4
+  zod: ^3.19.1
 
 dependencies:
   cookie-parser: 1.4.6
   dotenv: 16.0.3
   express: 4.18.2
   postgres: 3.3.1
+  zod: 3.19.1
 
 devDependencies:
   '@types/cookie-parser': 1.4.3
@@ -916,3 +918,7 @@ packages:
     resolution: {integrity: sha512-Ux4ygGWsu2c7isFWe8Yu1YluJmqVhxqK2cLXNQA5AcC3QfbGNpM7fu0Y8b/z16pXLnFxZYvWhd3fhBY9DLmC6Q==}
     engines: {node: '>=6'}
     dev: true
+
+  /zod/3.19.1:
+    resolution: {integrity: sha512-LYjZsEDhCdYET9ikFu6dVPGp2YH9DegXjdJToSzD9rO6fy4qiRYFoyEYwps88OseJlPyl2NOe2iJuhEhL7IpEA==}
+    dev: false
