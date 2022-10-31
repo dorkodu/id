@@ -1,7 +1,11 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 
 import pg from "../pg";
 import { authSchema, loginSchema, logoutSchema, signupSchema } from "../schemas/auth";
+
+async function middleware(req: Request, res: Response, next: NextFunction) {
+  next();
+}
 
 async function auth(req: Request, res: Response) {
   const parsed = authSchema.safeParse(req.body);
@@ -33,4 +37,4 @@ async function logout(req: Request, res: Response) {
   const result = await pg``;
 }
 
-export default { auth, signup, login, logout }
+export default { middleware, auth, signup, login, logout }
