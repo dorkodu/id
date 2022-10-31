@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { crypto } from "./crypto";
 import { date } from "./date";
+import { encoding } from "./encoding";
 
 function create(): { selector: Buffer, validator: Buffer, expires: number } {
   const selector = crypto.bytes(16);
@@ -17,6 +18,10 @@ function parse(token: string): undefined | { selector: string, validator: string
 
   if (!selector || !validator) return undefined;
   return { selector, validator };
+}
+
+function compare(raw: string, encrypted: Buffer) {
+  return encoding.compareBinary(crypto.sha256(raw), encrypted);
 }
 
 function attach(res: Response, token: { value: string, expires: number }) {
@@ -39,7 +44,10 @@ function get(req: Request): string | undefined {
 export const token = {
   create,
   parse,
+  compare,
+
   attach,
   detach,
+
   get,
 }
