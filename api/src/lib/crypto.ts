@@ -1,11 +1,15 @@
 import * as cyptography from "crypto";
+import bcrypt from "bcrypt";
 
-async function encryptPassword() {
+import { config } from "../config";
+import { encoding } from "./encoding";
 
+async function encryptPassword(raw: string) {
+  return await bcrypt.hash(sha256(raw).toString("base64"), config.bcryptRounds);
 }
 
-async function comparePassword() {
-
+async function comparePassword(raw: string, encrypted: Buffer) {
+  return await bcrypt.compare(sha256(raw).toString("base64"), encoding.fromBinary(encrypted, "utf8"));
 }
 
 function sha256(input: cyptography.BinaryLike) {
