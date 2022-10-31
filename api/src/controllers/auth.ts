@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 
 import pg from "../pg";
 import { authSchema, loginSchema, logoutSchema, signupSchema } from "../schemas/auth";
-import { fromBinary, sha256, utcTimestamp } from "../utils";
+import { fromBinary, sha256 } from "../utils";
 import { config } from "../config";
 
 async function auth(req: Request, res: Response) {
@@ -17,14 +17,7 @@ async function signup(req: Request, res: Response) {
   const parsed = signupSchema.safeParse(req.body);
   if (!parsed.success) return void res.status(500).send();
 
-  const user = {
-    username: parsed.data.username,
-    email: parsed.data.email,
-    password: await encryptPassword(parsed.data.password),
-    date: utcTimestamp(),
-  }
-
-  const result = await pg`INSERT INTO user ${pg(user)}`;
+  const result = await pg``;
 }
 
 async function login(req: Request, res: Response) {
