@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState } from "react";
 
 interface State {
   user: IUser | undefined;
@@ -29,7 +29,10 @@ function App() {
           <button>signup</button>
         </>
       }
-      {state.authorized && state.user &&
+      {state.authorized && !state.user &&
+        <>loading...</>
+      }
+      {state.user &&
         <>
           <div>username: {state.user.username}</div>
           <div>email: {state.user.email}</div>
