@@ -93,7 +93,6 @@ out
 .nitro
 .output
 dist
-dev-dist
 
 # Gatsby files
 .cache/
@@ -133,3 +132,6 @@ dev-dist
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+
+dev-dist
+.pnpm-store
