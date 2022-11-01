@@ -79,7 +79,7 @@ async function queryGetToken(req: Request) {
   if (!parsedToken) return undefined;
 
   const [result]: [{ id: number, userId: number, validator: Buffer, expires: number }?] = await pg`
-    SELECT id, userId, validator, expires FROM auth WHERE selector=${parsedToken.selector}
+    SELECT id, userId, validator, expires FROM auth_token WHERE selector=${parsedToken.selector}
   `;
 
   return result;
@@ -95,7 +95,7 @@ async function queryCreateToken(res: Response, userId: number): Promise<boolean>
     expires: tkn.expires,
   }
 
-  const [result]: [{ id: number }?] = await pg`INSERT INTO auth ${pg(row)} RETURNING id`;
+  const [result]: [{ id: number }?] = await pg`INSERT INTO auth_token ${pg(row)} RETURNING id`;
   if (!result) return false;
 
   token.attach(res, { value: tkn.full, expires: tkn.expires });
@@ -103,7 +103,7 @@ async function queryCreateToken(res: Response, userId: number): Promise<boolean>
 }
 
 async function queryDeleteToken(res: Response, tokenId: number, userId: number) {
-  await pg`DELETE FROM auth WHERE id=${tokenId} AND userId=${userId}`;
+  await pg`DELETE FROM auth_token WHERE id=${tokenId} AND userId=${userId}`;
   token.detach(res);
 }
 
