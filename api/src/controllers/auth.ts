@@ -50,10 +50,17 @@ async function signup(req: Request, res: Response<{ userId: number }>) {
 async function login(req: Request, res: Response<{ userId: number }>) {
   const parsed = loginSchema.safeParse(req.body);
   if (!parsed.success) return void res.status(500).send();
-  if (!parsed.data.username && !parsed.data.email) return void res.status(500).send();
-  if (parsed.data.username && parsed.data.email) return void res.status(500).send();
 
-  const result = await pg``;
+  const { username, email, password } = parsed.data;
+  let [result]: [{ id: number, password: Buffer }?] = [undefined];
+  if (username) [result] = await pg`SELECT id, password FROM users WHERE username=${username}`;
+  else if (email) [result] = await pg`SELECT id, password FROM users WHERE username=${email}`;
+  else return void res.status(500).send();
+
+  if (!result) return void res.status(500).send();
+  if (!crypto.comparePassword(password, result.password)) return void res.status(500).send();
+  if (!queryCreateToken(res, result.id)) return void res.status(500).send();
+  return void res.status(200).send({ userId: result.id });
 }
 
 async function logout(req: Request, res: Response) {
