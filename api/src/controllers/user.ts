@@ -47,7 +47,7 @@ async function changeEmail(req: Request, res: Response) {
     SELECT password FROM users WHERE id=${info.userId}
   `;
   if (!result0) return void res.status(500).send();
-  if (!crypto.comparePassword(password, result0.password)) return void res.status(500).send();
+  if (!await crypto.comparePassword(password, result0.password)) return void res.status(500).send();
 
   const [result1]: [{ email: string }?] = await pg`
     UPDATE users SET email=${newEmail} WHERE id=${info.userId} RETURNING email
@@ -70,7 +70,7 @@ async function changePassword(req: Request, res: Response) {
     SELECT password FROM users WHERE id=${info.userId}
   `;
   if (!result0) return void res.status(500).send();
-  if (!crypto.comparePassword(oldPassword, result0.password)) return void res.status(500).send();
+  if (!await crypto.comparePassword(oldPassword, result0.password)) return void res.status(500).send();
 
   const [result1]: [{ password: string }?] = await pg`
     UPDATE users SET password=${newPassword} WHERE id=${info.userId} RETURNING password

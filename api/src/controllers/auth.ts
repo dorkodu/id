@@ -64,7 +64,7 @@ async function login(req: Request, res: Response) {
   else return void res.status(500).send();
 
   if (!result) return void res.status(500).send();
-  if (!crypto.comparePassword(password, result.password)) return void res.status(500).send();
+  if (!await crypto.comparePassword(password, result.password)) return void res.status(500).send();
   if (!await queryCreateToken(res, result.id)) return void res.status(500).send();
   return void res.status(200).send({});
 }

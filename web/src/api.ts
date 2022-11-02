@@ -42,11 +42,11 @@ async function changeUsername(newUsername: string) {
 }
 
 async function changeEmail(newEmail: string, password: string) {
-  return await request<{}>("/api/user/changeUsername", { newEmail, password });
+  return await request<{}>("/api/user/changeEmail", { newEmail, password });
 }
 
 async function changePassword(oldPassword: string, newPassword: string) {
-  return await request<{}>("/api/user/changeUsername", { oldPassword, newPassword });
+  return await request<{}>("/api/user/changePassword", { oldPassword, newPassword });
 }
 
 export default {

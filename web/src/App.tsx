@@ -24,6 +24,14 @@ function App() {
   const signupEmail = useRef<HTMLInputElement>(null);
   const signupPassword = useRef<HTMLInputElement>(null);
 
+  const changeUsernameNewUsername = useRef<HTMLInputElement>(null);
+
+  const changeEmailNewEmail = useRef<HTMLInputElement>(null);
+  const changeEmailPassword = useRef<HTMLInputElement>(null);
+
+  const changePasswordOldPassword = useRef<HTMLInputElement>(null);
+  const changePasswordNewPassword = useRef<HTMLInputElement>(null);
+
   useEffect(() => { auth() }, [])
 
   const auth = async () => {
@@ -68,15 +76,64 @@ function App() {
     const { data: data1, err: err1 } = await api.getUser();
     if (err1 || !data1) return setLoading(false);
 
-    setState({ user: data1, authorized: true });
+    setState({ ...state, user: data1 });
     setLoading(false);
   }
 
   const logout = async () => {
+    setLoading(true);
+
     const { data, err } = await api.logout();
-    if (err || !data) return;
+    if (err || !data) return setLoading(false);
 
     setState({ user: undefined, authorized: false });
+    setLoading(false);
+  }
+
+  const changeUsername = async () => {
+    if (!state.user || !state.authorized) return;
+
+    const newUsername = changeUsernameNewUsername.current?.value;
+    if (!newUsername) return;
+
+    setLoading(true);
+
+    const { data, err } = await api.changeUsername(newUsername);
+    if (err || !data) return setLoading(false);
+
+    setState({ ...state, user: { ...state.user, username: newUsername } });
+    setLoading(false);
+  }
+
+  const changeEmail = async () => {
+    if (!state.user || !state.authorized) return;
+
+    const newEmail = changeEmailNewEmail.current?.value;
+    const password = changeEmailPassword.current?.value;
+    if (!newEmail || !password) return;
+
+    setLoading(true);
+
+    const { data, err } = await api.changeEmail(newEmail, password);
+    if (err || !data) return setLoading(false);
+
+    setState({ ...state, user: { ...state.user, email: newEmail } });
+    setLoading(false);
+  }
+
+  const changePassword = async () => {
+    if (!state.user || !state.authorized) return;
+
+    const oldPassword = changePasswordOldPassword.current?.value;
+    const newPassword = changePasswordNewPassword.current?.value;
+    if (!oldPassword || !newPassword) return;
+
+    setLoading(true);
+
+    const { data, err } = await api.changePassword(oldPassword, newPassword);
+    if (err || !data) return setLoading(false);
+
+    setLoading(false);
   }
 
   return (
@@ -105,24 +162,24 @@ function App() {
 
           <div>
             change username:
-            <div><input type={"text"} placeholder={"new username..."} /></div>
-            <button>apply</button>
+            <div><input ref={changeUsernameNewUsername} type={"text"} placeholder={"new username..."} /></div>
+            <button onClick={changeUsername}>apply</button>
           </div>
           <br />
 
           <div>
             change email:
-            <div><input type={"text"} placeholder={"new email..."} /></div>
-            <div><input type={"password"} placeholder={"password..."} /></div>
-            <button>apply</button>
+            <div><input ref={changeEmailNewEmail} type={"text"} placeholder={"new email..."} /></div>
+            <div><input ref={changeEmailPassword} type={"password"} placeholder={"password..."} /></div>
+            <button onClick={changeEmail}>apply</button>
           </div>
           <br />
 
           <div>
             change password:
-            <div><input type={"password"} placeholder={"old password..."} /></div>
-            <div><input type={"password"} placeholder={"new username..."} /></div>
-            <button>apply</button>
+            <div><input ref={changePasswordOldPassword} type={"password"} placeholder={"old password..."} /></div>
+            <div><input ref={changePasswordNewPassword} type={"password"} placeholder={"new password..."} /></div>
+            <button onClick={changePassword}>apply</button>
           </div>
           <br />
 
