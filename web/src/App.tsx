@@ -13,8 +13,18 @@ interface IUser {
   joinedAt: number;
 }
 
+interface ISession {
+  id: number;
+  createdAt: number;
+  expiresAt: number;
+  userAgent: string;
+  ip: string;
+}
+
 function App() {
   const [state, setState] = useState<State>({ user: undefined, authorized: false });
+  const [sessions, setSessions] = useState<ISession[]>([]);
+
   const [loading, setLoading] = useState(true);
 
   const loginInfo = useRef<HTMLInputElement>(null);
@@ -33,6 +43,7 @@ function App() {
   const changePasswordNewPassword = useRef<HTMLInputElement>(null);
 
   useEffect(() => { auth() }, [])
+  useEffect(() => { getSessions() }, [state.authorized])
 
   const auth = async () => {
     const { data: data0, err: err0 } = await api.auth();
@@ -136,6 +147,27 @@ function App() {
     setLoading(false);
   }
 
+  const getSessions = async () => {
+    if (!state.user || !state.authorized) return;
+
+    const anchor = !sessions.length ? -1 : sessions[sessions.length - 1]?.id;
+    if (anchor === undefined) return;
+
+    const { data, err } = await api.getSessions(anchor);
+    if (err || !data) return;
+
+    setSessions([...sessions, ...data]);
+  }
+
+  const terminateSession = async (sessionId: number) => {
+    if (!state.user || !state.authorized) return;
+
+    const { data, err } = await api.terminateSession(sessionId);
+    if (err || !data) return;
+
+    setSessions(sessions.filter((session) => session.id !== sessionId));
+  }
+
   return (
     <>
       {loading &&
@@ -180,6 +212,23 @@ function App() {
             <div><input ref={changePasswordOldPassword} type={"password"} placeholder={"old password..."} /></div>
             <div><input ref={changePasswordNewPassword} type={"password"} placeholder={"new password..."} /></div>
             <button onClick={changePassword}>apply</button>
+          </div>
+          <br />
+
+          <div>
+            <div>sessions:</div>
+            {
+              sessions.map((session) =>
+                <div key={session.id}>
+                  <br />
+                  <div>created at: {new Date(session.createdAt * 1000).toString()}</div>
+                  <div>expires at: {new Date(session.expiresAt * 1000).toString()}</div>
+                  <div>ip: {session.ip}</div>
+                  <div>user agent: {session.userAgent}</div>
+                  <button onClick={() => { terminateSession(session.id) }}>terminate session</button>
+                </div>
+              )
+            }
           </div>
           <br />
 

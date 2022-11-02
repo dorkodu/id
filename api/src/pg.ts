@@ -7,7 +7,15 @@ const pg = postgres({
   user: config.postgresUser,
   password: config.postgresPassword,
   database: config.postgresName,
-  transform: postgres.toCamel
+  transform: postgres.toCamel,
+  types: {
+    bigint: {
+      to: 20,
+      from: [20],
+      parse: raw => Number(raw),
+      serialize: raw => raw.toString(),
+    }
+  }
 })
 
 export default pg

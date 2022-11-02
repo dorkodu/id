@@ -19,3 +19,11 @@ export const changePasswordSchema = z.object({
   oldPassword: sharedSchemas.password,
   newPassword: sharedSchemas.password,
 }).strict();
+
+export const getSessionsSchema = z.object({
+  anchor: z.number()
+}).strict();
+
+export const terminateSessionSchema = z.object({
+  sessionId: z.number()
+}).strict();
