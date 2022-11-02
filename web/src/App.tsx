@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import api from "./api";
 
@@ -15,7 +15,7 @@ interface IUser {
 
 function App() {
   const [state, setState] = useState<State>({ user: undefined, authorized: false });
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const loginInfo = useRef<HTMLInputElement>(null);
   const loginPassword = useRef<HTMLInputElement>(null);
@@ -24,20 +24,34 @@ function App() {
   const signupEmail = useRef<HTMLInputElement>(null);
   const signupPassword = useRef<HTMLInputElement>(null);
 
+  useEffect(() => { auth() }, [])
+
+  const auth = async () => {
+    const { data: data0, err: err0 } = await api.auth();
+    if (err0 || !data0) return setLoading(false);
+
+    const { data: data1, err: err1 } = await api.getUser();
+    if (err1 || !data1) return setLoading(false);
+
+    setState({ user: data1, authorized: true });
+    setLoading(false);
+  }
+
   const login = async () => {
     const info = loginInfo.current?.value;
     const password = loginPassword.current?.value;
     if (!info || !password) return;
 
-    const { data: data0, err: err0 } = await api.login(info, password);
-    if (err0 || !data0) return;
+    setLoading(true);
 
-    setState({ ...state, authorized: true });
+    const { data: data0, err: err0 } = await api.login(info, password);
+    if (err0 || !data0) return setLoading(false);
 
     const { data: data1, err: err1 } = await api.getUser();
-    if (err1 || !data1) return;
+    if (err1 || !data1) return setLoading(false);
 
-    setState({ ...state, user: data1 });
+    setState({ user: data1, authorized: true });
+    setLoading(false);
   }
 
   const signup = async () => {
@@ -46,15 +60,16 @@ function App() {
     const password = signupPassword.current?.value;
     if (!username || !email || !password) return;
 
-    const { data: data0, err: err0 } = await api.signup(username, email, password);
-    if (err0 || !data0) return;
+    setLoading(true);
 
-    setState({ ...state, authorized: true });
+    const { data: data0, err: err0 } = await api.signup(username, email, password);
+    if (err0 || !data0) return setLoading(false);
 
     const { data: data1, err: err1 } = await api.getUser();
-    if (err1 || !data1) return;
+    if (err1 || !data1) return setLoading(false);
 
-    setState({ ...state, user: data1 });
+    setState({ user: data1, authorized: true });
+    setLoading(false);
   }
 
   const logout = async () => {

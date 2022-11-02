@@ -28,7 +28,7 @@ async function auth(req: Request, res: Response) {
   if (!parsed.success) return void res.status(500).send();
 
   if (!getAuthInfo(res)) return void res.status(500).send();
-  return void res.status(200).send()
+  return void res.status(200).send({});
 }
 
 async function signup(req: Request, res: Response) {
