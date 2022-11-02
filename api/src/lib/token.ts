@@ -3,13 +3,14 @@ import { crypto } from "./crypto";
 import { date } from "./date";
 import { encoding } from "./encoding";
 
-function create(): { selector: Buffer, validator: Buffer, full: string, expires: number } {
+function create() {
   const selector = crypto.bytes(16);
   const validator = crypto.bytes(32);
   const full = `${encoding.fromBinary(selector, "base64url")}:${encoding.fromBinary(validator, "base64url")}`;
-  const expires = date.utc() + 60 * 60 * 24 * 30;
+  const createdAt = date.utc();
+  const expiresAt = date.utc() + 60 * 60 * 24 * 30;
 
-  return { selector, validator, full, expires };
+  return { selector, validator, full, createdAt, expiresAt };
 }
 
 function parse(token: string): undefined | { selector: Buffer, validator: Buffer } {
@@ -26,12 +27,12 @@ function compare(raw: Buffer, encrypted: Buffer) {
   return encoding.compareBinary(crypto.sha256(raw), encrypted);
 }
 
-function attach(res: Response, token: { value: string, expires: number }) {
+function attach(res: Response, token: { value: string, expiresAt: number }) {
   res.cookie("token", token.value, {
     secure: true,
     httpOnly: true,
     sameSite: true,
-    expires: new Date(token.expires * 1000),
+    expires: new Date(token.expiresAt * 1000),
   });
 }
 

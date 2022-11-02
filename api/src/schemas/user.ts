@@ -15,7 +15,7 @@ export const changeEmailSchema = z.object({
   password: sharedSchemas.password,
 }).strict();
 
-export const ChangePasswordSchema = z.object({
+export const changePasswordSchema = z.object({
   oldPassword: sharedSchemas.password,
   newPassword: sharedSchemas.password,
 }).strict();

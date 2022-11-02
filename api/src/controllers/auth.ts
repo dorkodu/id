@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { crypto } from "../lib/crypto";
 import { date } from "../lib/date";
 import { token } from "../lib/token";
+import { userAgent } from "../lib/user_agent";
 
 import pg from "../pg";
 import { authSchema, loginSchema, logoutSchema, signupSchema } from "../schemas/auth";
@@ -15,7 +16,7 @@ async function middleware(req: Request, res: Response, next: NextFunction) {
   const tkn = await queryGetToken(req);
   if (!tkn) return next();
   if (!token.compare(parsedToken.validator, tkn.validator)) return next();
-  if (date.utc() > tkn.expires) { await queryDeleteToken(res, tkn.id, tkn.userId); return next(); }
+  if (date.utc() > tkn.expiresAt) { await queryDeleteToken(res, tkn.id, tkn.userId); return next(); }
 
   res.locals.userId = tkn.userId;
   res.locals.tokenId = tkn.id;
@@ -44,7 +45,7 @@ async function signup(req: Request, res: Response) {
 
   const [result]: [{ id: number }?] = await pg`INSERT INTO users ${pg(row)} RETURNING id`;
   if (!result) return void res.status(500).send();
-  if (!await queryCreateToken(res, result.id)) return void res.status(500).send();
+  if (!await queryCreateToken(req, res, result.id)) return void res.status(500).send();
   return void res.status(200).send({});
 }
 
@@ -65,7 +66,7 @@ async function login(req: Request, res: Response) {
 
   if (!result) return void res.status(500).send();
   if (!await crypto.comparePassword(password, result.password)) return void res.status(500).send();
-  if (!await queryCreateToken(res, result.id)) return void res.status(500).send();
+  if (!await queryCreateToken(req, res, result.id)) return void res.status(500).send();
   return void res.status(200).send({});
 }
 
@@ -84,32 +85,35 @@ async function queryGetToken(req: Request) {
   const parsedToken = rawToken ? token.parse(rawToken) : undefined;
   if (!parsedToken) return undefined;
 
-  const [result]: [{ id: number, userId: number, validator: Buffer, expires: number }?] = await pg`
-    SELECT id, user_id, validator, expires FROM auth_token WHERE selector=${parsedToken.selector}
+  const [result]: [{ id: number, userId: number, validator: Buffer, expiresAt: number }?] = await pg`
+    SELECT id, user_id, validator, expires_at FROM auth_tokens WHERE selector=${parsedToken.selector}
   `;
 
   return result;
 }
 
-async function queryCreateToken(res: Response, userId: number): Promise<boolean> {
+async function queryCreateToken(req: Request, res: Response, userId: number): Promise<boolean> {
   const tkn = token.create();
 
   const row = {
     user_id: userId,
     selector: tkn.selector,
     validator: crypto.sha256(tkn.validator),
-    expires: tkn.expires,
+    created_at: tkn.createdAt,
+    expires_at: tkn.expiresAt,
+    user_agent: userAgent.parse(req.headers["user-agent"]),
+    ip: req.ip
   }
 
-  const [result]: [{ id: number }?] = await pg`INSERT INTO auth_token ${pg(row)} RETURNING id`;
+  const [result]: [{ id: number }?] = await pg`INSERT INTO auth_tokens ${pg(row)} RETURNING id`;
   if (!result) return false;
 
-  token.attach(res, { value: tkn.full, expires: tkn.expires });
+  token.attach(res, { value: tkn.full, expiresAt: tkn.expiresAt });
   return true;
 }
 
 async function queryDeleteToken(res: Response, tokenId: number, userId: number) {
-  await pg`DELETE FROM auth_token WHERE id=${tokenId} AND user_id=${userId}`;
+  await pg`DELETE FROM auth_tokens WHERE id=${tokenId} AND user_id=${userId}`;
   token.detach(res);
 }
 

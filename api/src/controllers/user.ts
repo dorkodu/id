@@ -2,13 +2,13 @@ import { Request, Response } from "express";
 import { crypto } from "../lib/crypto";
 
 import pg from "../pg";
-import { changeEmailSchema, ChangePasswordSchema, changeUsernameSchema, getUserSchema } from "../schemas/user";
+import { changeEmailSchema, changePasswordSchema, changeUsernameSchema, getUserSchema } from "../schemas/user";
 import auth from "./auth";
 
 async function getUser(req: Request, res: Response<{ username: string, email: string, joinedAt: number }>) {
   const parsed = getUserSchema.safeParse(req.body);
   if (!parsed.success) return void res.status(500).send();
-  
+
   const info = auth.getAuthInfo(res);
   if (!info) return void res.status(500).send();
 
@@ -57,7 +57,7 @@ async function changeEmail(req: Request, res: Response) {
 }
 
 async function changePassword(req: Request, res: Response) {
-  const parsed = ChangePasswordSchema.safeParse(req.body);
+  const parsed = changePasswordSchema.safeParse(req.body);
   if (!parsed.success) return void res.status(500).send();
 
   const info = auth.getAuthInfo(res);
