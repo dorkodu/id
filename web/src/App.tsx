@@ -24,6 +24,7 @@ interface ISession {
 function App() {
   const [state, setState] = useState<State>({ user: undefined, authorized: false });
   const [sessions, setSessions] = useState<ISession[]>([]);
+  const [currentSession, setCurrentSession] = useState<ISession | undefined>(undefined);
 
   const [loading, setLoading] = useState(true);
 
@@ -43,7 +44,7 @@ function App() {
   const changePasswordNewPassword = useRef<HTMLInputElement>(null);
 
   useEffect(() => { auth() }, [])
-  useEffect(() => { getSessions() }, [state.authorized])
+  useEffect(() => { getCurrentSession(); getSessions(); }, [state.authorized])
 
   const auth = async () => {
     const { data: data0, err: err0 } = await api.auth();
@@ -98,6 +99,8 @@ function App() {
     if (err || !data) return setLoading(false);
 
     setState({ user: undefined, authorized: false });
+    setCurrentSession(undefined);
+    setSessions([]);
     setLoading(false);
   }
 
@@ -147,6 +150,15 @@ function App() {
     setLoading(false);
   }
 
+  const getCurrentSession = async () => {
+    if (!state.user || !state.authorized) return;
+
+    const { data, err } = await api.getCurrentSession();
+    if (err || !data) return;
+
+    setCurrentSession(data);
+  }
+
   const getSessions = async () => {
     if (!state.user || !state.authorized) return;
 
@@ -165,7 +177,14 @@ function App() {
     const { data, err } = await api.terminateSession(sessionId);
     if (err || !data) return;
 
-    setSessions(sessions.filter((session) => session.id !== sessionId));
+    if (currentSession && currentSession.id === sessionId) {
+      setState({ user: undefined, authorized: false });
+      setCurrentSession(undefined);
+      setSessions([]);
+    }
+    else {
+      setSessions(sessions.filter((session) => session.id !== sessionId));
+    }
   }
 
   return (
@@ -216,9 +235,24 @@ function App() {
           <br />
 
           <div>
-            <div>sessions:</div>
+            <div>current session:</div>
+            <br />
+            {currentSession &&
+              <>
+                <div>created at: {new Date(currentSession.createdAt * 1000).toString()}</div>
+                <div>expires at: {new Date(currentSession.expiresAt * 1000).toString()}</div>
+                <div>ip: {currentSession.ip}</div>
+                <div>user agent: {currentSession.userAgent}</div>
+                <button onClick={() => { terminateSession(currentSession.id) }}>terminate session</button>
+              </>
+            }
+            <br /><br />
+          </div>
+
+          <div>
+            <div>all sessions:</div>
             {
-              sessions.map((session) =>
+              sessions.map((session) => currentSession && currentSession.id !== session.id &&
                 <div key={session.id}>
                   <br />
                   <div>created at: {new Date(session.createdAt * 1000).toString()}</div>

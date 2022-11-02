@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { crypto } from "../lib/crypto";
 
 import pg from "../pg";
-import { changeEmailSchema, changePasswordSchema, changeUsernameSchema, getSessionsSchema, getUserSchema, terminateSessionSchema } from "../schemas/user";
+import { changeEmailSchema, changePasswordSchema, changeUsernameSchema, getCurrentSessionSchema, getSessionsSchema, getUserSchema, terminateSessionSchema } from "../schemas/user";
 import auth from "./auth";
 
 async function getUser(req: Request, res: Response<{ username: string, email: string, joinedAt: number }>) {
@@ -79,7 +79,22 @@ async function changePassword(req: Request, res: Response) {
   return void res.status(200).send({});
 }
 
-async function getSessions(req: Request, res: Response) {
+async function getCurrentSession(req: Request, res: Response<{ id: number, createdAt: number, expiresAt: number, userAgent: string, ip: string }>) {
+  const parsed = getCurrentSessionSchema.safeParse(req.body);
+  if (!parsed.success) return void res.status(500).send();
+
+  const info = auth.getAuthInfo(res);
+  if (!info) return void res.status(500).send();
+
+  const [result]: [{ id: number, createdAt: number, expiresAt: number, userAgent: string, ip: string }?] = await pg`
+    SELECT id, created_at, expires_at, user_agent, ip FROM auth_tokens WHERE id=${info.tokenId}
+  `;
+  if (!result) return void res.status(500).send();
+
+  return void res.status(200).send(result);
+}
+
+async function getSessions(req: Request, res: Response<{ id: number, createdAt: number, expiresAt: number, userAgent: string, ip: string }[]>) {
   const parsed = getSessionsSchema.safeParse(req.body);
   if (!parsed.success) return void res.status(500).send();
 
@@ -122,6 +137,7 @@ export default {
   changeEmail,
   changePassword,
 
+  getCurrentSession,
   getSessions,
   terminateSession,
 }

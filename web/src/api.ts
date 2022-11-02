@@ -49,6 +49,16 @@ async function changePassword(oldPassword: string, newPassword: string) {
   return await request<{}>("/api/user/changePassword", { oldPassword, newPassword });
 }
 
+async function getCurrentSession() {
+  return await request<{
+    id: number,
+    createdAt: number,
+    expiresAt: number,
+    userAgent: string,
+    ip: string
+  }>("/api/user/getCurrentSession");
+}
+
 async function getSessions(anchor: number) {
   return await request<{
     id: number,
@@ -74,6 +84,7 @@ export default {
   changeEmail,
   changePassword,
 
+  getCurrentSession,
   getSessions,
   terminateSession,
 }

@@ -20,6 +20,10 @@ export const changePasswordSchema = z.object({
   newPassword: sharedSchemas.password,
 }).strict();
 
+export const getCurrentSessionSchema = z.object({
+
+}).strict();
+
 export const getSessionsSchema = z.object({
   anchor: z.number()
 }).strict();
