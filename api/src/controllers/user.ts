@@ -8,12 +8,12 @@ import auth from "./auth";
 async function getUser(req: Request, res: Response<{ username: string, email: string, joinedAt: number }>) {
   const parsed = getUserSchema.safeParse(req.body);
   if (!parsed.success) return void res.status(500).send();
-
+  
   const info = auth.getAuthInfo(res);
   if (!info) return void res.status(500).send();
 
   const [result]: [{ username: string, email: string, joinedAt: number }?] = await pg`
-    SELECT username, email, joinedAt FROM users WHERE id=${info.userId}
+    SELECT username, email, joined_at FROM users WHERE id=${info.userId}
   `;
   if (!result) return void res.status(500).send();
   return void res.status(200).send(result);
@@ -31,7 +31,7 @@ async function changeUsername(req: Request, res: Response) {
     UPDATE users SET username=${newUsername} WHERE id=${info.userId} RETURNING username
   `;
   if (!result) return void res.status(500).send();
-  return void res.status(200).send();
+  return void res.status(200).send({});
 }
 
 async function changeEmail(req: Request, res: Response) {
@@ -53,7 +53,7 @@ async function changeEmail(req: Request, res: Response) {
     UPDATE users SET email=${newEmail} WHERE id=${info.userId} RETURNING email
   `;
   if (!result1) return void res.status(500).send();
-  return void res.status(200).send();
+  return void res.status(200).send({});
 }
 
 async function changePassword(req: Request, res: Response) {
@@ -76,7 +76,7 @@ async function changePassword(req: Request, res: Response) {
     UPDATE users SET password=${newPassword} WHERE id=${info.userId} RETURNING password
   `;
   if (!result1) return void res.status(500).send();
-  return void res.status(200).send();
+  return void res.status(200).send({});
 }
 
 export default {

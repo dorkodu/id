@@ -16,11 +16,10 @@ async function main() {
   app.use(cookieParser());
 
   app.use("/api/access", accessRoutes);
-  app.use("*", auth.middleware);
-  app.use("/api/auth", authRoutes);
-  app.use("/api/user", userRoutes);
+  app.use("/api/auth", auth.middleware, authRoutes);
+  app.use("/api/user", auth.middleware, userRoutes);
 
-  app.listen(config.port, () => { console.log(`Server has started on port ${config.port}`) })
+  app.listen(config.port, () => { console.log(`Server has started on port ${config.port}`) });
 }
 
 main();

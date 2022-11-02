@@ -12,16 +12,17 @@ function create(): { selector: Buffer, validator: Buffer, full: string, expires:
   return { selector, validator, full, expires };
 }
 
-function parse(token: string): undefined | { selector: string, validator: string } {
+function parse(token: string): undefined | { selector: Buffer, validator: Buffer } {
   const split = token.split(":");
-  const selector = split[0];
-  const validator = split[1];
+  if (!split[0] || !split[1]) return undefined;
 
-  if (!selector || !validator) return undefined;
+  const selector = encoding.toBinary(split[0], "base64url");
+  const validator = encoding.toBinary(split[1], "base64url");
+
   return { selector, validator };
 }
 
-function compare(raw: string, encrypted: Buffer) {
+function compare(raw: Buffer, encrypted: Buffer) {
   return encoding.compareBinary(crypto.sha256(raw), encrypted);
 }
 

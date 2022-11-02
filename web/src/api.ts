@@ -1,4 +1,4 @@
-async function request<TData>(url: string, data?: any): Promise<{ data: Partial<TData>, err: boolean }> {
+async function request<TData>(url: string, data?: any): Promise<{ data: TData | undefined, err: boolean }> {
   const options: RequestInit = { method: "POST" }
   if (data !== undefined) {
     options.headers = { "Content-Type": "application/json" };
@@ -13,20 +13,20 @@ async function request<TData>(url: string, data?: any): Promise<{ data: Partial<
 
     return out;
   } catch {
-    return { data: {}, err: true }
+    return { data: undefined, err: true }
   }
 }
 
 async function auth() {
-  return await request<{ userId: number }>("/api/auth/auth");
+  return await request<{}>("/api/auth/auth");
 }
 
 async function signup(username: string, email: string, password: string) {
-  return await request<{ userId: number }>("/api/auth/signup", { username, email, password });
+  return await request<{}>("/api/auth/signup", { username, email, password });
 }
 
-async function login(username: string | undefined, email: string | undefined, password: string) {
-  return await request<{ userId: number }>("/api/auth/login", { username, email, password });
+async function login(info: string, password: string) {
+  return await request<{}>("/api/auth/login", { info, password });
 }
 
 async function logout() {

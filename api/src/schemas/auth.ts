@@ -13,8 +13,7 @@ export const signupSchema = z.object({
 }).strict();
 
 export const loginSchema = z.object({
-  username: sharedSchemas.username.optional(),
-  email: sharedSchemas.email.optional(),
+  info: z.string(),
   password: sharedSchemas.password,
 }).strict();
 
