@@ -1,6 +1,22 @@
-import type { ISession } from "../../api/src/types/session";
+import type { ApiDetail, ApiRoutes } from "../../api/src/types/api";
 
-async function request<TData>(url: string, data?: any): Promise<{ data: TData | undefined, err: boolean }> {
+const routes: ApiRoutes = {
+  auth: "/api/auth/auth",
+  signup: "/api/auth/signup",
+  login: "/api/auth/login",
+  logout: "/api/auth/logout",
+
+  getUser: "/api/user/getUser",
+  changeUsername: "/api/user/changeUsername",
+  changeEmail: "/api/user/changeEmail",
+  changePassword: "/api/user/changePassword",
+
+  getCurrentSession: "/api/session/getCurrentSession",
+  getSessions: "/api/session/getSessions",
+  terminateSession: "/api/session/terminateSession",
+}
+
+async function request<T extends keyof ApiRoutes>(url: T, data: ApiDetail[T]["input"]): Promise<{ data: ApiDetail[T]["output"] | undefined, err: boolean }> {
   const options: RequestInit = { method: "POST" }
   if (data !== undefined) {
     options.headers = { "Content-Type": "application/json" };
@@ -8,7 +24,7 @@ async function request<TData>(url: string, data?: any): Promise<{ data: TData | 
   }
 
   try {
-    const res = await fetch(url, options);
+    const res = await fetch(routes[url], options);
     const out = { data: await res.json(), err: !res.ok };
 
     console.log(out);
@@ -20,47 +36,47 @@ async function request<TData>(url: string, data?: any): Promise<{ data: TData | 
 }
 
 async function auth() {
-  return await request<{}>("/api/auth/auth");
+  return await request("auth", {});
 }
 
 async function signup(username: string, email: string, password: string) {
-  return await request<{}>("/api/auth/signup", { username, email, password });
+  return await request("signup", { username, email, password });
 }
 
 async function login(info: string, password: string) {
-  return await request<{}>("/api/auth/login", { info, password });
+  return await request("login", { info, password });
 }
 
 async function logout() {
-  return await request<{}>("/api/auth/logout");
+  return await request("logout", {});
 }
 
 async function getUser() {
-  return await request<{ username: string, email: string, joinedAt: number }>("/api/user/getUser");
+  return await request("getUser", {});
 }
 
 async function changeUsername(newUsername: string) {
-  return await request<{}>("/api/user/changeUsername", { newUsername });
+  return await request("changeUsername", { newUsername });
 }
 
 async function changeEmail(newEmail: string, password: string) {
-  return await request<{}>("/api/user/changeEmail", { newEmail, password });
+  return await request("changeEmail", { newEmail, password });
 }
 
 async function changePassword(oldPassword: string, newPassword: string) {
-  return await request<{}>("/api/user/changePassword", { oldPassword, newPassword });
+  return await request("changePassword", { oldPassword, newPassword });
 }
 
 async function getCurrentSession() {
-  return await request<ISession>("/api/session/getCurrentSession");
+  return await request("getCurrentSession", {});
 }
 
 async function getSessions(anchor: number, type: "newer" | "older") {
-  return await request<ISession[]>("/api/session/getSessions", { anchor, type });
+  return await request("getSessions", { anchor, type });
 }
 
 async function terminateSession(sessionId: number) {
-  return await request<{}>("/api/session/terminateSession", { sessionId });
+  return await request("terminateSession", { sessionId });
 }
 
 export default {

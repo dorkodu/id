@@ -1,10 +1,11 @@
 import * as express from "express";
 import controller from "../controllers/session";
+import { routes } from "./routes";
 
 const router = express.Router();
 
-router.post("/getCurrentSession", controller.getCurrentSession);
-router.post("/getSessions", controller.getSessions);
-router.post("/terminateSession", controller.terminateSession);
+router.post(routes.getCurrentSession, controller.getCurrentSession);
+router.post(routes.getSessions, controller.getSessions);
+router.post(routes.terminateSession, controller.terminateSession);
 
 export default router;
