@@ -14,4 +14,9 @@ export const routes: ApiRoutes = {
   getCurrentSession: "/api/session/getCurrentSession",
   getSessions: "/api/session/getSessions",
   terminateSession: "/api/session/terminateSession",
+
+  getAccesses: "/api/access/getAccesses",
+  checkAccess: "/api/access/checkAccess",
+  grantAccess: "/api/access/grantAccess",
+  revokeAccess: "/api/access/revokeAccess",
 }

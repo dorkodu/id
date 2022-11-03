@@ -14,6 +14,11 @@ const routes: ApiRoutes = {
   getCurrentSession: "/api/session/getCurrentSession",
   getSessions: "/api/session/getSessions",
   terminateSession: "/api/session/terminateSession",
+
+  getAccesses: "/api/access/getAccesses",
+  checkAccess: "/api/access/checkAccess",
+  grantAccess: "/api/access/grantAccess",
+  revokeAccess: "/api/access/revokeAccess",
 }
 
 async function request<T extends keyof ApiRoutes>(url: T, data: ApiDetail[T]["input"]): Promise<{ data: ApiDetail[T]["output"] | undefined, err: boolean }> {
@@ -79,6 +84,22 @@ async function terminateSession(sessionId: number) {
   return await request("terminateSession", { sessionId });
 }
 
+async function getAccesses() {
+  return await request("getAccesses", {});
+}
+
+async function checkAccess() {
+  return await request("checkAccess", {});
+}
+
+async function grantAccess() {
+  return await request("grantAccess", {});
+}
+
+async function revokeAccess() {
+  return await request("revokeAccess", {});
+}
+
 export default {
   auth,
   signup,
@@ -93,4 +114,9 @@ export default {
   getCurrentSession,
   getSessions,
   terminateSession,
+
+  getAccesses,
+  checkAccess,
+  grantAccess,
+  revokeAccess,
 }

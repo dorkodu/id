@@ -1,3 +1,4 @@
+import { InputCheckAccessSchema, InputGetAccessesSchema, InputGrantAccessSchema, InputRevokeAccessSchema, OutputCheckAccessSchema, OutputGetAccessesSchema, OutputGrantAccessSchema, OutputRevokeAccessSchema } from "../schemas/access"
 import type {
   InputAuthSchema,
   InputLoginSchema,
@@ -88,5 +89,26 @@ export interface ApiDetail {
     path: "/api/session/terminateSession"
     input: InputTerminateSessionSchema
     output: OutputTerminateSessionSchema
+  }
+
+  getAccesses: {
+    path: "/api/access/getAccesses",
+    input: InputGetAccessesSchema,
+    output: OutputGetAccessesSchema,
+  }
+  checkAccess: {
+    path: "/api/access/checkAccess",
+    input: InputCheckAccessSchema,
+    output: OutputCheckAccessSchema,
+  }
+  grantAccess: {
+    path: "/api/access/grantAccess",
+    input: InputGrantAccessSchema,
+    output: OutputGrantAccessSchema,
+  }
+  revokeAccess: {
+    path: "/api/access/revokeAccess",
+    input: InputRevokeAccessSchema,
+    output: OutputRevokeAccessSchema,
   }
 }
