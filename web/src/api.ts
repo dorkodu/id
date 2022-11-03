@@ -1,4 +1,4 @@
-import { ISession } from "./App";
+import type { ISession } from "../../api/src/types/session";
 
 async function request<TData>(url: string, data?: any): Promise<{ data: TData | undefined, err: boolean }> {
   const options: RequestInit = { method: "POST" }

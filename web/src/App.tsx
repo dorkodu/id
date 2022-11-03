@@ -2,23 +2,12 @@ import { useEffect, useRef, useState } from "react";
 
 import api from "./api";
 
+import type { IUser } from "../../api/src/types/user";
+import type { ISession } from "../../api/src/types/session";
+
 interface State {
   user: IUser | undefined;
   authorized: boolean;
-}
-
-interface IUser {
-  username: string;
-  email: string;
-  joinedAt: number;
-}
-
-export interface ISession {
-  id: number;
-  createdAt: number;
-  expiresAt: number;
-  userAgent: string;
-  ip: string;
 }
 
 function App() {
