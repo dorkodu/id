@@ -2,24 +2,25 @@ import { Request, Response } from "express";
 import { crypto } from "../lib/crypto";
 
 import pg from "../pg";
-import { changeEmailSchema, changePasswordSchema, changeUsernameSchema, getUserSchema } from "../schemas/user";
+import { changeEmailSchema, changePasswordSchema, changeUsernameSchema, getUserSchema, OutputChangeEmailSchema, OutputChangePasswordSchema, OutputChangeUsernameSchema, OutputGetUserSchema } from "../schemas/user";
+import { IUser } from "../types/user";
 import auth from "./auth";
 
-async function getUser(req: Request, res: Response<{ username: string, email: string, joinedAt: number }>) {
+async function getUser(req: Request, res: Response<OutputGetUserSchema>) {
   const parsed = getUserSchema.safeParse(req.body);
   if (!parsed.success) return void res.status(500).send();
 
   const info = auth.getAuthInfo(res);
   if (!info) return void res.status(500).send();
 
-  const [result]: [{ username: string, email: string, joinedAt: number }?] = await pg`
+  const [result]: [IUser?] = await pg`
     SELECT username, email, joined_at FROM users WHERE id=${info.userId}
   `;
   if (!result) return void res.status(500).send();
   return void res.status(200).send(result);
 }
 
-async function changeUsername(req: Request, res: Response) {
+async function changeUsername(req: Request, res: Response<OutputChangeUsernameSchema>) {
   const parsed = changeUsernameSchema.safeParse(req.body);
   if (!parsed.success) return void res.status(500).send();
 
@@ -34,7 +35,7 @@ async function changeUsername(req: Request, res: Response) {
   return void res.status(200).send({});
 }
 
-async function changeEmail(req: Request, res: Response) {
+async function changeEmail(req: Request, res: Response<OutputChangeEmailSchema>) {
   const parsed = changeEmailSchema.safeParse(req.body);
   if (!parsed.success) return void res.status(500).send();
 
@@ -56,7 +57,7 @@ async function changeEmail(req: Request, res: Response) {
   return void res.status(200).send({});
 }
 
-async function changePassword(req: Request, res: Response) {
+async function changePassword(req: Request, res: Response<OutputChangePasswordSchema>) {
   const parsed = changePasswordSchema.safeParse(req.body);
   if (!parsed.success) return void res.status(500).send();
 

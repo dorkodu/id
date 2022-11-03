@@ -5,7 +5,7 @@ import { token } from "../lib/token";
 import { userAgent } from "../lib/user_agent";
 
 import pg from "../pg";
-import { authSchema, loginSchema, logoutSchema, signupSchema } from "../schemas/auth";
+import { authSchema, loginSchema, logoutSchema, OutputAuthSchema, OutputLoginSchema, OutputLogoutSchema, OutputSignupSchema, signupSchema } from "../schemas/auth";
 import { sharedSchemas } from "../schemas/shared";
 
 async function middleware(req: Request, res: Response, next: NextFunction) {
@@ -24,7 +24,7 @@ async function middleware(req: Request, res: Response, next: NextFunction) {
   next();
 }
 
-async function auth(req: Request, res: Response) {
+async function auth(req: Request, res: Response<OutputAuthSchema>) {
   const parsed = authSchema.safeParse(req.body);
   if (!parsed.success) return void res.status(500).send();
 
@@ -32,7 +32,7 @@ async function auth(req: Request, res: Response) {
   return void res.status(200).send({});
 }
 
-async function signup(req: Request, res: Response) {
+async function signup(req: Request, res: Response<OutputSignupSchema>) {
   const parsed = signupSchema.safeParse(req.body);
   if (!parsed.success) return void res.status(500).send();
 
@@ -49,7 +49,7 @@ async function signup(req: Request, res: Response) {
   return void res.status(200).send({});
 }
 
-async function login(req: Request, res: Response) {
+async function login(req: Request, res: Response<OutputLoginSchema>) {
   const parsed = loginSchema.safeParse(req.body);
   if (!parsed.success) return void res.status(500).send();
 
@@ -70,7 +70,7 @@ async function login(req: Request, res: Response) {
   return void res.status(200).send({});
 }
 
-async function logout(req: Request, res: Response) {
+async function logout(req: Request, res: Response<OutputLogoutSchema>) {
   const parsed = logoutSchema.safeParse(req.body);
   if (!parsed.success) return void res.status(500).send();
 
