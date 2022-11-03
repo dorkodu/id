@@ -9,8 +9,4 @@ router.post("/changeUsername", controller.changeUsername);
 router.post("/changeEmail", controller.changeEmail);
 router.post("/changePassword", controller.changePassword);
 
-router.post("/getCurrentSession", controller.getCurrentSession);
-router.post("/getSessions", controller.getSessions);
-router.post("/terminateSession", controller.terminateSession);
-
 export default router;

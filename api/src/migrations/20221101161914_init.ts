@@ -9,7 +9,7 @@ export async function up(knex: Knex): Promise<void> {
       table.binary("password", 60)
       table.bigint("joined_at")
     })
-    .createTable("auth_tokens", (table) => {
+    .createTable("sessions", (table) => {
       table.bigIncrements("id").primary()
       table.bigint("user_id")
       table.binary("selector", 16).unique()
@@ -25,5 +25,5 @@ export async function up(knex: Knex): Promise<void> {
 export async function down(knex: Knex): Promise<void> {
   return knex.schema
     .dropTable("users")
-    .dropTable("auth_tokens")
+    .dropTable("sessions")
 }

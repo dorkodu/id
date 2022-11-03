@@ -56,7 +56,7 @@ async function getCurrentSession() {
     expiresAt: number,
     userAgent: string,
     ip: string
-  }>("/api/user/getCurrentSession");
+  }>("/api/session/getCurrentSession");
 }
 
 async function getSessions(anchor: number) {
@@ -66,11 +66,11 @@ async function getSessions(anchor: number) {
     expiresAt: number,
     userAgent: string,
     ip: string
-  }[]>("/api/user/getSessions", { anchor });
+  }[]>("/api/session/getSessions", { anchor });
 }
 
 async function terminateSession(sessionId: number) {
-  return await request<{}>("/api/user/terminateSession", { sessionId });
+  return await request<{}>("/api/session/terminateSession", { sessionId });
 }
 
 export default {
