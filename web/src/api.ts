@@ -1,3 +1,5 @@
+import { ISession } from "./App";
+
 async function request<TData>(url: string, data?: any): Promise<{ data: TData | undefined, err: boolean }> {
   const options: RequestInit = { method: "POST" }
   if (data !== undefined) {
@@ -50,23 +52,11 @@ async function changePassword(oldPassword: string, newPassword: string) {
 }
 
 async function getCurrentSession() {
-  return await request<{
-    id: number,
-    createdAt: number,
-    expiresAt: number,
-    userAgent: string,
-    ip: string
-  }>("/api/session/getCurrentSession");
+  return await request<ISession>("/api/session/getCurrentSession");
 }
 
-async function getSessions(anchor: number) {
-  return await request<{
-    id: number,
-    createdAt: number,
-    expiresAt: number,
-    userAgent: string,
-    ip: string
-  }[]>("/api/session/getSessions", { anchor });
+async function getSessions(anchor: number, type: "newer" | "older") {
+  return await request<ISession[]>("/api/session/getSessions", { anchor, type });
 }
 
 async function terminateSession(sessionId: number) {

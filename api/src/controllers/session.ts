@@ -25,11 +25,12 @@ async function getSessions(req: Request, res: Response<{ id: number, createdAt: 
   const info = auth.getAuthInfo(res);
   if (!info) return void res.status(500).send();
 
-  const { anchor } = parsed.data;
+  const { anchor, type } = parsed.data;
   const result = await pg<{ id: number, createdAt: number, expiresAt: number, userAgent: string, ip: string }[]>`
     SELECT id, created_at, expires_at, user_agent, ip FROM sessions
-    WHERE user_id=${info.userId} ${anchor === -1 ? pg`` : pg`AND id<${anchor}`}
-    ORDER BY id DESC
+    WHERE user_id=${info.userId}
+    ${anchor === -1 ? pg`` : type === "newer" ? pg`AND id>${anchor}` : pg`AND id<${anchor}`}
+    ORDER BY id ${anchor === -1 ? pg`DESC` : type === "newer" ? pg`ASC` : pg`DESC`}
     LIMIT 10
   `;
   if (!result.length) return void res.status(500).send();

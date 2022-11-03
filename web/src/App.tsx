@@ -13,7 +13,7 @@ interface IUser {
   joinedAt: number;
 }
 
-interface ISession {
+export interface ISession {
   id: number;
   createdAt: number;
   expiresAt: number;
@@ -23,7 +23,7 @@ interface ISession {
 
 function App() {
   const [state, setState] = useState<State>({ user: undefined, authorized: false });
-  const [sessions, setSessions] = useState<ISession[]>([]);
+  const [sessions, setSessions] = useState<{ ids: number[], entities: Record<number, ISession> }>({ ids: [], entities: {} });
   const [currentSession, setCurrentSession] = useState<ISession | undefined>(undefined);
 
   const [loading, setLoading] = useState(true);
@@ -44,7 +44,7 @@ function App() {
   const changePasswordNewPassword = useRef<HTMLInputElement>(null);
 
   useEffect(() => { auth() }, [])
-  useEffect(() => { getCurrentSession(); getSessions(); }, [state.authorized])
+  useEffect(() => { getCurrentSession(); getSessions("newer", true); }, [state.authorized])
 
   const auth = async () => {
     const { data: data0, err: err0 } = await api.auth();
@@ -100,7 +100,7 @@ function App() {
 
     setState({ user: undefined, authorized: false });
     setCurrentSession(undefined);
-    setSessions([]);
+    setSessions({ ids: [], entities: {} });
     setLoading(false);
   }
 
@@ -159,16 +159,21 @@ function App() {
     setCurrentSession(data);
   }
 
-  const getSessions = async () => {
+  const getSessions = async (type: "newer" | "older", refresh?: boolean) => {
     if (!state.user || !state.authorized) return;
 
-    const anchor = !sessions.length ? -1 : sessions[sessions.length - 1]?.id;
-    if (anchor === undefined) return;
+    const anchor = getAnchor(sessions.ids, type, refresh);
 
-    const { data, err } = await api.getSessions(anchor);
+    const { data, err } = await api.getSessions(anchor, type);
     if (err || !data) return;
 
-    setSessions([...sessions, ...data]);
+    if (refresh) sessions.ids = [];
+
+    const ids = sortArray([...sessions.ids, ...data.map((session) => session.id)]);
+    const entities = sessions.entities;
+    data.forEach((session) => void (entities[session.id] = session));
+
+    setSessions({ ids, entities });
   }
 
   const terminateSession = async (sessionId: number) => {
@@ -180,12 +185,28 @@ function App() {
     if (currentSession && currentSession.id === sessionId) {
       setState({ user: undefined, authorized: false });
       setCurrentSession(undefined);
-      setSessions([]);
+      setSessions({ ids: [], entities: {} });
     }
     else {
-      setSessions(sessions.filter((session) => session.id !== sessionId));
+      const ids = sessions.ids.filter((id) => id !== sessionId)
+      const entities = sessions.entities;
+      if (entities[sessionId]) delete entities[sessionId];
+
+      setSessions({ ids, entities });
     }
   }
+
+  /// HELPER FUNCTIONS \\\
+  const getAnchor = (arr: number[], type: "newer" | "older", refresh?: boolean): number => {
+    if (!arr.length || refresh) return -1;
+    const out = type === "newer" ? arr[0] : arr[arr.length - 1];
+    return out === undefined ? -1 : out;
+  }
+
+  const sortArray = (arr: number[]) => {
+    return [... new Set(arr)].sort((a, b) => (b - a));
+  }
+  /// HELPER FUNCTIONS \\\
 
   return (
     <>
@@ -251,15 +272,18 @@ function App() {
 
           <div>
             <div>all sessions:</div>
+            <button onClick={() => { getSessions("newer") }}>load newer</button>
+            <button onClick={() => { getSessions("older") }}>load older</button>
+            <button onClick={() => { getSessions("newer", true) }}>refresh</button>
             {
-              sessions.map((session) => currentSession && currentSession.id !== session.id &&
-                <div key={session.id}>
+              sessions.ids.map((id) => currentSession && currentSession.id !== id && sessions.entities[id] &&
+                <div key={sessions.entities[id]!.id}>
                   <br />
-                  <div>created at: {new Date(session.createdAt * 1000).toString()}</div>
-                  <div>expires at: {new Date(session.expiresAt * 1000).toString()}</div>
-                  <div>ip: {session.ip}</div>
-                  <div>user agent: {session.userAgent}</div>
-                  <button onClick={() => { terminateSession(session.id) }}>terminate session</button>
+                  <div>created at: {new Date(sessions.entities[id]!.createdAt * 1000).toString()}</div>
+                  <div>expires at: {new Date(sessions.entities[id]!.expiresAt * 1000).toString()}</div>
+                  <div>ip: {sessions.entities[id]!.ip}</div>
+                  <div>user agent: {sessions.entities[id]!.userAgent}</div>
+                  <button onClick={() => { terminateSession(sessions.entities[id]!.id) }}>terminate session</button>
                 </div>
               )
             }
