@@ -34,6 +34,15 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
     restart: always
+  oath_mailslurper:
+    image: marcopas/docker-mailslurper
+    volumes:
+      - ./mailslurper/config.json:/opt/mailslurper/config.json
+    ports:
+      - "2500:2500"
+      - "8080:8080"
+      - "8085:8085"
+    restart: always
 
 volumes:
   pgdata:
