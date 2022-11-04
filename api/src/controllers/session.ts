@@ -48,10 +48,7 @@ async function terminateSession(req: Request, res: Response<OutputTerminateSessi
 
   const { sessionId } = parsed.data;
 
-  const [result]: [{ id: number }?] = await pg`
-    DELETE FROM sessions WHERE id=${sessionId} AND user_id=${info.userId} RETURNING id
-  `;
-  if (!result) return void res.status(500).send();
+  await pg`DELETE FROM sessions WHERE id=${sessionId} AND user_id=${info.userId}`;
 
   return void res.status(200).send({});
 }

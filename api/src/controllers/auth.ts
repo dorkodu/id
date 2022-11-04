@@ -105,8 +105,8 @@ async function queryCreateToken(req: Request, res: Response, userId: number): Pr
     ip: req.ip
   }
 
-  const [result]: [{ id: number }?] = await pg`INSERT INTO sessions ${pg(row)} RETURNING id`;
-  if (!result) return false;
+  const result = await pg`INSERT INTO sessions ${pg(row)}`;
+  if (!result.count) return false;
 
   token.attach(res, { value: tkn.full, expiresAt: tkn.expiresAt });
   return true;

@@ -28,10 +28,8 @@ async function changeUsername(req: Request, res: Response<OutputChangeUsernameSc
   if (!info) return void res.status(500).send();
 
   const { newUsername } = parsed.data;
-  const [result]: [{ username: string }?] = await pg`
-    UPDATE users SET username=${newUsername} WHERE id=${info.userId} RETURNING username
-  `;
-  if (!result) return void res.status(500).send();
+  const result = await pg`UPDATE users SET username=${newUsername} WHERE id=${info.userId}`;
+  if (!result.count) return void res.status(500).send();
   return void res.status(200).send({});
 }
 
@@ -50,10 +48,8 @@ async function changeEmail(req: Request, res: Response<OutputChangeEmailSchema>)
   if (!result0) return void res.status(500).send();
   if (!await crypto.comparePassword(password, result0.password)) return void res.status(500).send();
 
-  const [result1]: [{ email: string }?] = await pg`
-    UPDATE users SET email=${newEmail} WHERE id=${info.userId} RETURNING email
-  `;
-  if (!result1) return void res.status(500).send();
+  const result1 = await pg`UPDATE users SET email=${newEmail} WHERE id=${info.userId}`;
+  if (!result1.count) return void res.status(500).send();
   return void res.status(200).send({});
 }
 
