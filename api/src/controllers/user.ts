@@ -73,10 +73,11 @@ async function changePassword(req: Request, res: Response<OutputChangePasswordSc
   if (!result0) return void res.status(500).send();
   if (!await crypto.comparePassword(oldPassword, result0.password)) return void res.status(500).send();
 
-  const [result1]: [{ password: string }?] = await pg`
-    UPDATE users SET password=${newPassword} WHERE id=${info.userId} RETURNING password
-  `;
-  if (!result1) return void res.status(500).send();
+  await pg.begin(pg => [
+    pg`UPDATE users SET password=${newPassword} WHERE id=${info.userId}`,
+    pg`DELETE FROM sessions WHERE user_id=${info.userId}`
+  ])
+
   return void res.status(200).send({});
 }
 
