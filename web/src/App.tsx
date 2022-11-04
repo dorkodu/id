@@ -136,7 +136,14 @@ function App() {
     const { data, err } = await api.changePassword(oldPassword, newPassword);
     if (err || !data) return setLoading(false);
 
+    setState({ user: undefined, authorized: false });
+    setCurrentSession(undefined);
+    setSessions({ ids: [], entities: {} });
     setLoading(false);
+  }
+
+  const forgotPassword = async () => {
+
   }
 
   const getCurrentSession = async () => {
@@ -207,6 +214,7 @@ function App() {
           <div><input ref={loginInfo} type={"text"} placeholder={"username or email..."} /></div>
           <div><input ref={loginPassword} type={"password"} placeholder={"password..."} /></div>
           <button onClick={login}>login</button>
+          <button onClick={forgotPassword}>forgot password</button>
           <br /><br />
           <div><input ref={signupUsername} type={"text"} placeholder={"username..."} /></div>
           <div><input ref={signupEmail} type={"email"} placeholder={"email..."} /></div>
