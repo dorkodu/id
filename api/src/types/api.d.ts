@@ -1,4 +1,3 @@
-import { InputCheckAccessSchema, InputGetAccessesSchema, InputGrantAccessSchema, InputRevokeAccessSchema, OutputCheckAccessSchema, OutputGetAccessesSchema, OutputGrantAccessSchema, OutputRevokeAccessSchema } from "../schemas/access"
 import type {
   InputAuthSchema,
   InputLoginSchema,
@@ -11,6 +10,25 @@ import type {
 } from "../schemas/auth"
 
 import type {
+  InputChangeUsernameSchema,
+  InputCompleteChangePasswordSchema,
+  InputGetUserSchema,
+  InputInitiateChangeEmailSchema,
+  InputInitiateChangePasswordSchema,
+  InputProceedChangePasswordSchema,
+  InputVerifyNewEmailChangeEmailSchema,
+  InputVerifyOldEmailChangeEmailSchema,
+  OutputChangeUsernameSchema,
+  OutputCompleteChangePasswordSchema,
+  OutputGetUserSchema,
+  OutputInitiateChangeEmailSchema,
+  OutputInitiateChangePasswordSchema,
+  OutputProceedChangePasswordSchema,
+  OutputVerifyNewEmailChangeEmailSchema,
+  OutputVerifyOldEmailChangeEmailSchema
+} from "../schemas/user"
+
+import type {
   InputGetCurrentSessionSchema,
   InputGetSessionsSchema,
   InputTerminateSessionSchema,
@@ -19,16 +37,17 @@ import type {
   OutputTerminateSessionSchema
 } from "../schemas/session"
 
+
 import type {
-  InputChangeEmailSchema,
-  InputChangePasswordSchema,
-  InputChangeUsernameSchema,
-  InputGetUserSchema,
-  OutputChangeEmailSchema,
-  OutputChangePasswordSchema,
-  OutputChangeUsernameSchema,
-  OutputGetUserSchema
-} from "../schemas/user"
+  InputCheckAccessSchema,
+  InputGetAccessesSchema,
+  InputGrantAccessSchema,
+  InputRevokeAccessSchema,
+  OutputCheckAccessSchema,
+  OutputGetAccessesSchema,
+  OutputGrantAccessSchema,
+  OutputRevokeAccessSchema
+} from "../schemas/access"
 
 export type ApiRoutes = { [K in keyof ApiDetail]: ApiDetail[K]["path"] }
 
@@ -64,15 +83,35 @@ export interface ApiDetail {
     input: InputChangeUsernameSchema
     output: OutputChangeUsernameSchema
   }
-  changeEmail: {
-    path: "/api/user/changeEmail"
-    input: InputChangeEmailSchema
-    output: OutputChangeEmailSchema
+  initiateChangeEmail: {
+    path: "/api/user/initiateChangeEmail",
+    input: InputInitiateChangeEmailSchema,
+    output: OutputInitiateChangeEmailSchema,
   }
-  changePassword: {
-    path: "/api/user/changePassword"
-    input: InputChangePasswordSchema
-    output: OutputChangePasswordSchema
+  verifyNewEmailChangeEmail: {
+    path: "/api/user/verifyNewEmailChangeEmail",
+    input: InputVerifyNewEmailChangeEmailSchema,
+    output: OutputVerifyNewEmailChangeEmailSchema,
+  }
+  verifyOldEmailChangeEmail: {
+    path: "/api/user/verifyOldEmailChangeEmail",
+    input: InputVerifyOldEmailChangeEmailSchema,
+    output: OutputVerifyOldEmailChangeEmailSchema,
+  }
+  initiateChangePassword: {
+    path: "/api/user/initiateChangePassword",
+    input: InputInitiateChangePasswordSchema,
+    output: OutputInitiateChangePasswordSchema,
+  }
+  proceedChangePassword: {
+    path: "/api/user/proceedChangePassword",
+    input: InputProceedChangePasswordSchema,
+    output: OutputProceedChangePasswordSchema,
+  }
+  completeChangePassword: {
+    path: "/api/user/completeChangePassword",
+    input: InputCompleteChangePasswordSchema,
+    output: OutputCompleteChangePasswordSchema,
   }
 
   getCurrentSession: {

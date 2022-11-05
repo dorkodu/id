@@ -11,35 +11,25 @@ const transporter = nodemailer.createTransport({
   }
 })
 
-async function sendSecurityNewLocation(email: string) {
+async function sendSecurityNotification(email: string) {
   transporter.sendMail({
     from: '"Oath" <oath@dorkodu.com>',
     to: email,
-    subject: "New Location",
+    subject: "",
     html: ``,
   })
 }
 
-async function sendSecurityEmailChange(email: string) {
+async function sendSecurityVerification(email: string) {
   transporter.sendMail({
     from: '"Oath" <oath@dorkodu.com>',
     to: email,
-    subject: "Email Change",
-    html: ``,
-  })
-}
-
-async function sendSecurityPasswordChange(email: string) {
-  transporter.sendMail({
-    from: '"Oath" <oath@dorkodu.com>',
-    to: email,
-    subject: "Password Change",
+    subject: "",
     html: ``,
   })
 }
 
 export const mailer = {
-  sendSecurityNewLocation,
-  sendSecurityEmailChange,
-  sendSecurityPasswordChange,
+  sendSecurityNotification,
+  sendSecurityVerification,
 }

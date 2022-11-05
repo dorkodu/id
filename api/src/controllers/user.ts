@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { crypto } from "../lib/crypto";
 
 import pg from "../pg";
-import { changeEmailSchema, changePasswordSchema, changeUsernameSchema, getUserSchema, OutputChangeEmailSchema, OutputChangePasswordSchema, OutputChangeUsernameSchema, OutputGetUserSchema } from "../schemas/user";
+import { changeUsernameSchema, getUserSchema, OutputChangeUsernameSchema, OutputGetUserSchema } from "../schemas/user";
 import { IUser } from "../types/user";
 import auth from "./auth";
 
@@ -33,54 +33,40 @@ async function changeUsername(req: Request, res: Response<OutputChangeUsernameSc
   return void res.status(200).send({});
 }
 
-async function changeEmail(req: Request, res: Response<OutputChangeEmailSchema>) {
-  const parsed = changeEmailSchema.safeParse(req.body);
-  if (!parsed.success) return void res.status(500).send();
+async function initiateChangeEmail() {
 
-  const info = auth.getAuthInfo(res);
-  if (!info) return void res.status(500).send();
-
-  const { newEmail, password } = parsed.data;
-
-  const [result0]: [{ password: Buffer }?] = await pg`
-    SELECT password FROM users WHERE id=${info.userId}
-  `;
-  if (!result0) return void res.status(500).send();
-  if (!await crypto.comparePassword(password, result0.password)) return void res.status(500).send();
-
-  const result1 = await pg`UPDATE users SET email=${newEmail} WHERE id=${info.userId}`;
-  if (!result1.count) return void res.status(500).send();
-  return void res.status(200).send({});
 }
 
-async function changePassword(req: Request, res: Response<OutputChangePasswordSchema>) {
-  const parsed = changePasswordSchema.safeParse(req.body);
-  if (!parsed.success) return void res.status(500).send();
+async function verifyNewEmailChangeEmail() {
 
-  const info = auth.getAuthInfo(res);
-  if (!info) return void res.status(500).send();
+}
 
-  const oldPassword = parsed.data.oldPassword;
-  const newPassword = await crypto.encryptPassword(parsed.data.newPassword);
+async function verifyOldEmailChangeEmail() {
 
-  const [result0]: [{ password: Buffer }?] = await pg`
-    SELECT password FROM users WHERE id=${info.userId}
-  `;
-  if (!result0) return void res.status(500).send();
-  if (!await crypto.comparePassword(oldPassword, result0.password)) return void res.status(500).send();
+}
 
-  await pg.begin(pg => [
-    pg`UPDATE users SET password=${newPassword} WHERE id=${info.userId}`,
-    pg`DELETE FROM sessions WHERE user_id=${info.userId}`
-  ])
+async function initiateChangePassword() {
 
-  return void res.status(200).send({});
+}
+
+async function proceedChangePassword() {
+
+}
+
+async function completeChangePassword() {
+
 }
 
 export default {
   getUser,
 
   changeUsername,
-  changeEmail,
-  changePassword,
+
+  initiateChangeEmail,
+  verifyNewEmailChangeEmail,
+  verifyOldEmailChangeEmail,
+
+  initiateChangePassword,
+  proceedChangePassword,
+  completeChangePassword,
 }
