@@ -63,7 +63,7 @@ async function initiateEmailChange(req: Request, res: Response<OutputInitiateEma
   res.status(200).send({});
 
   const [result]: [{ email: string }?] = await pg`
-    SELECT email FROM users WHERE user_id=${info.userId}
+    SELECT email FROM users WHERE id=${info.userId}
   `;
   if (!result) return;
 

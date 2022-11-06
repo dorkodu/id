@@ -19,11 +19,15 @@ export const initiateEmailChangeSchema = z.object({
 export type InputInitiateEmailChangeSchema = z.infer<typeof initiateEmailChangeSchema>
 export type OutputInitiateEmailChangeSchema = {}
 
-export const confirmEmailChangeSchema = z.object({}).strict();
+export const confirmEmailChangeSchema = z.object({
+  token: sharedSchemas.token,
+}).strict();
 export type InputConfirmEmailChangeSchema = z.infer<typeof confirmEmailChangeSchema>
 export type OutputConfirmEmailChangeSchema = {}
 
-export const revertEmailChangeSchema = z.object({}).strict();
+export const revertEmailChangeSchema = z.object({
+  token: sharedSchemas.token,
+}).strict();
 export type InputRevertEmailChangeSchema = z.infer<typeof revertEmailChangeSchema>
 export type OutputRevertEmailChangeSchema = {}
 
@@ -32,8 +36,8 @@ export type InputInitiatePasswordChangeSchema = z.infer<typeof initiatePasswordC
 export type OutputInitiatePasswordChangeSchema = {}
 
 export const confirmPasswordChangeSchema = z.object({
+  newPassword: sharedSchemas.password,
   token: sharedSchemas.token,
-  newPassword: sharedSchemas.password
 }).strict();
 export type InputConfirmPasswordChangeSchema = z.infer<typeof confirmPasswordChangeSchema>
 export type OutputConfirmPasswordChangeSchema = {}
