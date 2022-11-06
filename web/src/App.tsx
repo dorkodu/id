@@ -17,6 +17,7 @@ function App() {
   const [sessions, setSessions] = useState<{ ids: number[], entities: Record<number, ISession> }>({ ids: [], entities: {} });
   const [currentSession, setCurrentSession] = useState<ISession | undefined>(undefined);
   const [loading, setLoading] = useState(true);
+  const [done, setDone] = useState(false);
 
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -133,8 +134,8 @@ function App() {
 
     const { data, err } = await api.confirmEmailChange(token);
     if (err || !data) { navigate("/"); auth(); return; };
-    
-    setLoading(false);
+
+    setDone(true);
   }
 
   const revertEmailChange = async () => {
@@ -144,7 +145,7 @@ function App() {
     const { data, err } = await api.revertEmailChange(token);
     if (err || !data) { navigate("/"); auth(); return; };
 
-    setLoading(false);
+    setDone(true);
   }
 
   const initiatePasswordChange = async () => {
@@ -219,22 +220,22 @@ function App() {
 
   return (
     <>
-      {loading && searchParams.get("type") === emailTypes.confirmEmailChange &&
+      {!done && searchParams.get("type") === emailTypes.confirmEmailChange &&
         <>confirming email...</>
       }
-      {!loading && searchParams.get("type") === emailTypes.confirmEmailChange &&
+      {done && searchParams.get("type") === emailTypes.confirmEmailChange &&
         <>confirmed email. you can close this tab.</>
       }
-      {loading && searchParams.get("type") === emailTypes.revertEmailChange &&
+      {!done && searchParams.get("type") === emailTypes.revertEmailChange &&
         <>reverting email...</>
       }
-      {!loading && searchParams.get("type") === emailTypes.revertEmailChange &&
+      {done && searchParams.get("type") === emailTypes.revertEmailChange &&
         <>reverted email. you can close this tab.</>
       }
-      {loading && searchParams.get("type") === emailTypes.confirmPasswordChange &&
+      {!done && searchParams.get("type") === emailTypes.confirmPasswordChange &&
         <>confirming password...</>
       }
-      {!loading && searchParams.get("type") === emailTypes.confirmPasswordChange &&
+      {done && searchParams.get("type") === emailTypes.confirmPasswordChange &&
         <>confirmed password. you can close this tab.</>
       }
       {loading && !searchParams.get("type") &&
