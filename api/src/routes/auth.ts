@@ -1,13 +1,13 @@
 import * as express from "express";
 import controller from "../controllers/auth";
-import { routes } from "./routes";
+import { apiRoutes } from "../types/types";
 
 const router = express.Router();
 
-router.post(routes.auth, controller.auth);
+router.post(apiRoutes.auth, controller.auth);
 
-router.post(routes.signup, controller.signup);
-router.post(routes.login, controller.login);
-router.post(routes.logout, controller.logout);
+router.post(apiRoutes.signup, controller.signup);
+router.post(apiRoutes.login, controller.login);
+router.post(apiRoutes.logout, controller.logout);
 
 export default router;

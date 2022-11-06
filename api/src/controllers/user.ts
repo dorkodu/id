@@ -23,8 +23,8 @@ import {
 import { token } from "../lib/token";
 import { crypto } from "../lib/crypto";
 import { date } from "../lib/date";
-import { EmailType } from "../types/email_type";
 import { mailer } from "../lib/mailer";
+import { emailTypes } from "../types/types";
 
 async function getUser(req: Request, res: Response<OutputGetUserSchema>) {
   const parsed = getUserSchema.safeParse(req.body);
@@ -79,7 +79,7 @@ async function initiateEmailChange(req: Request, res: Response<OutputInitiateEma
     issued_at: timestamp,
     sent_at: -1,
     expires_at: -1,
-    type: EmailType.ConfirmEmailChange,
+    type: emailTypes.confirmEmailChange,
   }
 
   const oldEmail = result.email;
@@ -92,7 +92,7 @@ async function initiateEmailChange(req: Request, res: Response<OutputInitiateEma
     issued_at: timestamp,
     sent_at: -1,
     expires_at: -1,
-    type: EmailType.RevertEmailChange,
+    type: emailTypes.revertEmailChange,
   }
 
   const [id0, id1]: [{ id: number }?, { id: number }?] = await pg`
@@ -109,11 +109,15 @@ async function initiateEmailChange(req: Request, res: Response<OutputInitiateEma
 async function confirmEmailChange(req: Request, res: Response<OutputConfirmEmailChangeSchema>): Promise<void> {
   const parsed = confirmEmailChangeSchema.safeParse(req.body);
   if (!parsed.success) return void res.status(500).send();
+
+  res.status(200).send();
 }
 
 async function revertEmailChange(req: Request, res: Response<OutputRevertEmailChangeSchema>): Promise<void> {
   const parsed = revertEmailChangeSchema.safeParse(req.body);
   if (!parsed.success) return void res.status(500).send();
+  
+  res.status(200).send();
 }
 
 async function initiatePasswordChange(req: Request, res: Response<OutputInitiatePasswordChangeSchema>): Promise<void> {

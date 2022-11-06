@@ -1,18 +1,18 @@
 import * as express from "express";
 import controller from "../controllers/user";
-import { routes } from "./routes";
+import { apiRoutes } from "../types/types";
 
 const router = express.Router();
 
-router.post(routes.getUser, controller.getUser);
+router.post(apiRoutes.getUser, controller.getUser);
 
-router.post(routes.changeUsername, controller.changeUsername);
+router.post(apiRoutes.changeUsername, controller.changeUsername);
 
-router.post(routes.initiateEmailChange, controller.initiateEmailChange);
-router.post(routes.confirmEmailChange, controller.confirmEmailChange);
-router.post(routes.revertEmailChange, controller.revertEmailChange);
+router.post(apiRoutes.initiateEmailChange, controller.initiateEmailChange);
+router.post(apiRoutes.confirmEmailChange, controller.confirmEmailChange);
+router.post(apiRoutes.revertEmailChange, controller.revertEmailChange);
 
-router.post(routes.initiatePasswordChange, controller.initiatePasswordChange);
-router.post(routes.confirmPasswordChange, controller.confirmPasswordChange);
+router.post(apiRoutes.initiatePasswordChange, controller.initiatePasswordChange);
+router.post(apiRoutes.confirmPasswordChange, controller.confirmPasswordChange);
 
 export default router;

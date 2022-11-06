@@ -4,6 +4,8 @@ import api from "./api";
 
 import type { IUser } from "../../api/src/types/user";
 import type { ISession } from "../../api/src/types/session";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { emailTypes } from "./types";
 
 interface State {
   user: IUser | undefined;
@@ -14,8 +16,10 @@ function App() {
   const [state, setState] = useState<State>({ user: undefined, authorized: false });
   const [sessions, setSessions] = useState<{ ids: number[], entities: Record<number, ISession> }>({ ids: [], entities: {} });
   const [currentSession, setCurrentSession] = useState<ISession | undefined>(undefined);
-
   const [loading, setLoading] = useState(true);
+
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
 
   const loginInfo = useRef<HTMLInputElement>(null);
   const loginPassword = useRef<HTMLInputElement>(null);
@@ -27,12 +31,15 @@ function App() {
   const changeUsernameNewUsername = useRef<HTMLInputElement>(null);
 
   const changeEmailNewEmail = useRef<HTMLInputElement>(null);
-  const changeEmailPassword = useRef<HTMLInputElement>(null);
 
-  const changePasswordOldPassword = useRef<HTMLInputElement>(null);
-  const changePasswordNewPassword = useRef<HTMLInputElement>(null);
-
-  useEffect(() => { auth() }, [])
+  useEffect(() => {
+    const type = searchParams.get("type");
+    if (!type) auth();
+    else if (type === emailTypes.confirmEmailChange) confirmEmailChange();
+    else if (type === emailTypes.revertEmailChange) revertEmailChange();
+    else if (type === emailTypes.confirmPasswordChange) confirmPasswordChange();
+    else { navigate("/"); auth(); };
+  }, [])
   useEffect(() => { getCurrentSession(); getSessions("newer", true); }, [state.authorized])
 
   const auth = async () => {
@@ -108,38 +115,44 @@ function App() {
     setLoading(false);
   }
 
-  const changeEmail = async () => {
+  const initiateEmailChange = async () => {
     if (!state.user || !state.authorized) return;
 
     const newEmail = changeEmailNewEmail.current?.value;
-    const password = changeEmailPassword.current?.value;
-    if (!newEmail || !password) return;
+    if (!newEmail) return;
 
-    setLoading(true);
+    const { data, err } = await api.initiateEmailChange(newEmail);
+    if (err || !data) return;
 
-    const { data, err } = await api.changeEmail(newEmail, password);
-    if (err || !data) return setLoading(false);
+    console.log("initiateEmailChange");
+  }
 
-    setState({ ...state, user: { ...state.user, email: newEmail } });
+  const confirmEmailChange = async () => {
+    const token = searchParams.get("token");
+    if (!token) { navigate("/"); auth(); return; };
+
+    const { data, err } = await api.confirmEmailChange(token);
+    if (err || !data) { navigate("/"); auth(); return; };
+    
     setLoading(false);
   }
 
-  const changePassword = async () => {
-    if (!state.user || !state.authorized) return;
+  const revertEmailChange = async () => {
+    const token = searchParams.get("token");
+    if (!token) { navigate("/"); auth(); return; };
 
-    const oldPassword = changePasswordOldPassword.current?.value;
-    const newPassword = changePasswordNewPassword.current?.value;
-    if (!oldPassword || !newPassword) return;
+    const { data, err } = await api.revertEmailChange(token);
+    if (err || !data) { navigate("/"); auth(); return; };
 
-    setLoading(true);
-
-    const { data, err } = await api.changePassword(oldPassword, newPassword);
-    if (err || !data) return setLoading(false);
-
-    setState({ user: undefined, authorized: false });
-    setCurrentSession(undefined);
-    setSessions({ ids: [], entities: {} });
     setLoading(false);
+  }
+
+  const initiatePasswordChange = async () => {
+    if (!state.user || !state.authorized) return;
+  }
+
+  const confirmPasswordChange = async () => {
+
   }
 
   const forgotPassword = async () => {
@@ -206,7 +219,25 @@ function App() {
 
   return (
     <>
-      {loading &&
+      {loading && searchParams.get("type") === emailTypes.confirmEmailChange &&
+        <>confirming email...</>
+      }
+      {!loading && searchParams.get("type") === emailTypes.confirmEmailChange &&
+        <>confirmed email. you can close this tab.</>
+      }
+      {loading && searchParams.get("type") === emailTypes.revertEmailChange &&
+        <>reverting email...</>
+      }
+      {!loading && searchParams.get("type") === emailTypes.revertEmailChange &&
+        <>reverted email. you can close this tab.</>
+      }
+      {loading && searchParams.get("type") === emailTypes.confirmPasswordChange &&
+        <>confirming password...</>
+      }
+      {!loading && searchParams.get("type") === emailTypes.confirmPasswordChange &&
+        <>confirmed password. you can close this tab.</>
+      }
+      {loading && !searchParams.get("type") &&
         <>loading...</>
       }
       {!loading && !state.authorized &&
@@ -239,16 +270,13 @@ function App() {
           <div>
             change email:
             <div><input ref={changeEmailNewEmail} type={"text"} placeholder={"new email..."} /></div>
-            <div><input ref={changeEmailPassword} type={"password"} placeholder={"password..."} /></div>
-            <button onClick={changeEmail}>apply</button>
+            <button onClick={initiateEmailChange}>apply</button>
           </div>
           <br />
 
           <div>
-            change password:
-            <div><input ref={changePasswordOldPassword} type={"password"} placeholder={"old password..."} /></div>
-            <div><input ref={changePasswordNewPassword} type={"password"} placeholder={"new password..."} /></div>
-            <button onClick={changePassword}>apply</button>
+            change password:<br />
+            <button onClick={initiatePasswordChange}>apply</button>
           </div>
           <br />
 

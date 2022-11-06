@@ -1,7 +1,7 @@
 import nodemailer from "nodemailer";
 import { config } from "../config";
 import pg from "../pg";
-import { EmailType } from "../types/email_type";
+import { emailTypes } from "../types/types";
 import { date } from "./date";
 
 const transporter = nodemailer.createTransport({
@@ -15,7 +15,7 @@ const transporter = nodemailer.createTransport({
 })
 
 function sendConfirmEmailChange(email: string, ids: [number, number], token: string): Promise<boolean> {
-  const link = `http://localhost:8000/?type=${EmailType.ConfirmEmailChange}&token=${token}`;
+  const link = `http://localhost:8000/?type=${emailTypes.confirmEmailChange}&token=${token}`;
 
   return new Promise((resolve) => {
     transporter.sendMail({
@@ -42,7 +42,7 @@ function sendConfirmEmailChange(email: string, ids: [number, number], token: str
 }
 
 function sendRevertEmailChange(email: string, ids: [number, number], token: string): Promise<boolean> {
-  const link = `http://localhost:8000/?type=${EmailType.RevertEmailChange}&token=${token}`;
+  const link = `http://localhost:8000/?type=${emailTypes.revertEmailChange}&token=${token}`;
 
   return new Promise((resolve) => {
     transporter.sendMail({

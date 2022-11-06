@@ -1,25 +1,5 @@
 import type { ApiDetail, ApiRoutes } from "../../api/src/types/api";
-
-const routes: ApiRoutes = {
-  auth: "/api/auth/auth",
-  signup: "/api/auth/signup",
-  login: "/api/auth/login",
-  logout: "/api/auth/logout",
-
-  getUser: "/api/user/getUser",
-  changeUsername: "/api/user/changeUsername",
-  changeEmail: "/api/user/changeEmail",
-  changePassword: "/api/user/changePassword",
-
-  getCurrentSession: "/api/session/getCurrentSession",
-  getSessions: "/api/session/getSessions",
-  terminateSession: "/api/session/terminateSession",
-
-  getAccesses: "/api/access/getAccesses",
-  checkAccess: "/api/access/checkAccess",
-  grantAccess: "/api/access/grantAccess",
-  revokeAccess: "/api/access/revokeAccess",
-}
+import { apiRoutes } from "./types";
 
 async function request<T extends keyof ApiRoutes>(url: T, data: ApiDetail[T]["input"]): Promise<{ data: ApiDetail[T]["output"] | undefined, err: boolean }> {
   const options: RequestInit = { method: "POST" }
@@ -29,7 +9,7 @@ async function request<T extends keyof ApiRoutes>(url: T, data: ApiDetail[T]["in
   }
 
   try {
-    const res = await fetch(routes[url], options);
+    const res = await fetch(apiRoutes[url], options);
     const out = { data: await res.json(), err: !res.ok };
 
     console.log(out);
@@ -64,12 +44,24 @@ async function changeUsername(newUsername: string) {
   return await request("changeUsername", { newUsername });
 }
 
-async function changeEmail(newEmail: string, password: string) {
-  return await request("changeEmail", { newEmail, password });
+async function initiateEmailChange(newEmail: string) {
+  return await request("initiateEmailChange", { newEmail });
 }
 
-async function changePassword(oldPassword: string, newPassword: string) {
-  return await request("changePassword", { oldPassword, newPassword });
+async function confirmEmailChange(token: string) {
+  return await request("confirmEmailChange", { token });
+}
+
+async function revertEmailChange(token: string) {
+  return await request("revertEmailChange", { token });
+}
+
+async function initiatePasswordChange() {
+  return await request("initiatePasswordChange", {});
+}
+
+async function confirmPasswordChange(newPassword: string, token: string) {
+  return await request("confirmPasswordChange", { newPassword, token });
 }
 
 async function getCurrentSession() {
@@ -108,8 +100,11 @@ export default {
 
   getUser,
   changeUsername,
-  changeEmail,
-  changePassword,
+  initiateEmailChange,
+  confirmEmailChange,
+  revertEmailChange,
+  initiatePasswordChange,
+  confirmPasswordChange,
 
   getCurrentSession,
   getSessions,

@@ -1,6 +1,7 @@
 import { ApiRoutes } from "../types/api";
+import { EmailType } from "./email_type";
 
-export const routes: ApiRoutes = {
+export const apiRoutes: ApiRoutes = {
   auth: "/api/auth/auth",
   signup: "/api/auth/signup",
   login: "/api/auth/login",
@@ -22,4 +23,11 @@ export const routes: ApiRoutes = {
   checkAccess: "/api/access/checkAccess",
   grantAccess: "/api/access/grantAccess",
   revokeAccess: "/api/access/revokeAccess",
+}
+
+export const emailTypes: EmailType = {
+  notifyNewLocation: "new_location",
+  confirmEmailChange: "confirm_email_change",
+  revertEmailChange: "revert_email_change",
+  confirmPasswordChange: "confirm_password_change"
 }
