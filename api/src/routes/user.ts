@@ -8,12 +8,11 @@ router.post(routes.getUser, controller.getUser);
 
 router.post(routes.changeUsername, controller.changeUsername);
 
-router.post(routes.changeUsername, controller.initiateChangeEmail);
-router.get(routes.changeUsername, controller.verifyNewEmailChangeEmail);
-router.get(routes.changeUsername, controller.verifyOldEmailChangeEmail);
+router.post(routes.initiateEmailChange, controller.initiateEmailChange);
+router.post(routes.confirmEmailChange, controller.confirmEmailChange);
+router.post(routes.revertEmailChange, controller.revertEmailChange);
 
-router.post(routes.changeUsername, controller.initiateChangePassword);
-router.get(routes.changeUsername, controller.proceedChangePassword);
-router.post(routes.changeUsername, controller.completeChangePassword);
+router.post(routes.initiatePasswordChange, controller.initiatePasswordChange);
+router.post(routes.confirmPasswordChange, controller.confirmPasswordChange);
 
 export default router;

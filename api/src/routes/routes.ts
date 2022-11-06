@@ -8,12 +8,11 @@ export const routes: ApiRoutes = {
 
   getUser: "/api/user/getUser",
   changeUsername: "/api/user/changeUsername",
-  initiateChangeEmail: "/api/user/initiateChangeEmail",
-  verifyNewEmailChangeEmail: "/api/user/verifyNewEmailChangeEmail",
-  verifyOldEmailChangeEmail: "/api/user/verifyOldEmailChangeEmail",
-  initiateChangePassword: "/api/user/initiateChangePassword",
-  proceedChangePassword: "/api/user/proceedChangePassword",
-  completeChangePassword: "/api/user/completeChangePassword",
+  initiateEmailChange: "/api/user/initiateEmailChange",
+  confirmEmailChange: "/api/user/confirmEmailChange",
+  revertEmailChange: "/api/user/revertEmailChange",
+  initiatePasswordChange: "/api/user/initiatePasswordChange",
+  confirmPasswordChange: "/api/user/confirmPasswordChange",
 
   getCurrentSession: "/api/session/getCurrentSession",
   getSessions: "/api/session/getSessions",

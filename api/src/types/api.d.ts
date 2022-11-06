@@ -11,21 +11,19 @@ import type {
 
 import type {
   InputChangeUsernameSchema,
-  InputCompleteChangePasswordSchema,
+  InputConfirmEmailChangeSchema,
+  InputConfirmPasswordChangeSchema,
   InputGetUserSchema,
-  InputInitiateChangeEmailSchema,
-  InputInitiateChangePasswordSchema,
-  InputProceedChangePasswordSchema,
-  InputVerifyNewEmailChangeEmailSchema,
-  InputVerifyOldEmailChangeEmailSchema,
+  InputInitiateEmailChangeSchema,
+  InputInitiatePasswordChangeSchema,
+  InputRevertEmailChangeSchema,
   OutputChangeUsernameSchema,
-  OutputCompleteChangePasswordSchema,
+  OutputConfirmEmailChangeSchema,
+  OutputConfirmPasswordChangeSchema,
   OutputGetUserSchema,
-  OutputInitiateChangeEmailSchema,
-  OutputInitiateChangePasswordSchema,
-  OutputProceedChangePasswordSchema,
-  OutputVerifyNewEmailChangeEmailSchema,
-  OutputVerifyOldEmailChangeEmailSchema
+  OutputInitiateEmailChangeSchema,
+  OutputInitiatePasswordChangeSchema,
+  OutputRevertEmailChangeSchema,
 } from "../schemas/user"
 
 import type {
@@ -83,35 +81,30 @@ export interface ApiDetail {
     input: InputChangeUsernameSchema
     output: OutputChangeUsernameSchema
   }
-  initiateChangeEmail: {
-    path: "/api/user/initiateChangeEmail",
-    input: InputInitiateChangeEmailSchema,
-    output: OutputInitiateChangeEmailSchema,
+  initiateEmailChange: {
+    path: "/api/user/initiateEmailChange",
+    input: InputInitiateEmailChangeSchema,
+    output: OutputInitiateEmailChangeSchema,
   }
-  verifyNewEmailChangeEmail: {
-    path: "/api/user/verifyNewEmailChangeEmail",
-    input: InputVerifyNewEmailChangeEmailSchema,
-    output: OutputVerifyNewEmailChangeEmailSchema,
+  confirmEmailChange: {
+    path: "/api/user/confirmEmailChange",
+    input: InputConfirmEmailChangeSchema,
+    output: OutputConfirmEmailChangeSchema,
   }
-  verifyOldEmailChangeEmail: {
-    path: "/api/user/verifyOldEmailChangeEmail",
-    input: InputVerifyOldEmailChangeEmailSchema,
-    output: OutputVerifyOldEmailChangeEmailSchema,
+  revertEmailChange: {
+    path: "/api/user/revertEmailChange",
+    input: InputRevertEmailChangeSchema,
+    output: OutputRevertEmailChangeSchema,
   }
-  initiateChangePassword: {
-    path: "/api/user/initiateChangePassword",
-    input: InputInitiateChangePasswordSchema,
-    output: OutputInitiateChangePasswordSchema,
+  initiatePasswordChange: {
+    path: "/api/user/initiatePasswordChange",
+    input: InputInitiatePasswordChangeSchema,
+    output: OutputInitiatePasswordChangeSchema,
   }
-  proceedChangePassword: {
-    path: "/api/user/proceedChangePassword",
-    input: InputProceedChangePasswordSchema,
-    output: OutputProceedChangePasswordSchema,
-  }
-  completeChangePassword: {
-    path: "/api/user/completeChangePassword",
-    input: InputCompleteChangePasswordSchema,
-    output: OutputCompleteChangePasswordSchema,
+  confirmPasswordChange: {
+    path: "/api/user/confirmPasswordChange",
+    input: InputConfirmPasswordChangeSchema,
+    output: OutputConfirmPasswordChangeSchema,
   }
 
   getCurrentSession: {

@@ -13,30 +13,27 @@ export const changeUsernameSchema = z.object({
 export type InputChangeUsernameSchema = z.infer<typeof changeUsernameSchema>
 export type OutputChangeUsernameSchema = {}
 
-export const initiateChangeEmailSchema = z.object({
+export const initiateEmailChangeSchema = z.object({
   newEmail: sharedSchemas.email
 }).strict();
-export type InputInitiateChangeEmailSchema = z.infer<typeof initiateChangeEmailSchema>
-export type OutputInitiateChangeEmailSchema = {}
+export type InputInitiateEmailChangeSchema = z.infer<typeof initiateEmailChangeSchema>
+export type OutputInitiateEmailChangeSchema = {}
 
-export const verifyNewEmailChangeEmailSchema = z.object({}).strict();
-export type InputVerifyNewEmailChangeEmailSchema = z.infer<typeof verifyNewEmailChangeEmailSchema>
-export type OutputVerifyNewEmailChangeEmailSchema = {}
+export const confirmEmailChangeSchema = z.object({}).strict();
+export type InputConfirmEmailChangeSchema = z.infer<typeof confirmEmailChangeSchema>
+export type OutputConfirmEmailChangeSchema = {}
 
-export const verifyOldEmailChangeEmailSchema = z.object({}).strict();
-export type InputVerifyOldEmailChangeEmailSchema = z.infer<typeof verifyOldEmailChangeEmailSchema>
-export type OutputVerifyOldEmailChangeEmailSchema = {}
+export const revertEmailChangeSchema = z.object({}).strict();
+export type InputRevertEmailChangeSchema = z.infer<typeof revertEmailChangeSchema>
+export type OutputRevertEmailChangeSchema = {}
 
-export const initiateChangePasswordSchema = z.object({}).strict();
-export type InputInitiateChangePasswordSchema = z.infer<typeof initiateChangePasswordSchema>
-export type OutputInitiateChangePasswordSchema = {}
+export const initiatePasswordChangeSchema = z.object({}).strict();
+export type InputInitiatePasswordChangeSchema = z.infer<typeof initiatePasswordChangeSchema>
+export type OutputInitiatePasswordChangeSchema = {}
 
-export const proceedChangePasswordSchema = z.object({}).strict();
-export type InputProceedChangePasswordSchema = z.infer<typeof proceedChangePasswordSchema>
-export type OutputProceedChangePasswordSchema = {}
-
-export const completeChangePasswordSchema = z.object({
+export const confirmPasswordChangeSchema = z.object({
+  token: sharedSchemas.token,
   newPassword: sharedSchemas.password
 }).strict();
-export type InputCompleteChangePasswordSchema = z.infer<typeof completeChangePasswordSchema>
-export type OutputCompleteChangePasswordSchema = {}
+export type InputConfirmPasswordChangeSchema = z.infer<typeof confirmPasswordChangeSchema>
+export type OutputConfirmPasswordChangeSchema = {}

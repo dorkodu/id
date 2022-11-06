@@ -15,14 +15,12 @@ export async function up(knex: Knex): Promise<void> {
     .createTable("security_verification", (table) => {
       table.bigIncrements("id").primary()
       table.bigint("user_id")
-      table.binary("token", 32).unique()
+      table.string("email", 320).unique()
       table.binary("selector", 16).unique()
       table.binary("validator", 32).unique()
       table.bigint("issued_at")
       table.bigint("sent_at")
       table.bigint("expires_at")
-      table.string("user_agent", 256)
-      table.specificType("ip", "inet")
       table.string("type", 32)
     })
 }
