@@ -116,9 +116,26 @@ async function confirmEmailChange(req: Request, res: Response<OutputConfirmEmail
   const parsed = confirmEmailChangeSchema.safeParse(req.body);
   if (!parsed.success) return void res.status(500).send();
 
-  // Validate token
-  // Check expiry
-  // Apply
+  const tkn = token.parse(parsed.data.token);
+  if (!tkn) return void res.status(500).send();
+
+  const [result0]: [{ userId: number, email: string, validator: Buffer, issuedAt: number, expiresAt: number }?] = await pg`
+    SELECT user_id, email, validator, issued_at, expires_at FROM security_verification
+    WHERE selector=${tkn.selector}
+  `;
+  if (!result0) return void res.status(500).send();
+  if (date.utc() > result0.expiresAt) return void res.status(500).send();
+  if (!token.compare(result0.validator, tkn.validator)) return void res.status(500).send();
+
+  const [result1]: [{ expiresAt: number }?] = await pg`
+    SELECT expires_at FROM security_verification
+    WHERE user_id=${result0.userId} AND issued_at=${result0.issuedAt} AND type=${emailTypes.revertEmailChange}
+  `;
+  if (!result1) return void res.status(500).send();
+  if (date.utc() > result1.expiresAt) return void res.status(500).send();
+
+  const result2 = await pg`UPDATE users SET email=${result0.email} WHERE user_id=${result0.userId}`;
+  if (!result2.count) return void res.status(500).send();
 
   res.status(200).send({});
 }
