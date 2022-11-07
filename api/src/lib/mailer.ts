@@ -1,8 +1,6 @@
 import nodemailer from "nodemailer";
 import { config } from "../config";
-import pg from "../pg";
 import { emailTypes } from "../types/types";
-import { date } from "./date";
 
 const transporter = nodemailer.createTransport({
   pool: true,
@@ -14,7 +12,7 @@ const transporter = nodemailer.createTransport({
   },
 })
 
-function sendConfirmEmailChange(email: string, ids: [number, number], token: string): Promise<boolean> {
+function sendConfirmEmailChange(email: string, token: string): Promise<boolean> {
   const link = `http://localhost:8000/?type=${emailTypes.confirmEmailChange}&token=${token}`;
 
   return new Promise((resolve) => {
@@ -26,22 +24,12 @@ function sendConfirmEmailChange(email: string, ids: [number, number], token: str
       html: `<a href="${link}">${link}</a>`,
     }, async (err, info) => {
       const sent = !err && (!info.rejected.length || info.rejected[0] !== email);
-
-      if (sent) {
-        const sentAt = date.utc();
-        const expiresAt = sentAt + 60 * 60; // 1 hour
-        await pg`UPDATE security_verification SET sent_at=${sentAt}, expires_at=${expiresAt} WHERE id=${ids[0]}`
-      }
-      else {
-        await pg`DELETE FROM security_verification WHERE id IN ${pg(ids)}`
-      }
-
       resolve(sent);
     })
   })
 }
 
-function sendRevertEmailChange(email: string, ids: [number, number], token: string): Promise<boolean> {
+function sendRevertEmailChange(email: string, token: string): Promise<boolean> {
   const link = `http://localhost:8000/?type=${emailTypes.revertEmailChange}&token=${token}`;
 
   return new Promise((resolve) => {
@@ -53,16 +41,6 @@ function sendRevertEmailChange(email: string, ids: [number, number], token: stri
       html: `<a href="${link}">${link}</a>`,
     }, async (err, info) => {
       const sent = !err && (!info.rejected.length || info.rejected[0] !== email);
-
-      if (sent) {
-        const sentAt = date.utc();
-        const expiresAt = sentAt + 60 * 60 * 24 * 30; // 30 days
-        await pg`UPDATE security_verification SET sent_at=${sentAt}, expires_at=${expiresAt} WHERE id=${ids[1]}`
-      }
-      else {
-        await pg`DELETE FROM security_verification WHERE id IN ${pg(ids)}`
-      }
-
       resolve(sent);
     })
   })

@@ -62,80 +62,90 @@ async function initiateEmailChange(req: Request, res: Response<OutputInitiateEma
 
   res.status(200).send({});
 
-  const [result0]: [{ count: number }?] = await pg`
-    SELECT COUNT(*) FROM security_verification 
-    WHERE user_id=${info.userId} AND issued_at<${date.utc() + 60 * 60}
-  `;
-  if (!result0 || result0.count > 3 * 2) return;
-
-  const [result1]: [{ email: string }?] = await pg`
+  const [result0]: [{ email: string }?] = await pg`
     SELECT email FROM users WHERE id=${info.userId}
   `;
-  if (!result1) return;
+  if (!result0) return;
+  if (result0.email === parsed.data.newEmail) return;
 
-  const timestamp = date.utc();
+  const [result1]: [{ count: number }?] = await pg`
+    SELECT COUNT(*) FROM security_verification 
+    WHERE user_id=${info.userId} AND issued_at>${date.utc() - 60 * 60} AND type=${emailTypes.confirmEmailChange}
+  `;
+  if (!result1) return;
+  if (result1.count >= 3) return;
 
   const newEmail = parsed.data.newEmail;
-  const tkn0 = token.create();
-  const row0 = {
+  const tkn = token.create();
+  const row = {
     user_id: info.userId,
     email: newEmail,
-    selector: tkn0.selector,
-    validator: crypto.sha256(tkn0.validator),
-    issued_at: timestamp,
+    selector: tkn.selector,
+    validator: crypto.sha256(tkn.validator),
+    issued_at: date.utc(),
     sent_at: -1,
     expires_at: -1,
     type: emailTypes.confirmEmailChange,
   }
 
-  const oldEmail = result1.email;
-  const tkn1 = token.create();
-  const row1 = {
-    user_id: info.userId,
-    email: oldEmail,
-    selector: tkn1.selector,
-    validator: crypto.sha256(tkn1.validator),
-    issued_at: timestamp,
-    sent_at: -1,
-    expires_at: -1,
-    type: emailTypes.revertEmailChange,
-  }
+  const sent = await mailer.sendConfirmEmailChange(newEmail, tkn.full);
+  if (!sent) return;
 
-  const [id0, id1]: [{ id: number }?, { id: number }?] = await pg`
-    INSERT INTO security_verification ${pg([row0, row1])} RETURNING id
-  `;
-  if (id0 === undefined || id1 === undefined) return;
-
-  const sent0 = await mailer.sendConfirmEmailChange(newEmail, [id0.id, id1.id], tkn0.full);
-  if (!sent0) return;
-  const sent1 = await mailer.sendRevertEmailChange(oldEmail, [id0.id, id1.id], tkn1.full);
-  if (!sent1) return;
+  row.sent_at = date.utc();
+  row.expires_at = date.utc() + 60 * 60; // 1 hour
+  await pg`INSERT INTO security_verification ${pg(row)}`;
 }
 
 async function confirmEmailChange(req: Request, res: Response<OutputConfirmEmailChangeSchema>): Promise<void> {
   const parsed = confirmEmailChangeSchema.safeParse(req.body);
   if (!parsed.success) return void res.status(500).send();
 
-  const tkn = token.parse(parsed.data.token);
-  if (!tkn) return void res.status(500).send();
+  const tkn0 = token.parse(parsed.data.token);
+  if (!tkn0) return void res.status(500).send();
 
   const [result0]: [{ userId: number, email: string, validator: Buffer, issuedAt: number, expiresAt: number }?] = await pg`
     SELECT user_id, email, validator, issued_at, expires_at FROM security_verification
-    WHERE selector=${tkn.selector}
+    WHERE selector=${tkn0.selector}
   `;
   if (!result0) return void res.status(500).send();
   if (date.utc() > result0.expiresAt) return void res.status(500).send();
-  if (!token.compare(result0.validator, tkn.validator)) return void res.status(500).send();
+  if (!token.compare(tkn0.validator, result0.validator)) return void res.status(500).send();
 
-  const [result1]: [{ expiresAt: number }?] = await pg`
-    SELECT expires_at FROM security_verification
-    WHERE user_id=${result0.userId} AND issued_at=${result0.issuedAt} AND type=${emailTypes.revertEmailChange}
-  `;
+  const [result1]: [{ email: string }?] = await pg` SELECT email FROM users WHERE id=${result0.userId}`;
   if (!result1) return void res.status(500).send();
-  if (date.utc() > result1.expiresAt) return void res.status(500).send();
+  if (result1.email === result0.email) return void res.status(500).send();
 
-  const result2 = await pg`UPDATE users SET email=${result0.email} WHERE user_id=${result0.userId}`;
-  if (!result2.count) return void res.status(500).send();
+  const [result2]: [{ count: number }?] = await pg`
+    SELECT COUNT(*) FROM security_verification
+    WHERE user_id=${result0.userId} AND issued_at>${result0.issuedAt} AND type=${emailTypes.confirmEmailChange}
+  `;
+  if (!result2) return void res.status(500).send();
+  if (result2.count !== 0) return void res.status(500).send();
+
+  const oldEmail = result1.email;
+  const tkn1 = token.create();
+  const row = {
+    user_id: result0.userId,
+    email: oldEmail,
+    selector: tkn1.selector,
+    validator: crypto.sha256(tkn1.validator),
+    issued_at: date.utc(),
+    sent_at: -1,
+    expires_at: -1,
+    type: emailTypes.revertEmailChange,
+  }
+
+  const sent = await mailer.sendRevertEmailChange(oldEmail, tkn1.full);
+  if (!sent) return void res.status(500).send();
+
+  row.sent_at = date.utc();
+  row.expires_at = date.utc() + 60 * 60 * 24 * 30; // 30 days
+  const [result3, result4] = await pg.begin(pg => [
+    pg`INSERT INTO security_verification ${pg(row)}`,
+    pg`UPDATE users SET email=${result0.email} WHERE id=${result0.userId}`
+  ]);
+  if (!result3.count) return void res.status(500).send();
+  if (!result4.count) return void res.status(500).send();
 
   res.status(200).send({});
 }
