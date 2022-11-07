@@ -25,6 +25,10 @@ function App() {
   const loginInfo = useRef<HTMLInputElement>(null);
   const loginPassword = useRef<HTMLInputElement>(null);
 
+  const forgotPasswordUsername = useRef<HTMLInputElement>(null);
+  const forgotPasswordEmail = useRef<HTMLInputElement>(null);
+  const forgotPasswordPassword = useRef<HTMLInputElement>(null);
+
   const signupUsername = useRef<HTMLInputElement>(null);
   const signupEmail = useRef<HTMLInputElement>(null);
   const signupPassword = useRef<HTMLInputElement>(null);
@@ -36,9 +40,9 @@ function App() {
   useEffect(() => {
     const type = searchParams.get("type");
     if (!type) auth();
-    else if (type === emailTypes.confirmEmailChange) confirmEmailChange();
-    else if (type === emailTypes.revertEmailChange) revertEmailChange();
-    else if (type === emailTypes.confirmPasswordChange) confirmPasswordChange();
+    else if (type === emailTypes.confirmEmailChange) { confirmEmailChange() }
+    else if (type === emailTypes.revertEmailChange) { revertEmailChange() }
+    else if (type === emailTypes.confirmPasswordChange) { }
     else { navigate("/"); auth(); };
   }, [])
   useEffect(() => { getCurrentSession(); getSessions("newer", true); }, [state.authorized])
@@ -148,16 +152,34 @@ function App() {
     setDone(true);
   }
 
-  const initiatePasswordChange = async () => {
-    if (!state.user || !state.authorized) return;
+  const initiatePasswordChange = async (username?: string, email?: string) => {
+    if (!username || !email) return;
+
+    const { data, err } = await api.initiatePasswordChange(username, email);
+    if (err || !data) return;
+
+    console.log("initiatePasswordChange");
   }
 
   const confirmPasswordChange = async () => {
+    const token = searchParams.get("token");
+    if (!token) { navigate("/"); auth(); return; };
 
+    const newPassword = forgotPasswordPassword.current?.value;
+    if (!newPassword) return;
+
+    const { data, err } = await api.confirmPasswordChange(newPassword, token);
+    if (err || !data) return;
+
+    setDone(true);
   }
 
   const forgotPassword = async () => {
+    const username = forgotPasswordUsername.current?.value;
+    const email = forgotPasswordEmail.current?.value;
+    if (!username || !email) return;
 
+    initiatePasswordChange(username, email);
   }
 
   const getCurrentSession = async () => {
@@ -233,10 +255,13 @@ function App() {
         <>reverted email. you can close this tab.</>
       }
       {!done && searchParams.get("type") === emailTypes.confirmPasswordChange &&
-        <>confirming password...</>
+        <>
+          <div><input ref={forgotPasswordPassword} type={"password"} placeholder={"new password..."} /></div>
+          <button onClick={confirmPasswordChange}>confirm</button>
+        </>
       }
       {done && searchParams.get("type") === emailTypes.confirmPasswordChange &&
-        <>confirmed password. you can close this tab.</>
+        <>done. you can close this tab.</>
       }
       {loading && !searchParams.get("type") &&
         <>loading...</>
@@ -246,12 +271,17 @@ function App() {
           <div><input ref={loginInfo} type={"text"} placeholder={"username or email..."} /></div>
           <div><input ref={loginPassword} type={"password"} placeholder={"password..."} /></div>
           <button onClick={login}>login</button>
-          <button onClick={forgotPassword}>forgot password</button>
+
           <br /><br />
           <div><input ref={signupUsername} type={"text"} placeholder={"username..."} /></div>
           <div><input ref={signupEmail} type={"email"} placeholder={"email..."} /></div>
           <div><input ref={signupPassword} type={"password"} placeholder={"password..."} /></div>
           <button onClick={signup}>signup</button>
+          <br /><br />
+
+          <div><input ref={forgotPasswordUsername} type={"text"} placeholder={"username..."} /></div>
+          <div><input ref={forgotPasswordEmail} type={"email"} placeholder={"email..."} /></div>
+          <button onClick={forgotPassword}>forgot password</button>
         </>
       }
       {!loading && state.user &&
@@ -277,7 +307,7 @@ function App() {
 
           <div>
             change password:<br />
-            <button onClick={initiatePasswordChange}>apply</button>
+            <button onClick={() => { initiatePasswordChange(state.user?.username, state.user?.email) }}>apply</button>
           </div>
           <br />
 

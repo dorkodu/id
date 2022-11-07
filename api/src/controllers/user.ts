@@ -187,11 +187,15 @@ async function revertEmailChange(req: Request, res: Response<OutputRevertEmailCh
 async function initiatePasswordChange(req: Request, res: Response<OutputInitiatePasswordChangeSchema>): Promise<void> {
   const parsed = initiatePasswordChangeSchema.safeParse(req.body);
   if (!parsed.success) return void res.status(500).send();
+
+  res.status(200).send({});
 }
 
 async function confirmPasswordChange(req: Request, res: Response<OutputConfirmPasswordChangeSchema>): Promise<void> {
   const parsed = confirmPasswordChangeSchema.safeParse(req.body);
   if (!parsed.success) return void res.status(500).send();
+
+  res.status(200).send({});
 }
 
 export default {

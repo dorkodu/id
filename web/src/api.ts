@@ -56,8 +56,8 @@ async function revertEmailChange(token: string) {
   return await request("revertEmailChange", { token });
 }
 
-async function initiatePasswordChange() {
-  return await request("initiatePasswordChange", {});
+async function initiatePasswordChange(username: string, email: string) {
+  return await request("initiatePasswordChange", { username, email });
 }
 
 async function confirmPasswordChange(newPassword: string, token: string) {

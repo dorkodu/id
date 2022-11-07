@@ -31,7 +31,10 @@ export const revertEmailChangeSchema = z.object({
 export type InputRevertEmailChangeSchema = z.infer<typeof revertEmailChangeSchema>
 export type OutputRevertEmailChangeSchema = {}
 
-export const initiatePasswordChangeSchema = z.object({}).strict();
+export const initiatePasswordChangeSchema = z.object({
+  username: sharedSchemas.username,
+  email: sharedSchemas.email,
+}).strict();
 export type InputInitiatePasswordChangeSchema = z.infer<typeof initiatePasswordChangeSchema>
 export type OutputInitiatePasswordChangeSchema = {}
 
