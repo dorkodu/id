@@ -62,10 +62,16 @@ async function initiateEmailChange(req: Request, res: Response<OutputInitiateEma
 
   res.status(200).send({});
 
-  const [result]: [{ email: string }?] = await pg`
+  const [result0]: [{ count: number }?] = await pg`
+    SELECT COUNT(*) FROM security_verification 
+    WHERE user_id=${info.userId} AND issued_at<${date.utc() + 60 * 60}
+  `;
+  if (!result0 || result0.count > 3 * 2) return;
+
+  const [result1]: [{ email: string }?] = await pg`
     SELECT email FROM users WHERE id=${info.userId}
   `;
-  if (!result) return;
+  if (!result1) return;
 
   const timestamp = date.utc();
 
@@ -82,7 +88,7 @@ async function initiateEmailChange(req: Request, res: Response<OutputInitiateEma
     type: emailTypes.confirmEmailChange,
   }
 
-  const oldEmail = result.email;
+  const oldEmail = result1.email;
   const tkn1 = token.create();
   const row1 = {
     user_id: info.userId,
@@ -110,12 +116,20 @@ async function confirmEmailChange(req: Request, res: Response<OutputConfirmEmail
   const parsed = confirmEmailChangeSchema.safeParse(req.body);
   if (!parsed.success) return void res.status(500).send();
 
+  // Validate token
+  // Check expiry
+  // Apply
+
   res.status(200).send({});
 }
 
 async function revertEmailChange(req: Request, res: Response<OutputRevertEmailChangeSchema>): Promise<void> {
   const parsed = revertEmailChangeSchema.safeParse(req.body);
   if (!parsed.success) return void res.status(500).send();
+
+  // Validate token
+  // Check expiry
+  // Apply
 
   res.status(200).send({});
 }

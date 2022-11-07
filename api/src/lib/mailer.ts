@@ -29,7 +29,7 @@ function sendConfirmEmailChange(email: string, ids: [number, number], token: str
 
       if (sent) {
         const sentAt = date.utc();
-        const expiresAt = sentAt + 60 * 60 * 24 * 30;
+        const expiresAt = sentAt + 60 * 60; // 1 hour
         await pg`UPDATE security_verification SET sent_at=${sentAt}, expires_at=${expiresAt} WHERE id=${ids[0]}`
       }
       else {
@@ -56,7 +56,7 @@ function sendRevertEmailChange(email: string, ids: [number, number], token: stri
 
       if (sent) {
         const sentAt = date.utc();
-        const expiresAt = sentAt + 60 * 60 * 24 * 30;
+        const expiresAt = sentAt + 60 * 60 * 24 * 30; // 30 days
         await pg`UPDATE security_verification SET sent_at=${sentAt}, expires_at=${expiresAt} WHERE id=${ids[1]}`
       }
       else {

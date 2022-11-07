@@ -22,6 +22,7 @@ export async function up(knex: Knex): Promise<void> {
       table.bigint("sent_at")
       table.bigint("expires_at")
       table.string("type", 32)
+      table.unique(["user_id", "issued_at", "type"])
     })
 }
 

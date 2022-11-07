@@ -12,13 +12,15 @@
   "dbUserName": "",
   "dbPassword": "",
   "maxWorkers": 1000,
-  "keyFile": "",
+  "autoStartBrowser": false,
   "certFile": "",
-  "adminKeyFile": "",
+  "keyFile": "",
   "adminCertFile": "",
-  "authenticationScheme": "",
+  "adminKeyFile": "",
+  "theme": "slate",
   "authSecret": "",
   "authSalt": "",
+  "authenticationScheme": "",
   "authTimeoutInMinutes": 120,
   "credentials": {}
 }
