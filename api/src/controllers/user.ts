@@ -154,9 +154,32 @@ async function revertEmailChange(req: Request, res: Response<OutputRevertEmailCh
   const parsed = revertEmailChangeSchema.safeParse(req.body);
   if (!parsed.success) return void res.status(500).send();
 
-  // Validate token
-  // Check expiry
-  // Apply
+  const tkn0 = token.parse(parsed.data.token);
+  if (!tkn0) return void res.status(500).send();
+
+  const [result0]: [{ userId: number, email: string, validator: Buffer, issuedAt: number, expiresAt: number }?] = await pg`
+    SELECT user_id, email, validator, issued_at, expires_at FROM security_verification
+    WHERE selector=${tkn0.selector}
+  `;
+  if (!result0) return void res.status(500).send();
+  if (date.utc() > result0.expiresAt) return void res.status(500).send();
+  if (!token.compare(tkn0.validator, result0.validator)) return void res.status(500).send();
+
+  const [result1]: [{ email: string }?] = await pg` SELECT email FROM users WHERE id=${result0.userId}`;
+  if (!result1) return void res.status(500).send();
+  if (result1.email === result0.email) return void res.status(500).send();
+
+  const [result2]: [{ count: number }?] = await pg`
+    SELECT COUNT(*) FROM security_verification
+    WHERE user_id=${result0.userId} AND issued_at>${result0.issuedAt} AND type=${emailTypes.revertEmailChange}
+  `;
+  if (!result2) return void res.status(500).send();
+  if (result2.count !== 0) return void res.status(500).send();
+
+  const result3 = await pg`
+    UPDATE users SET email=${result0.email} WHERE id=${result0.userId}
+  `;
+  if (!result3.count) return void res.status(500).send();
 
   res.status(200).send({});
 }
