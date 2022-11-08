@@ -47,11 +47,19 @@ function sendRevertEmailChange(email: string, token: string): Promise<boolean> {
 }
 
 function sendConfirmPasswordChange(email: string, token: string) {
-  transporter.sendMail({
-    from: '"Oath" <oath@dorkodu.com>',
-    to: email,
-    subject: "",
-    html: `${token}`,
+  const link = `http://localhost:8000/?type=${emailTypes.confirmPasswordChange}&token=${token}`;
+
+  return new Promise((resolve) => {
+    transporter.sendMail({
+      from: '"Oath" <oath@dorkodu.com>',
+      to: email,
+      subject: "Confirm Password Change",
+      text: `${link}`,
+      html: `<a href="${link}">${link}</a>`,
+    }, async (err, info) => {
+      const sent = !err && (!info.rejected.length || info.rejected[0] !== email);
+      resolve(sent);
+    })
   })
 }
 

@@ -16,7 +16,7 @@ async function middleware(req: Request, res: Response, next: NextFunction) {
   const tkn = await queryGetToken(req);
   if (!tkn) return next();
   if (!token.compare(parsedToken.validator, tkn.validator)) return next();
-  if (date.utc() > tkn.expiresAt) { await queryDeleteToken(res, tkn.id, tkn.userId); return next(); }
+  if (date.utc() > tkn.expiresAt) return next();
 
   res.locals.userId = tkn.userId;
   res.locals.tokenId = tkn.id;
@@ -76,7 +76,7 @@ async function logout(req: Request, res: Response<OutputLogoutSchema>) {
 
   const authInfo = getAuthInfo(res);
   if (!authInfo) return void res.status(500).send();
-  await queryDeleteToken(res, authInfo.tokenId, authInfo.userId);
+  await queryExpireToken(res, authInfo.tokenId, authInfo.userId);
   return void res.status(200).send({});
 }
 
@@ -112,8 +112,8 @@ async function queryCreateToken(req: Request, res: Response, userId: number): Pr
   return true;
 }
 
-async function queryDeleteToken(res: Response, tokenId: number, userId: number) {
-  await pg`DELETE FROM sessions WHERE id=${tokenId} AND user_id=${userId}`;
+async function queryExpireToken(res: Response, tokenId: number, userId: number) {
+  await pg`UPDATE sessions SET expires_at=${date.utc()} WHERE id=${tokenId} AND user_id=${userId}`;
   token.detach(res);
 }
 

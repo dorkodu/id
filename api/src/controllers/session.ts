@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { date } from "../lib/date";
 import pg from "../pg";
 import { getCurrentSessionSchema, getSessionsSchema, OutputGetCurrentSessionSchema, OutputGetSessionsSchema, OutputTerminateSessionSchema, terminateSessionSchema } from "../schemas/session";
 import { ISession } from "../types/session";
@@ -29,7 +30,7 @@ async function getSessions(req: Request, res: Response<OutputGetSessionsSchema>)
   const { anchor, type } = parsed.data;
   const result = await pg<ISession[]>`
     SELECT id, created_at, expires_at, user_agent, ip FROM sessions
-    WHERE user_id=${info.userId}
+    WHERE user_id=${info.userId} AND expires_at>${date.utc()}
     ${anchor === -1 ? pg`` : type === "newer" ? pg`AND id>${anchor}` : pg`AND id<${anchor}`}
     ORDER BY id ${anchor === -1 ? pg`DESC` : type === "newer" ? pg`ASC` : pg`DESC`}
     LIMIT 10
