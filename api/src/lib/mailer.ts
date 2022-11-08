@@ -12,6 +12,21 @@ const transporter = nodemailer.createTransport({
   },
 })
 
+function sendConfirmEmail(email: string, otp: number) {
+  return new Promise((resolve) => {
+    transporter.sendMail({
+      from: '"Oath" <oath@dorkodu.com>',
+      to: email,
+      subject: "Confirm Email",
+      text: `${otp}`,
+      html: `your code: ${otp}`,
+    }, async (err, info) => {
+      const sent = !err && (!info.rejected.length || info.rejected[0] !== email);
+      resolve(sent);
+    })
+  })
+}
+
 function sendConfirmEmailChange(email: string, token: string): Promise<boolean> {
   const link = `http://localhost:8000/?type=${emailTypes.confirmEmailChange}&token=${token}`;
 
@@ -64,6 +79,7 @@ function sendConfirmPasswordChange(email: string, token: string) {
 }
 
 export const mailer = {
+  sendConfirmEmail,
   sendConfirmEmailChange,
   sendRevertEmailChange,
   sendConfirmPasswordChange,

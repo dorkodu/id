@@ -1,12 +1,14 @@
 import type {
   InputAuthSchema,
+  InputConfirmSignupSchema,
+  InputInitiateSignupSchema,
   InputLoginSchema,
   InputLogoutSchema,
-  InputSignupSchema,
   OutputAuthSchema,
+  OutputConfirmSignupSchema,
+  OutputInitiateSignupSchema,
   OutputLoginSchema,
   OutputLogoutSchema,
-  OutputSignupSchema
 } from "../schemas/auth"
 
 import type {
@@ -55,10 +57,15 @@ export interface ApiDetail {
     input: InputAuthSchema
     output: OutputAuthSchema
   }
-  signup: {
-    path: "/api/auth/signup"
-    input: InputSignupSchema
-    output: OutputSignupSchema
+  initiateSignup: {
+    path: "/api/auth/initiateSignup"
+    input: InputInitiateSignupSchema
+    output: OutputInitiateSignupSchema
+  }
+  confirmSignup: {
+    path: "/api/auth/confirmSignup"
+    input: InputConfirmSignupSchema
+    output: OutputConfirmSignupSchema
   }
   login: {
     path: "/api/auth/login"

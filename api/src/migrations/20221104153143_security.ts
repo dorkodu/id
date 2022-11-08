@@ -24,6 +24,15 @@ export async function up(knex: Knex): Promise<void> {
       table.string("type", 32)
       table.unique(["user_id", "issued_at", "type"])
     })
+    .createTable("email_verification", (table) => {
+      table.bigIncrements("id").primary()
+      table.string("username", 16)
+      table.string("email", 320)
+      table.integer("otp")
+      table.bigint("sent_at")
+      table.bigint("expires_at")
+      table.smallint("tries_left")
+    })
 }
 
 export async function down(knex: Knex): Promise<void> {

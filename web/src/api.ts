@@ -24,8 +24,12 @@ async function auth() {
   return await request("auth", {});
 }
 
-async function signup(username: string, email: string, password: string) {
-  return await request("signup", { username, email, password });
+async function initiateSignup(username: string, email: string) {
+  return await request("initiateSignup", { username, email });
+}
+
+async function confirmSignup(username: string, email: string, password: string) {
+  return await request("confirmSignup", { username, email, password });
 }
 
 async function login(info: string, password: string) {
@@ -94,7 +98,8 @@ async function revokeAccess() {
 
 export default {
   auth,
-  signup,
+  initiateSignup,
+  confirmSignup,
   login,
   logout,
 

@@ -3,7 +3,8 @@ import { EmailType } from "./email_type";
 
 export const apiRoutes: ApiRoutes = {
   auth: "/api/auth/auth",
-  signup: "/api/auth/signup",
+  initiateSignup: "/api/auth/initiateSignup",
+  confirmSignup: "/api/auth/confirmSignup",
   login: "/api/auth/login",
   logout: "/api/auth/logout",
 
@@ -27,7 +28,8 @@ export const apiRoutes: ApiRoutes = {
 
 export const emailTypes: EmailType = {
   notifyNewLocation: "new_location",
+  confirmEmail: "confirm_email",
   confirmEmailChange: "confirm_email_change",
   revertEmailChange: "revert_email_change",
-  confirmPasswordChange: "confirm_password_change"
+  confirmPasswordChange: "confirm_password_change",
 }

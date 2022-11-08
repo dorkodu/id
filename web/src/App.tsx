@@ -19,7 +19,7 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [done, setDone] = useState(false);
 
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
 
   const loginInfo = useRef<HTMLInputElement>(null);
@@ -31,7 +31,11 @@ function App() {
 
   const signupUsername = useRef<HTMLInputElement>(null);
   const signupEmail = useRef<HTMLInputElement>(null);
-  const signupPassword = useRef<HTMLInputElement>(null);
+
+  const confirmSignupUsername = useRef<HTMLInputElement>(null);
+  const confirmSignupEmail = useRef<HTMLInputElement>(null);
+  const confirmSignupPassword = useRef<HTMLInputElement>(null);
+  const confirmSignupOTP = useRef<HTMLInputElement>(null);
 
   const changeUsernameNewUsername = useRef<HTMLInputElement>(null);
 
@@ -40,6 +44,7 @@ function App() {
   useEffect(() => {
     const type = searchParams.get("type");
     if (!type) auth();
+    else if (type === emailTypes.confirmEmail) { }
     else if (type === emailTypes.confirmEmailChange) { confirmEmailChange() }
     else if (type === emailTypes.revertEmailChange) { revertEmailChange() }
     else if (type === emailTypes.confirmPasswordChange) { }
@@ -75,22 +80,39 @@ function App() {
     setLoading(false);
   }
 
-  const signup = async () => {
+  //const signup = async () => {
+  //  const username = signupUsername.current?.value;
+  //  const email = signupEmail.current?.value;
+  //  const password = signupPassword.current?.value;
+  //  if (!username || !email || !password) return;
+  //
+  //  setLoading(true);
+  //
+  //  const { data: data0, err: err0 } = await api.signup(username, email, password);
+  //  if (err0 || !data0) return setLoading(false);
+  //
+  //  const { data: data1, err: err1 } = await api.getUser();
+  //  if (err1 || !data1) return setLoading(false);
+  //
+  //  setState({ ...state, user: data1 });
+  //  setLoading(false);
+  //}
+
+  const initiateSignup = async () => {
     const username = signupUsername.current?.value;
     const email = signupEmail.current?.value;
-    const password = signupPassword.current?.value;
-    if (!username || !email || !password) return;
+    if (!username || !email) return;
 
+    const { data, err } = await api.initiateSignup(username, email);
+    if (err || !data) return;
+
+    setSearchParams({ type: emailTypes.confirmEmail });
     setLoading(true);
+    setDone(false);
+  }
 
-    const { data: data0, err: err0 } = await api.signup(username, email, password);
-    if (err0 || !data0) return setLoading(false);
+  const confirmSignup = async () => {
 
-    const { data: data1, err: err1 } = await api.getUser();
-    if (err1 || !data1) return setLoading(false);
-
-    setState({ ...state, user: data1 });
-    setLoading(false);
   }
 
   const logout = async () => {
@@ -242,6 +264,15 @@ function App() {
 
   return (
     <>
+      {!done && searchParams.get("type") === emailTypes.confirmEmail &&
+        <>
+          <div><input ref={confirmSignupUsername} type={"text"} placeholder={"username..."} /></div>
+          <div><input ref={confirmSignupEmail} type={"email"} placeholder={"email..."} /></div>
+          <div><input ref={confirmSignupPassword} type={"password"} placeholder={"password..."} /></div>
+          <div><input ref={confirmSignupOTP} type={"text"} placeholder={"otp..."} /></div>
+          <button onClick={confirmSignup}>signup</button>
+        </>
+      }
       {!done && searchParams.get("type") === emailTypes.confirmEmailChange &&
         <>confirming email...</>
       }
@@ -275,8 +306,7 @@ function App() {
           <br /><br />
           <div><input ref={signupUsername} type={"text"} placeholder={"username..."} /></div>
           <div><input ref={signupEmail} type={"email"} placeholder={"email..."} /></div>
-          <div><input ref={signupPassword} type={"password"} placeholder={"password..."} /></div>
-          <button onClick={signup}>signup</button>
+          <button onClick={initiateSignup}>signup</button>
           <br /><br />
 
           <div><input ref={forgotPasswordUsername} type={"text"} placeholder={"username..."} /></div>

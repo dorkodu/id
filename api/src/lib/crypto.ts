@@ -20,9 +20,14 @@ function bytes(length: number) {
   return cyptography.randomBytes(length);
 }
 
+function number(min: number, max: number) {
+  return cyptography.randomInt(min, max);
+}
+
 export const crypto = {
   encryptPassword,
   comparePassword,
   sha256,
   bytes,
+  number,
 }

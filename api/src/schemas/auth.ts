@@ -8,13 +8,21 @@ export const authSchema = z.object({
 export type InputAuthSchema = z.infer<typeof authSchema>
 export type OutputAuthSchema = {}
 
-export const signupSchema = z.object({
+export const initiateSignupSchema = z.object({
+  username: sharedSchemas.username,
+  email: sharedSchemas.email,
+}).strict();
+export type InputInitiateSignupSchema = z.infer<typeof initiateSignupSchema>
+export type OutputInitiateSignupSchema = {}
+
+export const confirmSignupSchema = z.object({
   username: sharedSchemas.username,
   email: sharedSchemas.email,
   password: sharedSchemas.password,
+  otp: z.number(),
 }).strict();
-export type InputSignupSchema = z.infer<typeof signupSchema>
-export type OutputSignupSchema = {}
+export type InputConfirmSignupSchema = z.infer<typeof confirmSignupSchema>
+export type OutputConfirmSignupSchema = {}
 
 export const loginSchema = z.object({
   info: z.string(),
