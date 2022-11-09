@@ -93,7 +93,7 @@ async function confirmSignup(req: Request, res: Response<OutputConfirmSignupSche
     RETURNING id, otp
   `;
   if (!result1) return void res.status(500).send();
-  if (result1.otp != otp) return void res.status(500).send();
+  if (result1.otp.toString() !== otp) return void res.status(500).send();
 
   const row = {
     username: username,

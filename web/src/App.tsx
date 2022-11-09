@@ -80,24 +80,6 @@ function App() {
     setLoading(false);
   }
 
-  //const signup = async () => {
-  //  const username = signupUsername.current?.value;
-  //  const email = signupEmail.current?.value;
-  //  const password = signupPassword.current?.value;
-  //  if (!username || !email || !password) return;
-  //
-  //  setLoading(true);
-  //
-  //  const { data: data0, err: err0 } = await api.signup(username, email, password);
-  //  if (err0 || !data0) return setLoading(false);
-  //
-  //  const { data: data1, err: err1 } = await api.getUser();
-  //  if (err1 || !data1) return setLoading(false);
-  //
-  //  setState({ ...state, user: data1 });
-  //  setLoading(false);
-  //}
-
   const initiateSignup = async () => {
     const username = signupUsername.current?.value;
     const email = signupEmail.current?.value;
