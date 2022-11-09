@@ -12,6 +12,21 @@ const transporter = nodemailer.createTransport({
   },
 })
 
+function sendNewLocation(email: string, ip: string, userAgent: string): Promise<boolean> {
+  return new Promise((resolve) => {
+    transporter.sendMail({
+      from: '"Oath" <oath@dorkodu.com>',
+      to: email,
+      subject: "New Location",
+      text: `${ip} ${userAgent}`,
+      html: `<div>${ip}</div><div>${userAgent}</div>`,
+    }, async (err, info) => {
+      const sent = !err && (!info.rejected.length || info.rejected[0] !== email);
+      resolve(sent);
+    })
+  })
+}
+
 function sendConfirmEmail(email: string, otp: number) {
   return new Promise((resolve) => {
     transporter.sendMail({
@@ -79,6 +94,7 @@ function sendConfirmPasswordChange(email: string, token: string) {
 }
 
 export const mailer = {
+  sendNewLocation,
   sendConfirmEmail,
   sendConfirmEmailChange,
   sendRevertEmailChange,
