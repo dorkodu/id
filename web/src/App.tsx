@@ -112,7 +112,22 @@ function App() {
   }
 
   const confirmSignup = async () => {
+    const username = confirmSignupUsername.current?.value;
+    const email = confirmSignupEmail.current?.value;
+    const password = confirmSignupPassword.current?.value;
+    const otp = confirmSignupOTP.current?.value;
+    if (!username || !email || !password || !otp) return;
 
+    const { data: data0, err: err0 } = await api.confirmSignup(username, email, password, otp);
+    if (err0 || !data0) return;
+
+    const { data: data1, err: err1 } = await api.getUser();
+    if (err1 || !data1) return;
+
+    setState({ user: data1, authorized: true });
+    setSearchParams({});
+    setLoading(false);
+    setDone(true);
   }
 
   const logout = async () => {

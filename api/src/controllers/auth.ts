@@ -68,27 +68,51 @@ async function initiateSignup(req: Request, res: Response<OutputInitiateSignupSc
   row.sent_at = date.utc();
   row.expires_at = date.utc() + 60 * 10; // 10 minutes
   await pg`INSERT INTO email_verification ${pg(row)}`;
-
-  //const row = {
-  //  username: parsed.data.username,
-  //  email: parsed.data.email,
-  //  password: await crypto.encryptPassword(parsed.data.password),
-  //  joined_at: date.utc(),
-  //}
-  //
-  //const [result]: [{ id: number }?] = await pg`INSERT INTO users ${pg(row)} RETURNING id`;
-  //if (!result) return void res.status(500).send();
-  //if (!await queryCreateToken(req, res, result.id)) return void res.status(500).send();
-  //return void res.status(200).send({});
 }
 
 async function confirmSignup(req: Request, res: Response<OutputConfirmSignupSchema>): Promise<void> {
   const parsed = confirmSignupSchema.safeParse(req.body);
   if (!parsed.success) return void res.status(500).send();
 
-  // Get username, email, password & otp
+  const { username, email, password, otp } = parsed.data;
 
-  res.status(200).send({});
+  const [result0]: [{ count: number }?] = await pg`
+    SELECT COUNT(*) FROM users WHERE username=${username} OR email=${email}
+  `;
+  if (!result0) return void res.status(500).send();
+  if (result0.count !== 0) return void res.status(500).send();
+
+  const [result1]: [{ id: number, otp: number }?] = await pg`
+    UPDATE email_verification SET tries_left=tries_left-1
+    WHERE id=(
+      SELECT id FROM email_verification
+      WHERE username=${username} AND email=${email} AND expires_at>${date.utc()} AND tries_left>0
+      ORDER BY id DESC 
+      LIMIT 1
+    )
+    RETURNING id, otp
+  `;
+  if (!result1) return void res.status(500).send();
+  if (result1.otp != otp) return void res.status(500).send();
+
+  const row = {
+    username: username,
+    email: email,
+    password: await crypto.encryptPassword(password),
+    joined_at: date.utc(),
+  }
+
+  const [result2, result3] = await pg.begin(pg => [
+    pg`INSERT INTO users ${pg(row)} RETURNING id`,
+    pg`UPDATE email_verification SET expires_at=${date.utc()} WHERE id=${result1.id}`,
+  ]);
+  if (!result2.count) return void res.status(500).send();
+  if (!result3.count) return void res.status(500).send();
+
+  const userId: number | undefined = result2[0]?.id;
+  if (userId === undefined) return void res.status(500).send();
+  if (!await queryCreateToken(req, res, userId)) return void res.status(500).send();
+  return void res.status(200).send({});
 }
 
 async function login(req: Request, res: Response<OutputLoginSchema>) {

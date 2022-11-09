@@ -28,8 +28,8 @@ async function initiateSignup(username: string, email: string) {
   return await request("initiateSignup", { username, email });
 }
 
-async function confirmSignup(username: string, email: string, password: string) {
-  return await request("confirmSignup", { username, email, password });
+async function confirmSignup(username: string, email: string, password: string, otp: string) {
+  return await request("confirmSignup", { username, email, password, otp });
 }
 
 async function login(info: string, password: string) {

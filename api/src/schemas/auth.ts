@@ -19,7 +19,7 @@ export const confirmSignupSchema = z.object({
   username: sharedSchemas.username,
   email: sharedSchemas.email,
   password: sharedSchemas.password,
-  otp: z.number(),
+  otp: z.string(),
 }).strict();
 export type InputConfirmSignupSchema = z.infer<typeof confirmSignupSchema>
 export type OutputConfirmSignupSchema = {}

@@ -39,4 +39,5 @@ export async function down(knex: Knex): Promise<void> {
   return knex.schema
     .dropTable("security_notification")
     .dropTable("security_verification")
+    .dropTable("email_verification")
 }
