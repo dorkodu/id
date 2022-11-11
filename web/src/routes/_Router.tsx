@@ -27,8 +27,6 @@ function Router() {
           <Route path="/welcome" element={<Welcome />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
-          <Route path="/change_username" element={<ChangeUsername />} />
-          <Route path="/change_email" element={<ChangeEmail />} />
           <Route path="/confirm_change_email" element={<ConfirmChangeEmail />} />
           <Route path="/revert_change_email" element={<RevertChangeEmail />} />
           <Route path="/change_password" element={<ChangePassword />} />
@@ -36,6 +34,8 @@ function Router() {
           {/* Routes that require authentication */}
           <Route element={<RequireAuth />}>
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/change_username" element={<ChangeUsername />} />
+            <Route path="/change_email" element={<ChangeEmail />} />
           </Route>
 
           {/* Error routes & catch all */}
