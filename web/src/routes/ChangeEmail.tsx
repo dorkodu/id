@@ -20,7 +20,7 @@ function ChangeEmail() {
       <br />
       <button onClick={initiateEmailChange}>initiate email change</button>
       <br />
-      {done && <div>username is changed.</div>}
+      {done && <div>mail is sent. please check your email.</div>}
     </>
   )
 }

@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
 import App from "../App";
 import RequireAuth from "../components/RequireAuth";
+import Spinner from "../components/Spinner";
+import { useUserStore } from "../stores/userStore";
 
 const Welcome = React.lazy(() => import("./Welcome"));
 const Login = React.lazy(() => import("./Login"));
@@ -16,6 +18,18 @@ const Dashboard = React.lazy(() => import("./Dashboard"));
 const NotFound = React.lazy(() => import("./NotFound"));
 
 function Router() {
+  const queryAuth = useUserStore(state => state.queryAuth);
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      await queryAuth();
+      setReady(true);
+    })()
+  }, []);
+
+  if (!ready) return <Spinner />;
+
   return (
     <BrowserRouter>
       <Routes>

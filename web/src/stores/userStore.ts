@@ -6,6 +6,7 @@ import { array } from "../lib/array";
 import api from "./api";
 
 interface State {
+  authorized: boolean;
   user: IUser | undefined;
   currentSession: ISession | undefined;
   session: {
@@ -37,6 +38,7 @@ interface Action {
 }
 
 const initialState: State = {
+  authorized: false,
   user: undefined,
   currentSession: undefined,
   session: { ids: [], entities: {} },
@@ -63,7 +65,7 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
     const { data, err } = await api.auth();
     if (err || !data) return false;
 
-    if (!await get().queryGetUser()) return false;
+    set(state => { state.authorized = true })
     return true;
   },
 
@@ -77,21 +79,23 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
     const { data, err } = await api.confirmSignup(username, email, password, otp);
     if (err || !data) return false;
 
-    if (!await get().queryGetUser()) return false;
+    set(state => { state.authorized = true })
     return true;
   },
 
   queryLogin: async (info: string, password: string) => {
     const { data, err } = await api.login(info, password);
     if (err || !data) return false;
-    
-    if (!await get().queryGetUser()) return false;
+
+    set(state => { state.authorized = true })
     return true;
   },
 
   queryLogout: async () => {
     const { data, err } = await api.logout();
     if (err || !data) return false;
+
+    set(initialState);
     return true;
   },
 
@@ -173,7 +177,7 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
       delete entities[sessionId];
 
       if (get().currentSession?.id === sessionId)
-        state.user = undefined;
+        set(initialState);
     })
   },
 })))
