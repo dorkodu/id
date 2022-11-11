@@ -1,5 +1,6 @@
 import React from "react";
-import { BrowserRouter, Route, Routes, } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+
 import App from "../App";
 
 const Welcome = React.lazy(() => import("./Welcome"));
@@ -12,6 +13,8 @@ function Router() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<App />}>
+          <Route index element={<Navigate to="welcome" />} />
+
           <Route path="/welcome" element={<Welcome />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
