@@ -1,10 +1,11 @@
-import { useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useUserStore } from "../stores/userStore";
 
 function ChangePassword() {
   const [searchParams] = useSearchParams();
   const [done, setDone] = useState(false);
+  const user = useUserStore(state => state.user);
   const queryInitiatePasswordChange = useUserStore(state => state.queryInitiatePasswordChange);
   const queryConfirmPasswordChange = useUserStore(state => state.queryConfirmPasswordChange);
 
@@ -12,6 +13,12 @@ function ChangePassword() {
   const changePasswordEmail = useRef<HTMLInputElement>(null);
   const changePasswordPassword = useRef<HTMLInputElement>(null);
   const changePasswordOTP = useRef<HTMLInputElement>(null);
+
+  useLayoutEffect(() => {
+    if (!user) return;
+    changePasswordUsername.current && (changePasswordUsername.current.value = user.username);
+    changePasswordEmail.current && (changePasswordEmail.current.value = user.email);
+  }, []);
 
   const initiateChangePassword = async () => {
     const username = changePasswordUsername.current?.value;
@@ -41,7 +48,7 @@ function ChangePassword() {
           <input ref={changePasswordEmail} type={"email"} placeholder={"email..."} />
           <br />
           <button onClick={initiateChangePassword}>initiate password change</button>
-          <br/>
+          <br />
           {done && <div>mail is sent. please check your email.</div>}
         </>
       }
