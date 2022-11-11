@@ -1,33 +1,53 @@
+import { useNavigate } from "react-router-dom";
 import create from "zustand"
 import { immer } from 'zustand/middleware/immer'
+import { routes, Routes } from "../routes/_routes";
+import { useUserStore } from "./userStore";
 
 interface State {
   loading: boolean;
-  route: {
-    name: string;
-    forGuests: boolean;
-    forAny: boolean;
-  }
-
-  setLoading: (loading: boolean) => void;
-  setRoute: (route: Partial<State["route"]>) => void;
+  route: (keyof Routes) | undefined;
 }
 
-export const useAppStore = create(immer<State>((set) => ({
+interface Action {
+  setLoading: (loading: boolean) => void;
+  setRoute: (route: State["route"]) => void;
+}
+
+const initialState: State = {
   loading: true,
-  route: {
-    name: "",
-    forGuests: true,
-    forAny: false,
-  },
+  route: undefined,
+}
+
+export const useAppStore = create(immer<State & Action>((set) => ({
+  ...initialState,
 
   setLoading: (loading) => set((state: State) => {
     state.loading = loading;
   }),
 
   setRoute: (route) => set((state: State) => {
-    state.route.name = route.name ?? "";
-    state.route.forGuests = route.forGuests ?? false;
-    state.route.forAny = route.forAny ?? false;
+    state.route = route;
   }),
 })))
+
+export function useSetRoute() {
+  const user = useUserStore(state => state.user);
+  const setRoute = useAppStore(state => state.setRoute);
+  const navigate = useNavigate();
+
+  return (route: keyof Routes) => {
+    if (user && routes[route].forGuests) {
+      setRoute("dashboard");
+      navigate(routes["dashboard"].path);
+    }
+    else if (!user && !routes[route].forGuests) {
+      setRoute("welcome");
+      navigate(routes["welcome"].path);
+    }
+    else {
+      setRoute(route);
+      navigate(routes[route].path);
+    }
+  }
+}
