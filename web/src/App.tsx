@@ -1,15 +1,22 @@
 import { Suspense, useEffect } from "react";
-import { Outlet } from "react-router-dom"
+import { Outlet, useNavigate } from "react-router-dom"
 import Spinner from "./components/Spinner";
-import { useAppStore, useSetRoute } from "./stores/appStore"
+import { useAppStore } from "./stores/appStore"
+import { useUserStore } from "./stores/userStore";
 
 function App() {
+  const navigate = useNavigate();
+
+  const queryAuth = useUserStore(state => state.queryAuth);
   const loading = useAppStore(state => state.loading);
   const setLoading = useAppStore(state => state.setLoading);
 
-  const setRoute = useSetRoute();
-
-  useEffect(() => { setLoading(false); setRoute("welcome"); }, []);
+  useEffect(() => {
+    (async () => {
+      if (await queryAuth()) navigate("/dashboard");
+      setLoading(false);
+    })();
+  }, []);
 
   return (
     <>

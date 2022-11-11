@@ -15,13 +15,15 @@ interface State {
 }
 
 interface Action {
+  getSessions: () => ISession[];
+
   queryAuth: () => Promise<boolean>;
   queryInitiateSignup: (username: string, email: string) => Promise<boolean>;
   queryConfirmSignup: (username: string, email: string, password: string, otp: string) => Promise<boolean>;
-  queryLogin: (username: string, password: string) => Promise<boolean>;
+  queryLogin: (info: string, password: string) => Promise<boolean>;
   queryLogout: () => Promise<boolean>;
 
-  queryGetUser: () => Promise<void>;
+  queryGetUser: () => Promise<boolean>;
   queryChangeUsername: (newUsername: string) => Promise<boolean>;
   queryInitiateEmailChange: (newEmail: string) => Promise<boolean>;
   queryConfirmEmailChange: (token: string) => Promise<boolean>;
@@ -43,11 +45,25 @@ const initialState: State = {
 export const useUserStore = create(immer<State & Action>((set, get) => ({
   ...initialState,
 
+  getSessions: () => {
+    const ids = get().session.ids;
+    const entities = get().session.entities;
+    const sessions: ISession[] = [];
+
+    ids.forEach(id => {
+      if (get().currentSession?.id == id) return;
+      const session = entities[id];
+      if (session) sessions.push(session);
+    })
+
+    return sessions;
+  },
+
   queryAuth: async () => {
     const { data, err } = await api.auth();
     if (err || !data) return false;
 
-    await get().queryGetUser();
+    if (!await get().queryGetUser()) return false;
     return true;
   },
 
@@ -60,12 +76,16 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
   queryConfirmSignup: async (username: string, email: string, password: string, otp: string) => {
     const { data, err } = await api.confirmSignup(username, email, password, otp);
     if (err || !data) return false;
+
+    if (!await get().queryGetUser()) return false;
     return true;
   },
 
-  queryLogin: async (username: string, password: string) => {
-    const { data, err } = await api.login(username, password);
+  queryLogin: async (info: string, password: string) => {
+    const { data, err } = await api.login(info, password);
     if (err || !data) return false;
+    
+    if (!await get().queryGetUser()) return false;
     return true;
   },
 
@@ -77,16 +97,16 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
 
   queryGetUser: async () => {
     const { data, err } = await api.getUser();
-    if (err || !data) return;
+    if (err || !data) return false;
 
     set(state => { state.user = data; })
+    return true;
   },
 
   queryChangeUsername: async (newUsername: string) => {
     const { data, err } = await api.changeUsername(newUsername);
     if (err || !data) return false;
-
-    set(state => { state.user && (state.user.username = newUsername) })
+    if (!await get().queryGetUser()) return false;
     return true;
   },
 
@@ -99,12 +119,14 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
   queryConfirmEmailChange: async (token: string) => {
     const { data, err } = await api.confirmEmailChange(token);
     if (err || !data) return false;
+    if (!await get().queryGetUser()) return false;
     return true;
   },
 
   queryRevertEmailChange: async (token: string) => {
     const { data, err } = await api.revertEmailChange(token);
     if (err || !data) return false;
+    if (!await get().queryGetUser()) return false;
     return true;
   },
 
@@ -149,6 +171,9 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
 
       ids = ids.filter(id => id !== sessionId);
       delete entities[sessionId];
+
+      if (get().currentSession?.id === sessionId)
+        state.user = undefined;
     })
   },
 })))

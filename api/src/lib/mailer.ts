@@ -1,6 +1,5 @@
 import nodemailer from "nodemailer";
 import { config } from "../config";
-import { emailTypes } from "../types/types";
 
 const transporter = nodemailer.createTransport({
   pool: true,
@@ -43,7 +42,7 @@ function sendConfirmEmail(email: string, otp: number) {
 }
 
 function sendConfirmEmailChange(email: string, token: string): Promise<boolean> {
-  const link = `http://localhost:8000/?type=${emailTypes.confirmEmailChange}&token=${token}`;
+  const link = `http://localhost:8000/confirm_change_email?token=${token}`;
 
   return new Promise((resolve) => {
     transporter.sendMail({
@@ -60,7 +59,7 @@ function sendConfirmEmailChange(email: string, token: string): Promise<boolean> 
 }
 
 function sendRevertEmailChange(email: string, token: string): Promise<boolean> {
-  const link = `http://localhost:8000/?type=${emailTypes.revertEmailChange}&token=${token}`;
+  const link = `http://localhost:8000/revert_change_email?token=${token}`;
 
   return new Promise((resolve) => {
     transporter.sendMail({
@@ -77,7 +76,7 @@ function sendRevertEmailChange(email: string, token: string): Promise<boolean> {
 }
 
 function sendConfirmPasswordChange(email: string, token: string) {
-  const link = `http://localhost:8000/?type=${emailTypes.confirmPasswordChange}&token=${token}`;
+  const link = `http://localhost:8000/change_password?token=${token}`;
 
   return new Promise((resolve) => {
     transporter.sendMail({
