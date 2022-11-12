@@ -19,6 +19,24 @@ const config: { [key: string]: Knex.Config } = {
     }
   },
 
+  test: {
+    client: "postgresql",
+    connection: {
+      host: "oath_postgres",
+      port: 5432,
+      database: "test",
+      user: "postgres",
+      password: "postgres",
+    },
+    pool: {
+      min: 1,
+      max: 1
+    },
+    migrations: {
+      tableName: "knex_migrations"
+    }
+  },
+
   //staging: {
   //  client: "postgresql",
   //  connection: {
