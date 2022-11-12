@@ -8,7 +8,13 @@ import { createHtmlPlugin as html } from 'vite-plugin-html';
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
-    react(),
+    react({
+      jsxRuntime: 'automatic',
+      jsxImportSource: '@emotion/react',
+      babel: {
+        plugins: ['@emotion/babel-plugin'],
+      },
+    }),
     html({ minify: true }),
     viteCompression({ algorithm: "gzip" }),
     viteCompression({ algorithm: "brotliCompress" }),
