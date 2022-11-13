@@ -60,20 +60,19 @@ async function initiateEmailChange(req: Request, res: Response<OutputInitiateEma
   const info = auth.getAuthInfo(res);
   if (!info) return void res.status(500).send();
 
-  res.status(200).send({});
 
   const [result0]: [{ email: string }?] = await pg`
     SELECT email FROM users WHERE id=${info.userId}
   `;
-  if (!result0) return;
-  if (result0.email === parsed.data.newEmail) return;
+  if (!result0) return void res.status(500).send();
+  if (result0.email === parsed.data.newEmail) return void res.status(500).send();
 
   const [result1]: [{ count: number }?] = await pg`
     SELECT COUNT(*) FROM security_verification 
     WHERE user_id=${info.userId} AND issued_at>${date.utc() - 60 * 60} AND type=${emailTypes.confirmEmailChange}
   `;
-  if (!result1) return;
-  if (result1.count >= 3) return;
+  if (!result1) return void res.status(500).send();
+  if (result1.count >= 3) return void res.status(500).send();
 
   const newEmail = parsed.data.newEmail;
   const tkn = token.create();
@@ -89,11 +88,13 @@ async function initiateEmailChange(req: Request, res: Response<OutputInitiateEma
   }
 
   const sent = await mailer.sendConfirmEmailChange(newEmail, tkn.full);
-  if (!sent) return;
+  if (!sent) return void res.status(500).send();
 
   row.sent_at = date.utc();
   row.expires_at = date.utc() + 60 * 60; // 1 hour
   await pg`INSERT INTO security_verification ${pg(row)}`;
+
+  res.status(200).send({});
 }
 
 async function confirmEmailChange(req: Request, res: Response<OutputConfirmEmailChangeSchema>): Promise<void> {
@@ -103,8 +104,8 @@ async function confirmEmailChange(req: Request, res: Response<OutputConfirmEmail
   const tkn0 = token.parse(parsed.data.token);
   if (!tkn0) return void res.status(500).send();
 
-  const [result0]: [{ userId: number, email: string, validator: Buffer, issuedAt: number, expiresAt: number }?] = await pg`
-    SELECT user_id, email, validator, issued_at, expires_at FROM security_verification
+  const [result0]: [{ id: number, userId: number, email: string, validator: Buffer, issuedAt: number, expiresAt: number }?] = await pg`
+    SELECT id, user_id, email, validator, issued_at, expires_at FROM security_verification
     WHERE selector=${tkn0.selector}
   `;
   if (!result0) return void res.status(500).send();
@@ -140,12 +141,14 @@ async function confirmEmailChange(req: Request, res: Response<OutputConfirmEmail
 
   row.sent_at = date.utc();
   row.expires_at = date.utc() + 60 * 60 * 24 * 30; // 30 days
-  const [result3, result4] = await pg.begin(pg => [
+  const [result3, result4, result5] = await pg.begin(pg => [
     pg`INSERT INTO security_verification ${pg(row)}`,
-    pg`UPDATE users SET email=${result0.email} WHERE id=${result0.userId}`
+    pg`UPDATE users SET email=${result0.email} WHERE id=${result0.userId}`,
+    pg`UPDATE security_verification SET expires_at=${date.utc()} WHERE id=${result0.id}`
   ]);
   if (!result3.count) return void res.status(500).send();
   if (!result4.count) return void res.status(500).send();
+  if (!result5.count) return void res.status(500).send();
 
   res.status(200).send({});
 }
@@ -157,8 +160,8 @@ async function revertEmailChange(req: Request, res: Response<OutputRevertEmailCh
   const tkn0 = token.parse(parsed.data.token);
   if (!tkn0) return void res.status(500).send();
 
-  const [result0]: [{ userId: number, email: string, validator: Buffer, issuedAt: number, expiresAt: number }?] = await pg`
-    SELECT user_id, email, validator, issued_at, expires_at FROM security_verification
+  const [result0]: [{ id: number, userId: number, email: string, validator: Buffer, issuedAt: number, expiresAt: number }?] = await pg`
+    SELECT id, user_id, email, validator, issued_at, expires_at FROM security_verification
     WHERE selector=${tkn0.selector}
   `;
   if (!result0) return void res.status(500).send();
@@ -176,10 +179,12 @@ async function revertEmailChange(req: Request, res: Response<OutputRevertEmailCh
   if (!result2) return void res.status(500).send();
   if (result2.count !== 0) return void res.status(500).send();
 
-  const result3 = await pg`
-    UPDATE users SET email=${result0.email} WHERE id=${result0.userId}
-  `;
+  const [result3, result4] = await pg.begin(pg => [
+    pg`UPDATE users SET email=${result0.email} WHERE id=${result0.userId}`,
+    pg`UPDATE security_verification SET expires_at=${date.utc()} WHERE id=${result0.id}`
+  ]);
   if (!result3.count) return void res.status(500).send();
+  if (!result4.count) return void res.status(500).send();
 
   res.status(200).send({});
 }
@@ -230,8 +235,8 @@ async function confirmPasswordChange(req: Request, res: Response<OutputConfirmPa
   const tkn = token.parse(parsed.data.token);
   if (!tkn) return void res.status(500).send();
 
-  const [result0]: [{ userId: number, email: string, validator: Buffer, issuedAt: number, expiresAt: number }?] = await pg`
-    SELECT user_id, email, validator, issued_at, expires_at FROM security_verification
+  const [result0]: [{ id: number, userId: number, email: string, validator: Buffer, issuedAt: number, expiresAt: number }?] = await pg`
+    SELECT id, user_id, email, validator, issued_at, expires_at FROM security_verification
     WHERE selector=${tkn.selector}
   `;
   if (!result0) return void res.status(500).send();
@@ -250,12 +255,14 @@ async function confirmPasswordChange(req: Request, res: Response<OutputConfirmPa
   if (result2.count !== 0) return void res.status(500).send();
 
   const password = await crypto.encryptPassword(parsed.data.newPassword);
-  const [result3, result4] = await pg.begin(pg => [
+  const [result3, result4, result5] = await pg.begin(pg => [
     pg`UPDATE users SET password=${password}`,
     pg`UPDATE sessions SET expires_at=${date.utc()} WHERE user_id=${result0.userId} AND expires_at>${date.utc()}`,
+    pg`UPDATE security_verification SET expires_at=${date.utc()} WHERE id=${result0.id}`
   ])
   if (!result3.count) return void res.status(500).send();
   if (!result4.count) return void res.status(500).send();
+  if (!result5.count) return void res.status(500).send();
 
   res.status(200).send({});
 }
