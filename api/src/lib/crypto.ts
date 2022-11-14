@@ -20,8 +20,8 @@ function bytes(length: number) {
   return cyptography.randomBytes(length);
 }
 
-function number(min: number, max: number) {
-  return cyptography.randomInt(min, max);
+function otp() {
+  return cyptography.randomInt(100_000, 1_000_000);
 }
 
 export const crypto = {
@@ -29,5 +29,5 @@ export const crypto = {
   comparePassword,
   sha256,
   bytes,
-  number,
+  otp,
 }

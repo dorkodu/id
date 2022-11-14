@@ -51,12 +51,11 @@ async function initiateSignup(req: Request, res: Response<OutputInitiateSignupSc
   `;
   if (!result1) return void res.status(500).send();
   if (result1.count !== 0) return void res.status(500).send();
-  res.status(200).send({});
 
   const row = {
     username: username,
     email: email,
-    otp: crypto.number(0, 1000000),
+    otp: crypto.otp(),
     sent_at: -1,
     expires_at: -1,
     tries_left: 3
@@ -68,6 +67,8 @@ async function initiateSignup(req: Request, res: Response<OutputInitiateSignupSc
   row.sent_at = date.utc();
   row.expires_at = date.utc() + 60 * 10; // 10 minutes
   await pg`INSERT INTO email_verification ${pg(row)}`;
+
+  res.status(200).send({});
 }
 
 async function confirmSignup(req: Request, res: Response<OutputConfirmSignupSchema>): Promise<void> {

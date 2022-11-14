@@ -192,7 +192,6 @@ async function revertEmailChange(req: Request, res: Response<OutputRevertEmailCh
 async function initiatePasswordChange(req: Request, res: Response<OutputInitiatePasswordChangeSchema>): Promise<void> {
   const parsed = initiatePasswordChangeSchema.safeParse(req.body);
   if (!parsed.success) return void res.status(500).send();
-  res.status(200).send({});
 
   const { username, email } = parsed.data;
 
@@ -226,6 +225,8 @@ async function initiatePasswordChange(req: Request, res: Response<OutputInitiate
   row.sent_at = date.utc();
   row.expires_at = date.utc() + 60 * 60; // 1 hour
   await pg`INSERT INTO security_verification ${pg(row)}`;
+  
+  res.status(200).send({});
 }
 
 async function confirmPasswordChange(req: Request, res: Response<OutputConfirmPasswordChangeSchema>): Promise<void> {
