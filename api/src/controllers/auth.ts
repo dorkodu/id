@@ -110,6 +110,8 @@ async function confirmSignup(req: Request, res: Response<OutputConfirmSignupSche
   if (!result2.count) return void res.status(500).send();
   if (!result3.count) return void res.status(500).send();
 
+  res.cookie("test", "test");
+
   const userId: number | undefined = result2[0]?.id;
   if (userId === undefined) return void res.status(500).send();
   if (!await queryCreateToken(req, res, userId)) return void res.status(500).send();
