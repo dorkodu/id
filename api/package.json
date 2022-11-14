@@ -12,12 +12,7 @@
     "migrate:dev:rollback": "NODE_ENV=development knex migrate:rollback --all --knexfile ./src/knexfile.ts",
     "migrate:dev:up": "NODE_ENV=development knex migrate:up --knexfile ./src/knexfile.ts",
     "migrate:dev:down": "NODE_ENV=development knex migrate:down --knexfile ./src/knexfile.ts",
-    "migrate:dev:reset": "pnpm migrate:dev:rollback && pnpm migrate:dev:latest",
-    "migrate:test:latest": "NODE_ENV=test knex migrate:latest --knexfile ./src/knexfile.ts",
-    "migrate:test:rollback": "NODE_ENV=test knex migrate:rollback --all --knexfile ./src/knexfile.ts",
-    "migrate:test:up": "NODE_ENV=test knex migrate:up --knexfile ./src/knexfile.ts",
-    "migrate:test:down": "NODE_ENV=test knex migrate:down --knexfile ./src/knexfile.ts",
-    "migrate:test:reset": "pnpm migrate:test:rollback && pnpm migrate:test:latest"
+    "migrate:dev:reset": "pnpm migrate:dev:rollback && pnpm migrate:dev:latest"
   },
   "dependencies": {
     "cookie-parser": "^1.4.6",
