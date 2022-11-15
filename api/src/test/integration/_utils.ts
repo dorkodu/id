@@ -12,8 +12,12 @@ async function resetDatabase() {
   ])
 }
 
-async function request(url: string, data?: any, cookies?: any) {
-  return await axios.post(url, data, { headers: { Cookie: cookies } });
+async function request(url: string, data?: any, cookies?: any): Promise<AxiosResponse> {
+  return new Promise((resolve) => {
+    axios.post(url, data, { headers: { Cookie: cookies } })
+      .then((res) => { resolve(res) })
+      .catch((err) => { resolve(err.response) })
+  });
 }
 
 function getCookies(res: AxiosResponse) {
