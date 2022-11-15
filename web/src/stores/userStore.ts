@@ -4,6 +4,7 @@ import { ISession } from "../../../api/src/types/session";
 import { IUser } from "../../../api/src/types/user";
 import { array } from "../lib/array";
 import api from "./api";
+import { useAppStore } from "./appStore";
 
 interface State {
   authorized: boolean;
@@ -63,10 +64,11 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
 
   queryAuth: async () => {
     const { data, err } = await api.auth();
-    if (err || !data) return false;
+    const authorized = !(err || !data);
 
-    set(state => { state.authorized = true })
-    return true;
+    set(state => { state.authorized = authorized })
+    useAppStore.getState().setAuthLoading(false);
+    return authorized;
   },
 
   queryInitiateSignup: async (username: string, email: string) => {

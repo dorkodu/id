@@ -1,5 +1,5 @@
 import type { ApiDetail, ApiRoutes } from "../../../api/src/types/api";
-import { apiRoutes } from "../types";
+import { apiRoutes } from "../types/types";
 
 async function request<T extends keyof ApiRoutes>(url: T, data: ApiDetail[T]["input"]): Promise<{ data: ApiDetail[T]["output"] | undefined, err: boolean }> {
   const options: RequestInit = { method: "POST" }

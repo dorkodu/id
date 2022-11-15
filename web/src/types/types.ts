@@ -1,5 +1,5 @@
-import type { ApiRoutes } from "../../api/src/types/api";
-import type { EmailType } from "../../api/src/types/email_type";
+import type { ApiRoutes } from "../../../api/src/types/api";
+import type { EmailType } from "../../../api/src/types/email_type";
 
 export const apiRoutes: ApiRoutes = {
   auth: "/api/auth/auth",

@@ -2,16 +2,17 @@ import { Suspense, useEffect } from "react";
 import { Outlet } from "react-router-dom"
 import Spinner from "./components/Spinner";
 import { useAppStore } from "./stores/appStore"
+import { useUserStore } from "./stores/userStore";
 
 function App() {
-  const loading = useAppStore(state => state.loading);
-  const setLoading = useAppStore(state => state.setLoading);
+  const loading = useAppStore(state => state.getLoading());
 
-  useEffect(() => { setLoading(false) }, []);
+  const queryAuth = useUserStore(state => state.queryAuth);
+  useEffect(() => { queryAuth(); }, []);
 
   return (
     <>
-      <Suspense fallback={<Spinner />}>
+      <Suspense >
         {loading ? <Spinner /> : <Outlet />}
       </Suspense>
     </>
