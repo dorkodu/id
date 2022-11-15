@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig, AxiosResponse } from "axios"
+import axios, { AxiosResponse } from "axios"
 import pg from "../../pg"
 import cookie from "cookie"
 
@@ -12,8 +12,8 @@ async function resetDatabase() {
   ])
 }
 
-async function request(url: string, data?: any, config?: AxiosRequestConfig) {
-  return await axios.post(url, data, config);
+async function request(url: string, data?: any, cookies?: any) {
+  return await axios.post(url, data, { headers: { Cookie: cookies } });
 }
 
 function getCookies(res: AxiosResponse) {
@@ -22,8 +22,15 @@ function getCookies(res: AxiosResponse) {
   return cookie.parse(cookies.join(";"));
 }
 
+function getCookieToken(res: AxiosResponse) {
+  const cookies = getCookies(res);
+  if (!cookies || !cookies["token"]) throw new Error();
+  return cookies["token"];
+}
+
 export const utils = {
   resetDatabase,
   request,
   getCookies,
+  getCookieToken,
 }
