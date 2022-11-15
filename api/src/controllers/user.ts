@@ -144,7 +144,7 @@ async function confirmEmailChange(req: Request, res: Response<OutputConfirmEmail
   const [result3, result4, result5] = await pg.begin(pg => [
     pg`INSERT INTO security_verification ${pg(row)}`,
     pg`UPDATE users SET email=${result0.email} WHERE id=${result0.userId}`,
-    pg`UPDATE security_verification SET expires_at=${date.utc()} WHERE id=${result0.id}`
+    pg`UPDATE security_verification SET expires_at=${date.old()} WHERE id=${result0.id}`
   ]);
   if (!result3.count) return void res.status(500).send();
   if (!result4.count) return void res.status(500).send();
@@ -181,7 +181,7 @@ async function revertEmailChange(req: Request, res: Response<OutputRevertEmailCh
 
   const [result3, result4] = await pg.begin(pg => [
     pg`UPDATE users SET email=${result0.email} WHERE id=${result0.userId}`,
-    pg`UPDATE security_verification SET expires_at=${date.utc()} WHERE id=${result0.id}`
+    pg`UPDATE security_verification SET expires_at=${date.old()} WHERE id=${result0.id}`
   ]);
   if (!result3.count) return void res.status(500).send();
   if (!result4.count) return void res.status(500).send();
@@ -258,8 +258,8 @@ async function confirmPasswordChange(req: Request, res: Response<OutputConfirmPa
   const password = await crypto.encryptPassword(parsed.data.newPassword);
   const [result3, result4, result5] = await pg.begin(pg => [
     pg`UPDATE users SET password=${password}`,
-    pg`UPDATE sessions SET expires_at=${date.utc()} WHERE user_id=${result0.userId} AND expires_at>${date.utc()}`,
-    pg`UPDATE security_verification SET expires_at=${date.utc()} WHERE id=${result0.id}`
+    pg`UPDATE sessions SET expires_at=${date.old()} WHERE user_id=${result0.userId} AND expires_at>${date.utc()}`,
+    pg`UPDATE security_verification SET expires_at=${date.old()} WHERE id=${result0.id}`
   ])
   if (!result3.count) return void res.status(500).send();
   if (!result4.count) return void res.status(500).send();

@@ -49,7 +49,7 @@ async function terminateSession(req: Request, res: Response<OutputTerminateSessi
 
   const { sessionId } = parsed.data;
 
-  await pg`UPDATE sessions SET expires_at=${date.utc()} WHERE id=${sessionId} AND user_id=${info.userId}`;
+  await pg`UPDATE sessions SET expires_at=${date.old()} WHERE id=${sessionId} AND user_id=${info.userId}`;
 
   return void res.status(200).send({});
 }

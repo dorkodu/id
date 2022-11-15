@@ -105,12 +105,10 @@ async function confirmSignup(req: Request, res: Response<OutputConfirmSignupSche
 
   const [result2, result3] = await pg.begin(pg => [
     pg`INSERT INTO users ${pg(row)} RETURNING id`,
-    pg`UPDATE email_verification SET expires_at=${date.utc()} WHERE id=${result1.id}`,
+    pg`UPDATE email_verification SET expires_at=${date.old()} WHERE id=${result1.id}`,
   ]);
   if (!result2.count) return void res.status(500).send();
   if (!result3.count) return void res.status(500).send();
-
-  res.cookie("test", "test");
 
   const userId: number | undefined = result2[0]?.id;
   if (userId === undefined) return void res.status(500).send();
@@ -194,7 +192,7 @@ async function queryCreateToken(req: Request, res: Response, userId: number): Pr
 }
 
 async function queryExpireToken(res: Response, tokenId: number, userId: number) {
-  await pg`UPDATE sessions SET expires_at=${date.utc()} WHERE id=${tokenId} AND user_id=${userId}`;
+  await pg`UPDATE sessions SET expires_at=${date.old()} WHERE id=${tokenId} AND user_id=${userId}`;
   token.detach(res);
 }
 
