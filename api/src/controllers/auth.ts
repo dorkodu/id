@@ -46,7 +46,7 @@ async function initiateSignup(req: Request, res: Response<OutputInitiateSignupSc
   if (result0.count !== 0) return void res.status(500).send();
 
   const [result1]: [{ count: number }?] = await pg`
-    SELECT COUNT(*) FROM email_verification
+    SELECT COUNT(*) FROM email_otp
     WHERE username=${username} AND email=${email} AND expires_at>${date.utc()} AND tries_left>0
   `;
   if (!result1) return void res.status(500).send();
@@ -66,7 +66,7 @@ async function initiateSignup(req: Request, res: Response<OutputInitiateSignupSc
 
   row.sent_at = date.utc();
   row.expires_at = date.utc() + 60 * 10; // 10 minutes
-  await pg`INSERT INTO email_verification ${pg(row)}`;
+  await pg`INSERT INTO email_otp ${pg(row)}`;
 
   res.status(200).send({});
 }
@@ -84,9 +84,9 @@ async function confirmSignup(req: Request, res: Response<OutputConfirmSignupSche
   if (result0.count !== 0) return void res.status(500).send();
 
   const [result1]: [{ id: number, otp: number }?] = await pg`
-    UPDATE email_verification SET tries_left=tries_left-1
+    UPDATE email_otp SET tries_left=tries_left-1
     WHERE id=(
-      SELECT id FROM email_verification
+      SELECT id FROM email_otp
       WHERE username=${username} AND email=${email} AND expires_at>${date.utc()} AND tries_left>0
       ORDER BY id DESC 
       LIMIT 1
@@ -105,7 +105,7 @@ async function confirmSignup(req: Request, res: Response<OutputConfirmSignupSche
 
   const [result2, result3] = await pg.begin(pg => [
     pg`INSERT INTO users ${pg(row)} RETURNING id`,
-    pg`UPDATE email_verification SET expires_at=${date.old()} WHERE id=${result1.id}`,
+    pg`UPDATE email_otp SET expires_at=${date.old()} WHERE id=${result1.id}`,
   ]);
   if (!result2.count) return void res.status(500).send();
   if (!result3.count) return void res.status(500).send();

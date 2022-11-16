@@ -6,9 +6,8 @@ async function resetDatabase() {
   await pg.begin(pg => [
     pg`TRUNCATE TABLE users`,
     pg`TRUNCATE TABLE sessions`,
-    pg`TRUNCATE TABLE email_verification`,
-    pg`TRUNCATE TABLE security_verification`,
-    pg`TRUNCATE TABLE security_notification`,
+    pg`TRUNCATE TABLE email_token`,
+    pg`TRUNCATE TABLE email_otp`,
   ])
 }
 

@@ -24,7 +24,7 @@ import { token } from "../lib/token";
 import { crypto } from "../lib/crypto";
 import { date } from "../lib/date";
 import { mailer } from "../lib/mailer";
-import { emailTypes } from "../types/types";
+import { EmailTypes } from "../../../shared/src/email_types";
 
 async function getUser(req: Request, res: Response<OutputGetUserSchema>) {
   const parsed = getUserSchema.safeParse(req.body);
@@ -68,8 +68,8 @@ async function initiateEmailChange(req: Request, res: Response<OutputInitiateEma
   if (result0.email === parsed.data.newEmail) return void res.status(500).send();
 
   const [result1]: [{ count: number }?] = await pg`
-    SELECT COUNT(*) FROM security_verification 
-    WHERE user_id=${info.userId} AND issued_at>${date.utc() - 60 * 60} AND type=${emailTypes.confirmEmailChange}
+    SELECT COUNT(*) FROM email_token 
+    WHERE user_id=${info.userId} AND issued_at>${date.utc() - 60 * 60} AND type=${EmailTypes.ConfirmEmailChange}
   `;
   if (!result1) return void res.status(500).send();
   if (result1.count >= 3) return void res.status(500).send();
@@ -84,7 +84,7 @@ async function initiateEmailChange(req: Request, res: Response<OutputInitiateEma
     issued_at: date.utc(),
     sent_at: -1,
     expires_at: -1,
-    type: emailTypes.confirmEmailChange,
+    type: EmailTypes.ConfirmEmailChange,
   }
 
   const sent = await mailer.sendConfirmEmailChange(newEmail, tkn.full);
@@ -92,7 +92,7 @@ async function initiateEmailChange(req: Request, res: Response<OutputInitiateEma
 
   row.sent_at = date.utc();
   row.expires_at = date.utc() + 60 * 60; // 1 hour
-  await pg`INSERT INTO security_verification ${pg(row)}`;
+  await pg`INSERT INTO email_token ${pg(row)}`;
 
   res.status(200).send({});
 }
@@ -105,7 +105,7 @@ async function confirmEmailChange(req: Request, res: Response<OutputConfirmEmail
   if (!tkn0) return void res.status(500).send();
 
   const [result0]: [{ id: number, userId: number, email: string, validator: Buffer, issuedAt: number, expiresAt: number }?] = await pg`
-    SELECT id, user_id, email, validator, issued_at, expires_at FROM security_verification
+    SELECT id, user_id, email, validator, issued_at, expires_at FROM email_token
     WHERE selector=${tkn0.selector}
   `;
   if (!result0) return void res.status(500).send();
@@ -117,8 +117,8 @@ async function confirmEmailChange(req: Request, res: Response<OutputConfirmEmail
   if (result1.email === result0.email) return void res.status(500).send();
 
   const [result2]: [{ count: number }?] = await pg`
-    SELECT COUNT(*) FROM security_verification
-    WHERE user_id=${result0.userId} AND issued_at>${result0.issuedAt} AND type=${emailTypes.confirmEmailChange}
+    SELECT COUNT(*) FROM email_token
+    WHERE user_id=${result0.userId} AND issued_at>${result0.issuedAt} AND type=${EmailTypes.ConfirmEmailChange}
   `;
   if (!result2) return void res.status(500).send();
   if (result2.count !== 0) return void res.status(500).send();
@@ -133,7 +133,7 @@ async function confirmEmailChange(req: Request, res: Response<OutputConfirmEmail
     issued_at: date.utc(),
     sent_at: -1,
     expires_at: -1,
-    type: emailTypes.revertEmailChange,
+    type: EmailTypes.RevertEmailChange,
   }
 
   const sent = await mailer.sendRevertEmailChange(oldEmail, tkn1.full);
@@ -142,9 +142,9 @@ async function confirmEmailChange(req: Request, res: Response<OutputConfirmEmail
   row.sent_at = date.utc();
   row.expires_at = date.utc() + 60 * 60 * 24 * 30; // 30 days
   const [result3, result4, result5] = await pg.begin(pg => [
-    pg`INSERT INTO security_verification ${pg(row)}`,
+    pg`INSERT INTO email_token ${pg(row)}`,
     pg`UPDATE users SET email=${result0.email} WHERE id=${result0.userId}`,
-    pg`UPDATE security_verification SET expires_at=${date.old()} WHERE id=${result0.id}`
+    pg`UPDATE email_token SET expires_at=${date.old()} WHERE id=${result0.id}`
   ]);
   if (!result3.count) return void res.status(500).send();
   if (!result4.count) return void res.status(500).send();
@@ -161,7 +161,7 @@ async function revertEmailChange(req: Request, res: Response<OutputRevertEmailCh
   if (!tkn0) return void res.status(500).send();
 
   const [result0]: [{ id: number, userId: number, email: string, validator: Buffer, issuedAt: number, expiresAt: number }?] = await pg`
-    SELECT id, user_id, email, validator, issued_at, expires_at FROM security_verification
+    SELECT id, user_id, email, validator, issued_at, expires_at FROM email_token
     WHERE selector=${tkn0.selector}
   `;
   if (!result0) return void res.status(500).send();
@@ -173,15 +173,15 @@ async function revertEmailChange(req: Request, res: Response<OutputRevertEmailCh
   if (result1.email === result0.email) return void res.status(500).send();
 
   const [result2]: [{ count: number }?] = await pg`
-    SELECT COUNT(*) FROM security_verification
-    WHERE user_id=${result0.userId} AND issued_at>${result0.issuedAt} AND type=${emailTypes.revertEmailChange}
+    SELECT COUNT(*) FROM email_token
+    WHERE user_id=${result0.userId} AND issued_at>${result0.issuedAt} AND type=${EmailTypes.RevertEmailChange}
   `;
   if (!result2) return void res.status(500).send();
   if (result2.count !== 0) return void res.status(500).send();
 
   const [result3, result4] = await pg.begin(pg => [
     pg`UPDATE users SET email=${result0.email} WHERE id=${result0.userId}`,
-    pg`UPDATE security_verification SET expires_at=${date.old()} WHERE id=${result0.id}`
+    pg`UPDATE email_token SET expires_at=${date.old()} WHERE id=${result0.id}`
   ]);
   if (!result3.count) return void res.status(500).send();
   if (!result4.count) return void res.status(500).send();
@@ -201,8 +201,8 @@ async function initiatePasswordChange(req: Request, res: Response<OutputInitiate
   if (!result0) return;
 
   const [result1]: [{ count: number }?] = await pg`
-    SELECT COUNT(*) FROM security_verification
-    WHERE user_id=${result0.id} AND issued_at>${date.utc() - 60 * 60} AND type=${emailTypes.confirmPasswordChange}
+    SELECT COUNT(*) FROM email_token
+    WHERE user_id=${result0.id} AND issued_at>${date.utc() - 60 * 60} AND type=${EmailTypes.ConfirmPasswordChange}
   `;
   if (!result1) return;
   if (result1.count >= 3) return;
@@ -216,7 +216,7 @@ async function initiatePasswordChange(req: Request, res: Response<OutputInitiate
     issued_at: date.utc(),
     sent_at: -1,
     expires_at: -1,
-    type: emailTypes.confirmPasswordChange,
+    type: EmailTypes.ConfirmPasswordChange,
   }
 
   const sent = await mailer.sendConfirmPasswordChange(email, tkn.full);
@@ -224,7 +224,7 @@ async function initiatePasswordChange(req: Request, res: Response<OutputInitiate
 
   row.sent_at = date.utc();
   row.expires_at = date.utc() + 60 * 60; // 1 hour
-  await pg`INSERT INTO security_verification ${pg(row)}`;
+  await pg`INSERT INTO email_token ${pg(row)}`;
   
   res.status(200).send({});
 }
@@ -237,7 +237,7 @@ async function confirmPasswordChange(req: Request, res: Response<OutputConfirmPa
   if (!tkn) return void res.status(500).send();
 
   const [result0]: [{ id: number, userId: number, email: string, validator: Buffer, issuedAt: number, expiresAt: number }?] = await pg`
-    SELECT id, user_id, email, validator, issued_at, expires_at FROM security_verification
+    SELECT id, user_id, email, validator, issued_at, expires_at FROM email_token
     WHERE selector=${tkn.selector}
   `;
   if (!result0) return void res.status(500).send();
@@ -249,8 +249,8 @@ async function confirmPasswordChange(req: Request, res: Response<OutputConfirmPa
   if (result1.email !== result0.email) return void res.status(500).send();
 
   const [result2]: [{ count: number }?] = await pg`
-    SELECT COUNT(*) FROM security_verification
-    WHERE user_id=${result0.userId} AND issued_at>${result0.issuedAt} AND type=${emailTypes.confirmPasswordChange}
+    SELECT COUNT(*) FROM email_token
+    WHERE user_id=${result0.userId} AND issued_at>${result0.issuedAt} AND type=${EmailTypes.ConfirmPasswordChange}
   `;
   if (!result2) return void res.status(500).send();
   if (result2.count !== 0) return void res.status(500).send();
@@ -259,7 +259,7 @@ async function confirmPasswordChange(req: Request, res: Response<OutputConfirmPa
   const [result3, result4, result5] = await pg.begin(pg => [
     pg`UPDATE users SET password=${password}`,
     pg`UPDATE sessions SET expires_at=${date.old()} WHERE user_id=${result0.userId} AND expires_at>${date.utc()}`,
-    pg`UPDATE security_verification SET expires_at=${date.old()} WHERE id=${result0.id}`
+    pg`UPDATE email_token SET expires_at=${date.old()} WHERE id=${result0.id}`
   ])
   if (!result3.count) return void res.status(500).send();
   if (!result4.count) return void res.status(500).send();

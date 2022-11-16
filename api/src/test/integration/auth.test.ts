@@ -7,7 +7,7 @@ async function signup(username: string, email: string, password: string) {
   await utils.request("http://oath_api:8001/api/auth/initiateSignup", { username, email })
 
   const [result0]: [{ otp: number }?] = await pg`
-        SELECT otp FROM email_verification WHERE username=${username} AND email=${email}
+        SELECT otp FROM email_otp WHERE username=${username} AND email=${email}
       `;
   if (!result0) throw new Error();
 

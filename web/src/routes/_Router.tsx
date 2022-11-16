@@ -3,6 +3,7 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
 import App from "../App";
 import RequireAuth from "../components/RequireAuth";
+import { EmailTypes } from "@shared/email_types";
 
 const Welcome = React.lazy(() => import("./Welcome"));
 const Login = React.lazy(() => import("./Login"));
@@ -11,6 +12,7 @@ const ChangeUsername = React.lazy(() => import("./ChangeUsername"));
 const ChangeEmail = React.lazy(() => import("./ChangeEmail"));
 const ConfirmChangeEmail = React.lazy(() => import("./ConfirmChangeEmail"));
 const RevertChangeEmail = React.lazy(() => import("./RevertChangeEmail"));
+const ConfirmChangePassword = React.lazy(() => import("./ConfirmChangePassword"));
 const ChangePassword = React.lazy(() => import("./ChangePassword"));
 const Dashboard = React.lazy(() => import("./Dashboard"));
 const NotFound = React.lazy(() => import("./NotFound"));
@@ -27,9 +29,10 @@ function Router() {
           <Route path="/welcome" element={<Welcome />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
-          <Route path="/confirm_change_email" element={<ConfirmChangeEmail />} />
-          <Route path="/revert_change_email" element={<RevertChangeEmail />} />
           <Route path="/change_password" element={<ChangePassword />} />
+          <Route path={`/${EmailTypes.ConfirmEmailChange}`} element={<ConfirmChangeEmail />} />
+          <Route path={`/${EmailTypes.RevertEmailChange}`} element={<RevertChangeEmail />} />
+          <Route path={`/${EmailTypes.ConfirmPasswordChange}`} element={<ConfirmChangePassword />} />
 
           {/* Routes that require authentication */}
           <Route element={<RequireAuth />}>
