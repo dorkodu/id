@@ -1,7 +1,7 @@
 import create from "zustand"
 import { immer } from 'zustand/middleware/immer'
-import { ISession } from "../../../api/src/types/session";
-import { IUser } from "../../../api/src/types/user";
+import { ISession } from "@shared/session";
+import { IUser } from "@shared/user";
 import { array } from "../lib/array";
 import api from "./api";
 import { useAppStore } from "./appStore";

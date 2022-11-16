@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { ISession } from "../types/session";
+import { ISession } from "../../../shared/src/session";
 
 export const getCurrentSessionSchema = z.object({
 

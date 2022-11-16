@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 import { sharedSchemas } from "./shared";
-import { IUser } from "../types/user";
+import { IUser } from "../../../shared/src/user";
 
 export const getUserSchema = z.object({}).strict();
 export type InputGetUserSchema = z.infer<typeof getUserSchema>

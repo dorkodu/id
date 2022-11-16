@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { date } from "../lib/date";
 import pg from "../pg";
 import { getCurrentSessionSchema, getSessionsSchema, OutputGetCurrentSessionSchema, OutputGetSessionsSchema, OutputTerminateSessionSchema, terminateSessionSchema } from "../schemas/session";
-import { ISession } from "../types/session";
+import { ISession } from "../../../shared/src/session";
 import auth from "./auth";
 
 async function getCurrentSession(req: Request, res: Response<OutputGetCurrentSessionSchema>) {

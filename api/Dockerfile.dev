@@ -1,11 +1,16 @@
 FROM node:16-alpine
-WORKDIR /api
+WORKDIR /oath
+
+RUN mkdir -p /oath/api
+RUN mkdir -p /oath/shared
 
 RUN npm install -g pnpm
 
-COPY pnpm-lock.yaml .
-RUN pnpm fetch
-COPY . .
-RUN pnpm install --offline
+COPY ./api/pnpm-lock.yaml /oath/api
+RUN cd api && pnpm fetch
+COPY ./api /oath/api
+COPY ./shared /oath/shared
+RUN cd api && pnpm install --offline
 
+WORKDIR /oath/api
 CMD [ "pnpm", "run", "dev" ]

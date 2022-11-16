@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 
 import pg from "../pg";
-import { IUser } from "../types/user";
+import { IUser } from "../../../shared/src/user";
 import auth from "./auth";
 
 import {

@@ -3,25 +3,27 @@ version: '3.8'
 services:
   oath_api:
     build:
-      context: ./api
-      dockerfile: Dockerfile.dev
+      context: .
+      dockerfile: ./api/Dockerfile.dev
     environment:
       - NODE_ENV=development
     volumes:
-      - ./api:/api
-      - /api/node_modules
+      - ./api:/oath/api
+      - ./shared:/oath/shared
+      - /oath/api/node_modules
     ports:
       - "8001:8001"
     restart: always
   oath_web:
     build:
-      context: ./web
-      dockerfile: Dockerfile.dev
+      context: .
+      dockerfile: ./web/Dockerfile.dev
     environment:
       - NODE_ENV=development
     volumes:
-      - ./web:/web
-      - /web/node_modules
+      - ./web:/oath/web
+      - ./shared:/oath/shared
+      -  /oath/web/node_modules
     ports:
       - "8000:8000"
     restart: always

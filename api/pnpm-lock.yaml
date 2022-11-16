@@ -17,6 +17,7 @@ specifiers:
   express: ^4.18.2
   knex: ^2.3.0
   node-cron: ^3.0.2
+  nodejs-snowflake: ^2.0.1
   nodemailer: ^6.8.0
   pg: ^8.8.0
   postgres: ^3.3.1
@@ -33,6 +34,7 @@ dependencies:
   dotenv: 16.0.3
   express: 4.18.2
   node-cron: 3.0.2
+  nodejs-snowflake: 2.0.1
   nodemailer: 6.8.0
   postgres: 3.3.1
   ua-parser-js: 1.0.32
@@ -1260,6 +1262,10 @@ packages:
     dependencies:
       whatwg-url: 5.0.0
     dev: true
+
+  /nodejs-snowflake/2.0.1:
+    resolution: {integrity: sha512-zMfDorNNsJm1OWWx/OUUGVT0bQ3TwC2ti4URD8UjnpffVLtLpy3eBDIaV5TnLs91YrRhwBD6L0StqU6YtnZt9A==}
+    dev: false
 
   /nodemailer/6.8.0:
     resolution: {integrity: sha512-EjYvSmHzekz6VNkNd12aUqAco+bOkRe3Of5jVhltqKhEsjw/y0PYPJfp83+s9Wzh1dspYAkUW/YNQ350NATbSQ==}

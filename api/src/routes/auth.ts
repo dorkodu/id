@@ -1,6 +1,6 @@
 import * as express from "express";
 import controller from "../controllers/auth";
-import { apiRoutes } from "../types/types";
+import { apiRoutes } from "../../../shared/src/api_routes";
 
 const router = express.Router();
 

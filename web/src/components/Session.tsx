@@ -1,4 +1,4 @@
-import { ISession } from "../../../api/src/types/session"
+import { ISession } from "@shared/session"
 import { useUserStore } from "../stores/userStore";
 
 interface Props {

@@ -1,5 +1,7 @@
 import { defineConfig } from 'vite'
 
+import path from 'path'
+
 import react from '@vitejs/plugin-react';
 import viteCompression from 'vite-plugin-compression';
 import { VitePWA } from 'vite-plugin-pwa';
@@ -36,6 +38,11 @@ export default defineConfig({
     strictPort: true,
     proxy: {
       "/api": "http://oath_api:8001"
+    }
+  },
+  resolve: {
+    alias: {
+      "@shared": path.resolve(__dirname, '../shared/src'),
     }
   }
 })

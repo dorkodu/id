@@ -9,7 +9,7 @@ import type {
   OutputInitiateSignupSchema,
   OutputLoginSchema,
   OutputLogoutSchema,
-} from "../schemas/auth"
+} from "../../api/src/schemas/auth"
 
 import type {
   InputChangeUsernameSchema,
@@ -26,7 +26,7 @@ import type {
   OutputInitiateEmailChangeSchema,
   OutputInitiatePasswordChangeSchema,
   OutputRevertEmailChangeSchema,
-} from "../schemas/user"
+} from "../../api/src/schemas/user"
 
 import type {
   InputGetCurrentSessionSchema,
@@ -35,7 +35,7 @@ import type {
   OutputGetCurrentSessionSchema,
   OutputGetSessionsSchema,
   OutputTerminateSessionSchema
-} from "../schemas/session"
+} from "../../api/src/schemas/session"
 
 
 import type {
@@ -47,11 +47,9 @@ import type {
   OutputGetAccessesSchema,
   OutputGrantAccessSchema,
   OutputRevokeAccessSchema
-} from "../schemas/access"
+} from "../../api/src/schemas/access"
 
-export type ApiRoutes = { [K in keyof ApiDetail]: ApiDetail[K]["path"] }
-
-export interface ApiDetail {
+export interface ApiDetails {
   auth: {
     path: "/api/auth/auth"
     input: InputAuthSchema
