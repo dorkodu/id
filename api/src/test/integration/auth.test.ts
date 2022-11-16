@@ -4,7 +4,7 @@ import pg from "../../pg";
 import cookie from "cookie"
 
 async function signup(username: string, email: string, password: string) {
-  await utils.request("http://oath_api:8001/api/auth/initiateSignup", { username, email })
+  await utils.request("initiateSignup", { username, email })
 
   const [result0]: [{ otp: number }?] = await pg`
         SELECT otp FROM email_otp WHERE username=${username} AND email=${email}
@@ -15,7 +15,7 @@ async function signup(username: string, email: string, password: string) {
   expect(result0.otp).toBeGreaterThanOrEqual(100_000);
   expect(result0.otp).toBeLessThan(1_000_000);
 
-  const res = await utils.request("http://oath_api:8001/api/auth/confirmSignup",
+  const res = await utils.request("confirmSignup",
     { username, email, password, otp: result0.otp.toString() });
 
   const [result1]: [{ id: number }?] = await pg`
@@ -28,7 +28,7 @@ async function signup(username: string, email: string, password: string) {
 }
 
 async function loginWithUsername(info: string, password: string) {
-  const res = await utils.request("http://oath_api:8001/api/auth/login", { info, password });
+  const res = await utils.request("login", { info, password });
   const token = utils.getCookieToken(res);
 
   expect(token).toBeTypeOf("string");
@@ -36,7 +36,7 @@ async function loginWithUsername(info: string, password: string) {
 }
 
 async function loginWithEmail(info: string, password: string) {
-  const res = await utils.request("http://oath_api:8001/api/auth/login", { info, password });
+  const res = await utils.request("login", { info, password });
   const token = utils.getCookieToken(res);
 
   expect(token).toBeTypeOf("string");
@@ -82,7 +82,7 @@ describe("login", () => {
 
     const token = await loginWithUsername(info, password);
     const cookies = cookie.serialize("token", token);
-    const res = await utils.request("http://oath_api:8001/api/auth/auth", {}, cookies);
+    const res = await utils.request("auth", {}, cookies);
 
     expect(res.status).toBe(200);
   })
@@ -93,7 +93,7 @@ describe("login", () => {
 
     const token = await loginWithEmail(info, password);
     const cookies = cookie.serialize("token", token);
-    const res = await utils.request("http://oath_api:8001/api/auth/auth", {}, cookies);
+    const res = await utils.request("auth", {}, cookies);
 
     expect(res.status).toBe(200);
   })
@@ -101,7 +101,7 @@ describe("login", () => {
   it("should not signup with already used username/email", async () => {
     const username = "test";
     const email = "test@test.com";
-    const res = await utils.request("http://oath_api:8001/api/auth/initiateSignup", { username, email })
+    const res = await utils.request("initiateSignup", { username, email })
 
     expect(res.status).toBe(500);
   })
@@ -113,10 +113,10 @@ describe("login", () => {
     expect(token).toBeTypeOf("string");
 
     const cookies = cookie.serialize("token", token);
-    const res0 = await utils.request("http://oath_api:8001/api/auth/logout", {}, cookies);
+    const res0 = await utils.request("logout", {}, cookies);
     expect(res0.status).toBe(200);
 
-    const res1 = await utils.request("http://oath_api:8001/api/auth/auth", {}, cookies);
+    const res1 = await utils.request("auth", {}, cookies);
     expect(res1.status).toBe(500);
   })
 })

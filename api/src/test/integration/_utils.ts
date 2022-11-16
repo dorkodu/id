@@ -1,6 +1,7 @@
 import axios, { AxiosResponse } from "axios"
 import pg from "../../pg"
 import cookie from "cookie"
+import { ApiRoutes, apiRoutes } from "../../../../shared/src/api_routes"
 
 async function resetDatabase() {
   await pg.begin(pg => [
@@ -11,9 +12,9 @@ async function resetDatabase() {
   ])
 }
 
-async function request(url: string, data?: any, cookies?: any): Promise<AxiosResponse> {
+async function request(route: keyof ApiRoutes, data?: any, cookies?: any): Promise<AxiosResponse> {
   return new Promise((resolve) => {
-    axios.post(url, data, { headers: { Cookie: cookies } })
+    axios.post(`http://oath_api:8001${apiRoutes[route]}`, data, { headers: { Cookie: cookies } })
       .then((res) => { resolve(res) })
       .catch((err) => { resolve(err.response) })
   });
