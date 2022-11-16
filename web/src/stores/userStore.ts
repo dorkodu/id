@@ -177,9 +177,9 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
 
       ids = ids.filter(id => id !== sessionId);
       delete entities[sessionId];
-
-      if (get().currentSession?.id === sessionId)
-        set(initialState);
     })
+
+    if (get().currentSession?.id === sessionId)
+      set(initialState);
   },
 })))
