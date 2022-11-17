@@ -1,27 +1,29 @@
 import { Request, Response } from "express";
 
-import _pg from "../pg";
-import { checkAccessSchema, grantAccessSchema, OutputCheckAccessSchema, OutputGetAccessesSchema, OutputGrantAccessSchema, OutputRevokeAccessSchema, revokeAccessSchema } from "../schemas/access";
+import {
+  AccessSchema, checkAccessSchema, getAccessesSchema, grantAccessSchema,
+  revokeAccessSchema
+} from "../schemas/access";
 
-async function getAccesses(req: Request, res: Response<OutputGetAccessesSchema>) {
+async function getAccesses(req: Request, res: Response<AccessSchema.OutputGetAccesses>) {
+  const parsed = getAccessesSchema.safeParse(req.body);
+  if (!parsed.success) return void res.status(500).send();
+  return void res.status(200).send({});
+}
+
+async function checkAccess(req: Request, res: Response<AccessSchema.OutputCheckAccess>) {
   const parsed = checkAccessSchema.safeParse(req.body);
   if (!parsed.success) return void res.status(500).send();
   return void res.status(200).send({});
 }
 
-async function checkAccess(req: Request, res: Response<OutputCheckAccessSchema>) {
-  const parsed = checkAccessSchema.safeParse(req.body);
-  if (!parsed.success) return void res.status(500).send();
-  return void res.status(200).send({});
-}
-
-async function grantAccess(req: Request, res: Response<OutputGrantAccessSchema>) {
+async function grantAccess(req: Request, res: Response<AccessSchema.OutputGrantAccess>) {
   const parsed = grantAccessSchema.safeParse(req.body);
   if (!parsed.success) return void res.status(500).send();
   return void res.status(200).send({});
 }
 
-async function revokeAccess(req: Request, res: Response<OutputRevokeAccessSchema>) {
+async function revokeAccess(req: Request, res: Response<AccessSchema.OutputRevokeAccess>) {
   const parsed = revokeAccessSchema.safeParse(req.body);
   if (!parsed.success) return void res.status(500).send();
   return void res.status(200).send({});

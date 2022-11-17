@@ -6,7 +6,7 @@ import { token } from "../lib/token";
 import { userAgent } from "../lib/user_agent";
 
 import pg from "../pg";
-import { authSchema, confirmSignupSchema, initiateSignupSchema, loginSchema, logoutSchema, OutputAuthSchema, OutputConfirmSignupSchema, OutputInitiateSignupSchema, OutputLoginSchema, OutputLogoutSchema } from "../schemas/auth";
+import { authSchema, AuthSchema, confirmSignupSchema, initiateSignupSchema, loginSchema, logoutSchema } from "../schemas/auth";
 import { sharedSchemas } from "../schemas/shared";
 
 async function middleware(req: Request, res: Response, next: NextFunction) {
@@ -25,7 +25,7 @@ async function middleware(req: Request, res: Response, next: NextFunction) {
   next();
 }
 
-async function auth(req: Request, res: Response<OutputAuthSchema>) {
+async function auth(req: Request, res: Response<AuthSchema.OutputAuth>) {
   const parsed = authSchema.safeParse(req.body);
   if (!parsed.success) return void res.status(500).send();
 
@@ -33,7 +33,7 @@ async function auth(req: Request, res: Response<OutputAuthSchema>) {
   return void res.status(200).send({});
 }
 
-async function initiateSignup(req: Request, res: Response<OutputInitiateSignupSchema>): Promise<void> {
+async function initiateSignup(req: Request, res: Response<AuthSchema.OutputInitiateSignup>): Promise<void> {
   const parsed = initiateSignupSchema.safeParse(req.body);
   if (!parsed.success) return void res.status(500).send();
 
@@ -71,7 +71,7 @@ async function initiateSignup(req: Request, res: Response<OutputInitiateSignupSc
   res.status(200).send({});
 }
 
-async function confirmSignup(req: Request, res: Response<OutputConfirmSignupSchema>): Promise<void> {
+async function confirmSignup(req: Request, res: Response<AuthSchema.OutputConfirmSignup>): Promise<void> {
   const parsed = confirmSignupSchema.safeParse(req.body);
   if (!parsed.success) return void res.status(500).send();
 
@@ -116,7 +116,7 @@ async function confirmSignup(req: Request, res: Response<OutputConfirmSignupSche
   return void res.status(200).send({});
 }
 
-async function login(req: Request, res: Response<OutputLoginSchema>): Promise<void> {
+async function login(req: Request, res: Response<AuthSchema.OutputLogin>): Promise<void> {
   const parsed = loginSchema.safeParse(req.body);
   if (!parsed.success) return void res.status(500).send();
 
@@ -149,7 +149,7 @@ async function login(req: Request, res: Response<OutputLoginSchema>): Promise<vo
   await mailer.sendNewLocation(result0.email, ip, ua);
 }
 
-async function logout(req: Request, res: Response<OutputLogoutSchema>) {
+async function logout(req: Request, res: Response<AuthSchema.OutputLogout>) {
   const parsed = logoutSchema.safeParse(req.body);
   if (!parsed.success) return void res.status(500).send();
 

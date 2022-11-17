@@ -1,151 +1,86 @@
-import type {
-  InputAuthSchema,
-  InputConfirmSignupSchema,
-  InputInitiateSignupSchema,
-  InputLoginSchema,
-  InputLogoutSchema,
-  OutputAuthSchema,
-  OutputConfirmSignupSchema,
-  OutputInitiateSignupSchema,
-  OutputLoginSchema,
-  OutputLogoutSchema,
-} from "../../api/src/schemas/auth"
-
-import type {
-  InputChangeUsernameSchema,
-  InputConfirmEmailChangeSchema,
-  InputConfirmPasswordChangeSchema,
-  InputGetUserSchema,
-  InputInitiateEmailChangeSchema,
-  InputInitiatePasswordChangeSchema,
-  InputRevertEmailChangeSchema,
-  OutputChangeUsernameSchema,
-  OutputConfirmEmailChangeSchema,
-  OutputConfirmPasswordChangeSchema,
-  OutputGetUserSchema,
-  OutputInitiateEmailChangeSchema,
-  OutputInitiatePasswordChangeSchema,
-  OutputRevertEmailChangeSchema,
-} from "../../api/src/schemas/user"
-
-import type {
-  InputGetCurrentSessionSchema,
-  InputGetSessionsSchema,
-  InputTerminateSessionSchema,
-  OutputGetCurrentSessionSchema,
-  OutputGetSessionsSchema,
-  OutputTerminateSessionSchema
-} from "../../api/src/schemas/session"
-
-
-import type {
-  InputCheckAccessSchema,
-  InputGetAccessesSchema,
-  InputGrantAccessSchema,
-  InputRevokeAccessSchema,
-  OutputCheckAccessSchema,
-  OutputGetAccessesSchema,
-  OutputGrantAccessSchema,
-  OutputRevokeAccessSchema
-} from "../../api/src/schemas/access"
+import type { AuthSchema } from "../../api/src/schemas/auth"
+import type { UserSchema } from "../../api/src/schemas/user"
+import type { SessionSchema } from "../../api/src/schemas/session"
+import type { AccessSchema } from "../../api/src/schemas/access"
 
 export interface ApiDetails {
   auth: {
-    path: "/api/auth/auth"
-    input: InputAuthSchema
-    output: OutputAuthSchema
+    input: AuthSchema.InputAuth
+    output: AuthSchema.OutputAuth
   }
   initiateSignup: {
-    path: "/api/auth/initiateSignup"
-    input: InputInitiateSignupSchema
-    output: OutputInitiateSignupSchema
+    input: AuthSchema.InputInitiateSignup
+    output: AuthSchema.OutputInitiateSignup
   }
   confirmSignup: {
-    path: "/api/auth/confirmSignup"
-    input: InputConfirmSignupSchema
-    output: OutputConfirmSignupSchema
+    input: AuthSchema.InputConfirmSignup
+    output: AuthSchema.OutputConfirmSignup
   }
   login: {
-    path: "/api/auth/login"
-    input: InputLoginSchema
-    output: OutputLoginSchema
+    input: AuthSchema.InputLogin
+    output: AuthSchema.OutputLogin
   }
   logout: {
-    path: "/api/auth/logout"
-    input: InputLogoutSchema
-    output: OutputLogoutSchema
+    input: AuthSchema.InputLogout
+    output: AuthSchema.OutputLogout
   }
 
   getUser: {
-    path: "/api/user/getUser"
-    input: InputGetUserSchema
-    output: OutputGetUserSchema
+    input: UserSchema.InputGetUser
+    output: UserSchema.OutputGetUser
   }
   changeUsername: {
-    path: "/api/user/changeUsername"
-    input: InputChangeUsernameSchema
-    output: OutputChangeUsernameSchema
+    input: UserSchema.InputChangeUsername
+    output: UserSchema.OutputChangeUsername
   }
   initiateEmailChange: {
-    path: "/api/user/initiateEmailChange",
-    input: InputInitiateEmailChangeSchema,
-    output: OutputInitiateEmailChangeSchema,
+    input: UserSchema.InputInitiateEmailChange
+    output: UserSchema.OutputInitiateEmailChange
   }
   confirmEmailChange: {
-    path: "/api/user/confirmEmailChange",
-    input: InputConfirmEmailChangeSchema,
-    output: OutputConfirmEmailChangeSchema,
+    input: UserSchema.InputConfirmEmailChange
+    output: UserSchema.OutputConfirmEmailChange
   }
   revertEmailChange: {
-    path: "/api/user/revertEmailChange",
-    input: InputRevertEmailChangeSchema,
-    output: OutputRevertEmailChangeSchema,
+    input: UserSchema.InputRevertEmailChange
+    output: UserSchema.OutputRevertEmailChange
   }
   initiatePasswordChange: {
-    path: "/api/user/initiatePasswordChange",
-    input: InputInitiatePasswordChangeSchema,
-    output: OutputInitiatePasswordChangeSchema,
+    input: UserSchema.InputInitiatePasswordChange
+    output: UserSchema.OutputInitiatePasswordChange
   }
   confirmPasswordChange: {
-    path: "/api/user/confirmPasswordChange",
-    input: InputConfirmPasswordChangeSchema,
-    output: OutputConfirmPasswordChangeSchema,
+    input: UserSchema.InputConfirmPasswordChange
+    output: UserSchema.OutputConfirmPasswordChange
   }
 
   getCurrentSession: {
-    path: "/api/session/getCurrentSession"
-    input: InputGetCurrentSessionSchema
-    output: OutputGetCurrentSessionSchema
+    input: SessionSchema.InputGetCurrentSession
+    output: SessionSchema.OutputGetCurrentSession
   }
   getSessions: {
-    path: "/api/session/getSessions"
-    input: InputGetSessionsSchema
-    output: OutputGetSessionsSchema
+    input: SessionSchema.InputGetSessions
+    output: SessionSchema.OutputGetSessions
   }
   terminateSession: {
-    path: "/api/session/terminateSession"
-    input: InputTerminateSessionSchema
-    output: OutputTerminateSessionSchema
+    input: SessionSchema.InputTerminateSession
+    output: SessionSchema.OutputTerminateSession
   }
 
   getAccesses: {
-    path: "/api/access/getAccesses",
-    input: InputGetAccessesSchema,
-    output: OutputGetAccessesSchema,
+    input: AccessSchema.InputGetAccesses
+    output: AccessSchema.OutputGetAccesses
   }
   checkAccess: {
-    path: "/api/access/checkAccess",
-    input: InputCheckAccessSchema,
-    output: OutputCheckAccessSchema,
+    input: AccessSchema.InputCheckAccess
+    output: AccessSchema.OutputCheckAccess
   }
   grantAccess: {
-    path: "/api/access/grantAccess",
-    input: InputGrantAccessSchema,
-    output: OutputGrantAccessSchema,
+    input: AccessSchema.InputGrantAccess
+    output: AccessSchema.OutputGrantAccess
   }
   revokeAccess: {
-    path: "/api/access/revokeAccess",
-    input: InputRevokeAccessSchema,
-    output: OutputRevokeAccessSchema,
+    input: AccessSchema.InputRevokeAccess
+    output: AccessSchema.OutputRevokeAccess
   }
 }

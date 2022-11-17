@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
+import { ISession } from "../../../shared/src/session";
 import { date } from "../lib/date";
 import pg from "../pg";
-import { getCurrentSessionSchema, getSessionsSchema, OutputGetCurrentSessionSchema, OutputGetSessionsSchema, OutputTerminateSessionSchema, terminateSessionSchema } from "../schemas/session";
-import { ISession } from "../../../shared/src/session";
+import { getCurrentSessionSchema, getSessionsSchema, SessionSchema, terminateSessionSchema } from "../schemas/session";
 import auth from "./auth";
 
-async function getCurrentSession(req: Request, res: Response<OutputGetCurrentSessionSchema>) {
+async function getCurrentSession(req: Request, res: Response<SessionSchema.OutputGetCurrentSession>) {
   const parsed = getCurrentSessionSchema.safeParse(req.body);
   if (!parsed.success) return void res.status(500).send();
 
@@ -20,7 +20,7 @@ async function getCurrentSession(req: Request, res: Response<OutputGetCurrentSes
   return void res.status(200).send(result);
 }
 
-async function getSessions(req: Request, res: Response<OutputGetSessionsSchema>) {
+async function getSessions(req: Request, res: Response<SessionSchema.OutputGetSessions>) {
   const parsed = getSessionsSchema.safeParse(req.body);
   if (!parsed.success) return void res.status(500).send();
 
@@ -40,7 +40,7 @@ async function getSessions(req: Request, res: Response<OutputGetSessionsSchema>)
   return void res.status(200).send(result);
 }
 
-async function terminateSession(req: Request, res: Response<OutputTerminateSessionSchema>) {
+async function terminateSession(req: Request, res: Response<SessionSchema.OutputTerminateSession>) {
   const parsed = terminateSessionSchema.safeParse(req.body);
   if (!parsed.success) return void res.status(500).send();
 

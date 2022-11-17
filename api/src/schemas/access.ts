@@ -1,25 +1,23 @@
 import { z } from "zod";
 
-export const getAccessesSchema = z.object({
+export const getAccessesSchema = z.object({}).strict();
 
-}).strict();
-export type InputGetAccessesSchema = z.infer<typeof getAccessesSchema>
-export type OutputGetAccessesSchema = {}
+export const checkAccessSchema = z.object({}).strict();
 
-export const checkAccessSchema = z.object({
+export const grantAccessSchema = z.object({}).strict();
 
-}).strict();
-export type InputCheckAccessSchema = z.infer<typeof checkAccessSchema>
-export type OutputCheckAccessSchema = {}
+export const revokeAccessSchema = z.object({}).strict();
 
-export const grantAccessSchema = z.object({
+export namespace AccessSchema {
+  export type InputGetAccesses = z.infer<typeof getAccessesSchema>
+  export type OutputGetAccesses = {}
 
-}).strict();
-export type InputGrantAccessSchema = z.infer<typeof grantAccessSchema>
-export type OutputGrantAccessSchema = {}
+  export type InputCheckAccess = z.infer<typeof checkAccessSchema>
+  export type OutputCheckAccess = {}
 
-export const revokeAccessSchema = z.object({
+  export type InputGrantAccess = z.infer<typeof grantAccessSchema>
+  export type OutputGrantAccess = {}
 
-}).strict();
-export type InputRevokeAccessSchema = z.infer<typeof revokeAccessSchema>
-export type OutputRevokeAccessSchema = {}
+  export type InputRevokeAccess = z.infer<typeof revokeAccessSchema>
+  export type OutputRevokeAccess = {}
+}

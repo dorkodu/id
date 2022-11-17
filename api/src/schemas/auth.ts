@@ -2,18 +2,12 @@ import { z } from "zod";
 
 import { sharedSchemas } from "./shared";
 
-export const authSchema = z.object({
-
-}).strict();
-export type InputAuthSchema = z.infer<typeof authSchema>
-export type OutputAuthSchema = {}
+export const authSchema = z.object({}).strict();
 
 export const initiateSignupSchema = z.object({
   username: sharedSchemas.username,
   email: sharedSchemas.email,
 }).strict();
-export type InputInitiateSignupSchema = z.infer<typeof initiateSignupSchema>
-export type OutputInitiateSignupSchema = {}
 
 export const confirmSignupSchema = z.object({
   username: sharedSchemas.username,
@@ -21,18 +15,27 @@ export const confirmSignupSchema = z.object({
   password: sharedSchemas.password,
   otp: z.string(),
 }).strict();
-export type InputConfirmSignupSchema = z.infer<typeof confirmSignupSchema>
-export type OutputConfirmSignupSchema = {}
 
 export const loginSchema = z.object({
   info: z.string(),
   password: sharedSchemas.password,
 }).strict();
-export type InputLoginSchema = z.infer<typeof loginSchema>
-export type OutputLoginSchema = {}
 
-export const logoutSchema = z.object({
+export const logoutSchema = z.object({}).strict();
 
-}).strict();
-export type InputLogoutSchema = z.infer<typeof logoutSchema>
-export type OutputLogoutSchema = {}
+export namespace AuthSchema {
+  export type InputAuth = z.infer<typeof authSchema>
+  export type OutputAuth = {}
+
+  export type InputInitiateSignup = z.infer<typeof initiateSignupSchema>
+  export type OutputInitiateSignup = {}
+
+  export type InputConfirmSignup = z.infer<typeof confirmSignupSchema>
+  export type OutputConfirmSignup = {}
+
+  export type InputLogin = z.infer<typeof loginSchema>
+  export type OutputLogin = {}
+
+  export type InputLogout = z.infer<typeof logoutSchema>
+  export type OutputLogout = {}
+}

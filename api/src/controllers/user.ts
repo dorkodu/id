@@ -1,9 +1,14 @@
 import { Request, Response } from "express";
 
-import pg from "../pg";
 import { IUser } from "../../../shared/src/user";
+import pg from "../pg";
 import auth from "./auth";
 
+import { EmailTypes } from "../../../shared/src/email_types";
+import { crypto } from "../lib/crypto";
+import { date } from "../lib/date";
+import { mailer } from "../lib/mailer";
+import { token } from "../lib/token";
 import {
   changeUsernameSchema,
   confirmEmailChangeSchema,
@@ -11,22 +16,11 @@ import {
   getUserSchema,
   initiateEmailChangeSchema,
   initiatePasswordChangeSchema,
-  OutputChangeUsernameSchema,
-  OutputConfirmEmailChangeSchema,
-  OutputConfirmPasswordChangeSchema,
-  OutputGetUserSchema,
-  OutputInitiateEmailChangeSchema,
-  OutputInitiatePasswordChangeSchema,
-  OutputRevertEmailChangeSchema,
-  revertEmailChangeSchema
+  revertEmailChangeSchema,
+  UserSchema
 } from "../schemas/user";
-import { token } from "../lib/token";
-import { crypto } from "../lib/crypto";
-import { date } from "../lib/date";
-import { mailer } from "../lib/mailer";
-import { EmailTypes } from "../../../shared/src/email_types";
 
-async function getUser(req: Request, res: Response<OutputGetUserSchema>) {
+async function getUser(req: Request, res: Response<UserSchema.OutputGetUser>) {
   const parsed = getUserSchema.safeParse(req.body);
   if (!parsed.success) return void res.status(500).send();
 
@@ -40,7 +34,7 @@ async function getUser(req: Request, res: Response<OutputGetUserSchema>) {
   return void res.status(200).send(result);
 }
 
-async function changeUsername(req: Request, res: Response<OutputChangeUsernameSchema>) {
+async function changeUsername(req: Request, res: Response<UserSchema.OutputChangeUsername>) {
   const parsed = changeUsernameSchema.safeParse(req.body);
   if (!parsed.success) return void res.status(500).send();
 
@@ -53,7 +47,7 @@ async function changeUsername(req: Request, res: Response<OutputChangeUsernameSc
   return void res.status(200).send({});
 }
 
-async function initiateEmailChange(req: Request, res: Response<OutputInitiateEmailChangeSchema>): Promise<void> {
+async function initiateEmailChange(req: Request, res: Response<UserSchema.OutputInitiateEmailChange>): Promise<void> {
   const parsed = initiateEmailChangeSchema.safeParse(req.body);
   if (!parsed.success) return void res.status(500).send();
 
@@ -97,7 +91,7 @@ async function initiateEmailChange(req: Request, res: Response<OutputInitiateEma
   res.status(200).send({});
 }
 
-async function confirmEmailChange(req: Request, res: Response<OutputConfirmEmailChangeSchema>): Promise<void> {
+async function confirmEmailChange(req: Request, res: Response<UserSchema.OutputConfirmEmailChange>): Promise<void> {
   const parsed = confirmEmailChangeSchema.safeParse(req.body);
   if (!parsed.success) return void res.status(500).send();
 
@@ -153,7 +147,7 @@ async function confirmEmailChange(req: Request, res: Response<OutputConfirmEmail
   res.status(200).send({});
 }
 
-async function revertEmailChange(req: Request, res: Response<OutputRevertEmailChangeSchema>): Promise<void> {
+async function revertEmailChange(req: Request, res: Response<UserSchema.OutputRevertEmailChange>): Promise<void> {
   const parsed = revertEmailChangeSchema.safeParse(req.body);
   if (!parsed.success) return void res.status(500).send();
 
@@ -189,7 +183,7 @@ async function revertEmailChange(req: Request, res: Response<OutputRevertEmailCh
   res.status(200).send({});
 }
 
-async function initiatePasswordChange(req: Request, res: Response<OutputInitiatePasswordChangeSchema>): Promise<void> {
+async function initiatePasswordChange(req: Request, res: Response<UserSchema.OutputInitiatePasswordChange>): Promise<void> {
   const parsed = initiatePasswordChangeSchema.safeParse(req.body);
   if (!parsed.success) return void res.status(500).send();
 
@@ -225,11 +219,11 @@ async function initiatePasswordChange(req: Request, res: Response<OutputInitiate
   row.sent_at = date.utc();
   row.expires_at = date.utc() + 60 * 60; // 1 hour
   await pg`INSERT INTO email_token ${pg(row)}`;
-  
+
   res.status(200).send({});
 }
 
-async function confirmPasswordChange(req: Request, res: Response<OutputConfirmPasswordChangeSchema>): Promise<void> {
+async function confirmPasswordChange(req: Request, res: Response<UserSchema.OutputConfirmPasswordChange>): Promise<void> {
   const parsed = confirmPasswordChangeSchema.safeParse(req.body);
   if (!parsed.success) return void res.status(500).send();
 

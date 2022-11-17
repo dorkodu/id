@@ -1,6 +1,6 @@
-import { ApiDetails } from "./api_details";
+import type { ApiDetails } from "./api_details";
 
-export type ApiRoutes = { [K in keyof ApiDetails]: ApiDetails[K]["path"] }
+export type ApiRoutes = { [K in keyof ApiDetails]: string }
 
 export const apiRoutes: ApiRoutes = {
   auth: "/api/auth/auth",
