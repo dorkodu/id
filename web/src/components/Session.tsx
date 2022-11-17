@@ -1,4 +1,5 @@
 import { ISession } from "@shared/session"
+import { date } from "../lib/date";
 import { useUserStore } from "../stores/userStore";
 
 interface Props {
@@ -12,12 +13,16 @@ function Session({ session }: Props) {
     queryTerminateSession(session.id);
   }
 
+  const getUserAgent = () => {
+    return session.userAgent.split(",").filter(value => value !== "").join(" | ");
+  }
+
   return (
     <div>
-      <div>created at: {new Date(session.createdAt * 1000).toString()}</div>
-      <div>expires at: {new Date(session.expiresAt * 1000).toString()}</div>
+      <div>created at: {date.unix(session.createdAt).format('lll')}</div>
+      <div>expires at: {date.unix(session.expiresAt).format('lll')}</div>
       <div>ip: {session.ip}</div>
-      <div>user agent: {session.userAgent}</div>
+      <div>user agent: {getUserAgent()}</div>
       <button onClick={terminate}>terminate</button>
     </div>
   )

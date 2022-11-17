@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Session from "../components/Session";
 import Spinner from "../components/Spinner";
+import { date } from "../lib/date";
 import { useUserStore } from "../stores/userStore"
 
 function Dashboard() {
@@ -33,16 +34,16 @@ function Dashboard() {
       <div>
         <div>username: {user?.username}</div>
         <div>email: {user?.email}</div>
-        <div>joined at: {user?.joinedAt}</div>
+        <div>joined at: {user && date.unix(user.joinedAt).format('lll')}</div>
       </div>
 
       <br />
 
       <div>
         <button onClick={() => { navigate("/change_username") }}>change username</button>
-      <br />
+        <br />
         <button onClick={() => { navigate("/change_email") }}>change email</button>
-      <br />
+        <br />
         <button onClick={() => { navigate("/change_password") }}>change password</button>
       </div>
 
