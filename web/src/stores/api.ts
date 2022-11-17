@@ -10,7 +10,9 @@ async function request<T extends keyof ApiRoutes>(route: T, data: ApiDetails[T][
 
   try {
     const res = await fetch(apiRoutes[route], options);
-    const out = { data: await res.json(), err: !res.ok };
+    const data = await res.json().catch(() => undefined)
+    const err = !res.ok;
+    const out = { data, err };
 
     console.log(out);
 
