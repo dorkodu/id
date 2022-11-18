@@ -9,9 +9,11 @@ import userRoutes from "./routes/user";
 import sessionRoutes from "./routes/session";
 
 import auth from "./controllers/auth";
+import keydb from "./keydb";
 
 async function main() {
   const app = express();
+  await keydb.connect();
 
   app.set("trust proxy", true);
   app.use(express.json());
