@@ -28,7 +28,7 @@ async function getUser(req: Request, res: Response<UserSchema.OutputGetUser>) {
   if (!info) return void res.status(500).send();
 
   const [result]: [IUser?] = await pg`
-    SELECT username, email, joined_at FROM users WHERE id=${info.userId}
+    SELECT id, username, email, joined_at FROM users WHERE id=${info.userId}
   `;
   if (!result) return void res.status(500).send();
   return void res.status(200).send(result);
