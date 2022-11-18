@@ -14,6 +14,7 @@ services:
     ports:
       - "8001:8001"
     restart: always
+
   oath_web:
     build:
       context: .
@@ -23,10 +24,11 @@ services:
     volumes:
       - ./web:/oath/web
       - ./shared:/oath/shared
-      -  /oath/web/node_modules
+      - /oath/web/node_modules
     ports:
       - "8000:8000"
     restart: always
+
   oath_postgres:
     image: postgres:14-alpine
     environment:
@@ -36,6 +38,13 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
     restart: always
+
+  oath_keydb:
+    image: eqalpha/keydb:x86_64_v6.3.1
+    volumes:
+      - ./keydb/keydb.conf:/etc/keydb/keydb.conf
+    restart: always
+
   oath_mailslurper:
     image: marcopas/docker-mailslurper
     volumes:
