@@ -5,7 +5,6 @@ import { apiRoutes } from "../../../shared/src/api_routes";
 const router = express.Router();
 
 router.post(apiRoutes.getAccesses, controller.getAccesses);
-router.post(apiRoutes.checkAccess, controller.checkAccess);
 router.post(apiRoutes.grantAccess, controller.grantAccess);
 router.post(apiRoutes.revokeAccess, controller.revokeAccess);
 

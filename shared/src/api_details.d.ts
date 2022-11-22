@@ -2,6 +2,7 @@ import type { AuthSchema } from "../../api/src/schemas/auth"
 import type { UserSchema } from "../../api/src/schemas/user"
 import type { SessionSchema } from "../../api/src/schemas/session"
 import type { AccessSchema } from "../../api/src/schemas/access"
+import type { ExternalSchema } from "../../api/src/schemas/external"
 
 export interface ApiDetails {
   auth: {
@@ -71,10 +72,6 @@ export interface ApiDetails {
     input: AccessSchema.InputGetAccesses
     output: AccessSchema.OutputGetAccesses
   }
-  checkAccess: {
-    input: AccessSchema.InputCheckAccess
-    output: AccessSchema.OutputCheckAccess
-  }
   grantAccess: {
     input: AccessSchema.InputGrantAccess
     output: AccessSchema.OutputGrantAccess
@@ -83,8 +80,13 @@ export interface ApiDetails {
     input: AccessSchema.InputRevokeAccess
     output: AccessSchema.OutputRevokeAccess
   }
+
+  checkAccess: {
+    input: ExternalSchema.InputCheckAccess
+    output: ExternalSchema.OutputCheckAccess
+  }
   getUserData: {
-    input: AccessSchema.InputGetUserData
-    output: AccessSchema.OutputGetUserData
+    input: ExternalSchema.InputGetUserData
+    output: ExternalSchema.OutputGetUserData
   }
 }

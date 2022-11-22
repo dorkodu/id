@@ -22,8 +22,9 @@ export const apiRoutes: ApiRoutes = {
   terminateSession: "/api/session/terminateSession",
 
   getAccesses: "/api/access/getAccesses",
-  checkAccess: "/api/access/checkAccess",
   grantAccess: "/api/access/grantAccess",
   revokeAccess: "/api/access/revokeAccess",
-  getUserData: "/api/access/getUserData",
+
+  checkAccess: "/api/external/checkAccess",
+  getUserData: "/api/external/getUserData",
 }

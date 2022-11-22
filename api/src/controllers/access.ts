@@ -1,38 +1,65 @@
 import { Request, Response } from "express";
 
 import {
-  AccessSchema, checkAccessSchema, getAccessesSchema, getUserDataSchema, grantAccessSchema,
+  AccessSchema, getAccessesSchema, grantAccessSchema,
   revokeAccessSchema
 } from "../schemas/access";
 
-async function getAccesses(req: Request, res: Response<AccessSchema.OutputGetAccesses>) {
+async function getAccesses(req: Request, res: Response<AccessSchema.OutputGetAccesses>): Promise<void> {
   const parsed = getAccessesSchema.safeParse(req.body);
   if (!parsed.success) return void res.status(500).send();
-  return void res.status(200).send();
+
+  res.status(200).send();
 }
 
-async function checkAccess(req: Request, res: Response<AccessSchema.OutputCheckAccess>) {
-  const parsed = checkAccessSchema.safeParse(req.body);
-  if (!parsed.success) return void res.status(500).send();
-  return void res.status(200).send();
-}
-
-async function grantAccess(req: Request, res: Response<AccessSchema.OutputGrantAccess>) {
+async function grantAccess(req: Request, res: Response<AccessSchema.OutputGrantAccess>): Promise<void> {
   const parsed = grantAccessSchema.safeParse(req.body);
   if (!parsed.success) return void res.status(500).send();
-  return void res.status(200).send();
+
+  res.status(200).send();
 }
 
-async function revokeAccess(req: Request, res: Response<AccessSchema.OutputRevokeAccess>) {
+async function revokeAccess(req: Request, res: Response<AccessSchema.OutputRevokeAccess>): Promise<void> {
   const parsed = revokeAccessSchema.safeParse(req.body);
   if (!parsed.success) return void res.status(500).send();
-  return void res.status(200).send();
+
+  res.status(200).send();
 }
 
-async function getUser(req: Request, res: Response<AccessSchema.OutputGetUserData>) {
-  const parsed = getUserDataSchema.safeParse(req.body);
-  if (!parsed.success) return void res.status(500).send();
-  return void res.status(200).send();
+
+async function queryCreateAccessToken() {
+
 }
 
-export default { getAccesses, checkAccess, grantAccess, revokeAccess, getUser }
+async function queryExpireAccessToken() {
+
+}
+
+async function queryCheckAccessToken() {
+
+}
+
+async function queryCreateAccessCode() {
+
+}
+
+async function queryExpireAccessCode() {
+
+}
+
+async function queryCheckAccessCode() {
+
+}
+
+export default {
+  getAccesses,
+  grantAccess,
+  revokeAccess,
+
+  queryCreateAccessToken,
+  queryExpireAccessToken,
+  queryCheckAccessToken,
+  queryCreateAccessCode,
+  queryExpireAccessCode,
+  queryCheckAccessCode,
+}
