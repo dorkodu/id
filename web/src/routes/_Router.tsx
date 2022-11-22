@@ -4,6 +4,7 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import App from "../App";
 import RequireAuth from "../components/RequireAuth";
 import { EmailTypes } from "@shared/email_types";
+import Access from "./Access";
 
 const Welcome = React.lazy(() => import("./Welcome"));
 const Login = React.lazy(() => import("./Login"));
@@ -36,6 +37,7 @@ function Router() {
 
           {/* Routes that require authentication */}
           <Route element={<RequireAuth />}>
+            <Route path="/access" element={<Access />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/change_username" element={<ChangeUsername />} />
             <Route path="/change_email" element={<ChangeEmail />} />

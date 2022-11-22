@@ -3,13 +3,15 @@ import type { IAccess } from "../../../shared/src/access"
 
 export const getAccessesSchema = z.object({
   anchor: z.number(),
-  type: z.enum(["newer", "older"])
+  type: z.enum(["newer", "older"]),
 }).strict();
 
-export const grantAccessSchema = z.object({}).strict();
+export const grantAccessSchema = z.object({
+  service: z.string(),
+}).strict();
 
 export const revokeAccessSchema = z.object({
-  accessId: z.number()
+  accessId: z.number(),
 }).strict();
 
 
