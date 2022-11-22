@@ -29,6 +29,11 @@ function Dashboard() {
     await queryLogout() && navigate("/welcome");
   }
 
+  const getSessions = async (type: "older" | "newer", refresh?: boolean) => {
+    if (!user) return;
+    await queryGetSessions(type, refresh);
+  }
+
   return (
     <>
       <div>
@@ -61,6 +66,9 @@ function Dashboard() {
 
       <div>
         <div>all sessions:</div>
+        <button onClick={() => { getSessions("older") }}>load older</button>
+        <button onClick={() => { getSessions("newer") }}>load newer</button>
+        <button onClick={() => { getSessions("newer", true) }}>refresh</button>
         {
           sessions.map(session => <Session session={session} key={session.id} />)
         }
