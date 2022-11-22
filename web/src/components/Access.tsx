@@ -1,10 +1,10 @@
-import { ISession } from "@shared/session"
+import type { IAccess } from "@shared/access";
 import { date } from "../lib/date";
 import { util } from "../lib/util";
 import { useUserStore } from "../stores/userStore";
 
 interface Props {
-  session: ISession;
+  session: IAccess;
 }
 
 function Session({ session }: Props) {
@@ -20,6 +20,7 @@ function Session({ session }: Props) {
       <div>expires at: {date.unix(session.expiresAt).format('lll')}</div>
       <div>ip: {session.ip}</div>
       <div>user agent: {util.parseUserAgent(session.userAgent)}</div>
+      <div>service: {session.service}</div>
       <button onClick={terminate}>terminate</button>
     </div>
   )
