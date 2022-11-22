@@ -81,6 +81,10 @@ export interface ApiDetails {
     output: AccessSchema.OutputRevokeAccess
   }
 
+  getAccessToken: {
+    input: ExternalSchema.InputGetAccessToken
+    output: ExternalSchema.OutputGetAccessToken
+  }
   checkAccess: {
     input: ExternalSchema.InputCheckAccess
     output: ExternalSchema.OutputCheckAccess

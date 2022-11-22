@@ -25,6 +25,7 @@ export const apiRoutes: ApiRoutes = {
   grantAccess: "/api/access/grantAccess",
   revokeAccess: "/api/access/revokeAccess",
 
+  getAccessToken: "/api/external/getAccessToken",
   checkAccess: "/api/external/checkAccess",
   getUserData: "/api/external/getUserData",
 }

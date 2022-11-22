@@ -2,21 +2,22 @@ import { z } from "zod";
 import { IUser } from "../../../shared/src/user";
 import { sharedSchemas } from "./shared";
 
-/**
- * Used by the services that use Dorkodu ID as authentication.
- */
+export const getAccessTokenSchema = z.object({
+  code: z.string(),
+}).strict();
+
 export const checkAccessSchema = z.object({
   token: sharedSchemas.token
 }).strict();
 
-/**
- * Used by the services that use Dorkodu ID as authentication.
- */
 export const getUserDataSchema = z.object({
   token: sharedSchemas.token
 }).strict();
 
 export namespace ExternalSchema {
+  export type InputGetAccessToken = z.infer<typeof getAccessTokenSchema>
+  export type OutputGetAccessToken = { userId: number }
+
   export type InputCheckAccess = z.infer<typeof checkAccessSchema>
   export type OutputCheckAccess = { userId: number }
 
