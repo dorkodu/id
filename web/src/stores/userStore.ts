@@ -5,19 +5,27 @@ import { IUser } from "@shared/user";
 import { array } from "../lib/array";
 import api from "./api";
 import { useAppStore } from "./appStore";
+import { IAccess } from "@shared/access";
 
 interface State {
   authorized: boolean;
   user: IUser | undefined;
+
   currentSession: ISession | undefined;
   session: {
     ids: number[],
     entities: { [key: number | string]: ISession }
   };
+
+  access: {
+    ids: number[],
+    entities: { [key: number | string]: IAccess }
+  }
 }
 
 interface Action {
   getSessions: () => ISession[];
+  getAccesses: () => IAccess[];
 
   queryAuth: () => Promise<boolean>;
   queryInitiateSignup: (username: string, email: string) => Promise<boolean>;
@@ -36,6 +44,10 @@ interface Action {
   queryGetCurrentSession: () => Promise<void>;
   queryGetSessions: (type: "newer" | "older", refresh?: boolean) => Promise<void>;
   queryTerminateSession: (sessionId: number) => Promise<void>;
+
+  queryGetAccesses: (type: "newer" | "older", refresh?: boolean) => Promise<void>;
+  queryGrantAccess: () => Promise<void>;
+  queryRevokeAccess: (accessId: number) => Promise<void>;
 }
 
 const initialState: State = {
@@ -43,6 +55,7 @@ const initialState: State = {
   user: undefined,
   currentSession: undefined,
   session: { ids: [], entities: {} },
+  access: { ids: [], entities: {} },
 }
 
 export const useUserStore = create(immer<State & Action>((set, get) => ({
@@ -60,6 +73,19 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
     })
 
     return sessions;
+  },
+
+  getAccesses: () => {
+    const ids = get().access.ids;
+    const entities = get().access.entities;
+    const accesss: IAccess[] = [];
+
+    ids.forEach(id => {
+      const access = entities[id];
+      if (access) accesss.push(access);
+    })
+
+    return accesss;
   },
 
   queryAuth: async () => {
@@ -181,5 +207,17 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
 
     if (get().currentSession?.id === sessionId)
       set(initialState);
+  },
+
+  queryGetAccesses: async (type, refresh) => {
+
+  },
+
+  queryGrantAccess: async () => {
+
+  },
+
+  queryRevokeAccess: async (accessId) => {
+
   },
 })))
