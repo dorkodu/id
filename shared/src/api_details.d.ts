@@ -83,4 +83,8 @@ export interface ApiDetails {
     input: AccessSchema.InputRevokeAccess
     output: AccessSchema.OutputRevokeAccess
   }
+  getUserData: {
+    input: AccessSchema.InputGetUserData
+    output: AccessSchema.OutputGetUserData
+  }
 }

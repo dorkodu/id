@@ -82,20 +82,16 @@ async function terminateSession(sessionId: number) {
   return await request("terminateSession", { sessionId });
 }
 
-async function getAccesses() {
-  return await request("getAccesses", {});
-}
-
-async function checkAccess() {
-  return await request("checkAccess", {});
+async function getAccesses(anchor: number, type: "newer" | "older") {
+  return await request("getAccesses", { anchor, type });
 }
 
 async function grantAccess() {
   return await request("grantAccess", {});
 }
 
-async function revokeAccess() {
-  return await request("revokeAccess", {});
+async function revokeAccess(accessId: number) {
+  return await request("revokeAccess", { accessId });
 }
 
 export default {
@@ -118,7 +114,6 @@ export default {
   terminateSession,
 
   getAccesses,
-  checkAccess,
   grantAccess,
   revokeAccess,
 }
