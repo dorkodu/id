@@ -30,6 +30,7 @@ function Router() {
           <Route path="/welcome" element={<Welcome />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/access" element={<Access />} />
           <Route path="/change_password" element={<ChangePassword />} />
           <Route path={`/${EmailTypes.ConfirmEmailChange}`} element={<ConfirmChangeEmail />} />
           <Route path={`/${EmailTypes.RevertEmailChange}`} element={<RevertChangeEmail />} />
@@ -37,7 +38,6 @@ function Router() {
 
           {/* Routes that require authentication */}
           <Route element={<RequireAuth />}>
-            <Route path="/access" element={<Access />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/change_username" element={<ChangeUsername />} />
             <Route path="/change_email" element={<ChangeEmail />} />
