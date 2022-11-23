@@ -86,8 +86,8 @@ async function getAccesses(anchor: number, type: "newer" | "older") {
   return await request("getAccesses", { anchor, type });
 }
 
-async function grantAccess() {
-  return await request("grantAccess", {});
+async function grantAccess(service: string) {
+  return await request("grantAccess", { service });
 }
 
 async function revokeAccess(accessId: number) {

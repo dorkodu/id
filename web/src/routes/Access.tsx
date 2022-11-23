@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { useUserStore } from "../stores/userStore";
 
 function Access() {
+  const [status, setStatus] = useState({ done: false, error: false });
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const location = useLocation();
@@ -24,7 +26,9 @@ function Access() {
   }
 
   const accept = async () => {
-
+    if (!service) return;
+    const success = await queryGrantAccess(service);
+    setStatus({ done: true, error: !success });
   }
 
   const reject = async () => {
@@ -60,6 +64,8 @@ function Access() {
       <br />
       <button onClick={accept}>accept</button>
       <button onClick={reject}>reject</button>
+      <br />
+      {status.done && status.error && <>an error occured. please try again.</>}
     </>
   )
 }

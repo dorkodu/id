@@ -46,7 +46,7 @@ interface Action {
   queryTerminateSession: (sessionId: number) => Promise<void>;
 
   queryGetAccesses: (type: "newer" | "older", refresh?: boolean) => Promise<void>;
-  queryGrantAccess: () => Promise<boolean>;
+  queryGrantAccess: (service: string) => Promise<boolean>;
   queryRevokeAccess: (accessId: number) => Promise<void>;
 }
 
@@ -221,8 +221,8 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
     })
   },
 
-  queryGrantAccess: async () => {
-    const { data, err } = await api.grantAccess();
+  queryGrantAccess: async (service: string) => {
+    const { data, err } = await api.grantAccess(service);
     if (err || !data) return false;
     return true;
   },
