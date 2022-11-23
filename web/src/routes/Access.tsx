@@ -62,6 +62,8 @@ function Access() {
       <br />
       wants to use your dorkodu id account for authentication
       <br />
+      your user id, username, email, and join date will be shared
+      <br />
       <button onClick={accept}>accept</button>
       <button onClick={reject}>reject</button>
       <br />
