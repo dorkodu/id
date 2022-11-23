@@ -1,9 +1,10 @@
 import { useLayoutEffect, useRef, useState } from "react"
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useUserStore } from "../stores/userStore";
 
 function Signup() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const queryInitiateSignup = useUserStore(state => state.queryInitiateSignup);
   const queryConfirmSignup = useUserStore(state => state.queryConfirmSignup);
 
@@ -36,7 +37,10 @@ function Signup() {
     const otp = signupOTP.current?.value;
     if (!username || !email || !password || !otp) return;
     if (!await queryConfirmSignup(username, email, password, otp)) return;
-    navigate("/dashboard");
+
+    const redirect = searchParams.get("redirect");
+    if (!redirect) navigate("/dashboard");
+    else navigate(redirect);
   }
 
   return (
