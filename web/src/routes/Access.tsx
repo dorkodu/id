@@ -29,6 +29,7 @@ function Access() {
     if (!service) return;
     const success = await queryGrantAccess(service);
     setStatus({ done: true, error: !success });
+    document.location.href = `http://${service}`;
   }
 
   const reject = async () => {

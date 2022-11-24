@@ -7,7 +7,7 @@ export const getAccessesSchema = z.object({
 }).strict();
 
 export const grantAccessSchema = z.object({
-  service: z.string(),
+  service: z.string().max(128),
 }).strict();
 
 export const revokeAccessSchema = z.object({
@@ -20,7 +20,7 @@ export namespace AccessSchema {
   export type OutputGetAccesses = IAccess[]
 
   export type InputGrantAccess = z.infer<typeof grantAccessSchema>
-  export type OutputGrantAccess = {}
+  export type OutputGrantAccess = { code: string }
 
   export type InputRevokeAccess = z.infer<typeof revokeAccessSchema>
   export type OutputRevokeAccess = {}

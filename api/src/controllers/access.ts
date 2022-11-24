@@ -1,6 +1,9 @@
 import { Request, Response } from "express";
 import { IAccess } from "../../../shared/src/access";
+import { crypto } from "../lib/crypto";
 import { date } from "../lib/date";
+import { token } from "../lib/token";
+import { userAgent } from "../lib/user_agent";
 import pg from "../pg";
 
 import {
@@ -33,14 +36,23 @@ async function grantAccess(req: Request, res: Response<AccessSchema.OutputGrantA
   const parsed = grantAccessSchema.safeParse(req.body);
   if (!parsed.success) return void res.status(500).send();
 
-  res.status(200).send();
+  const info = auth.getAuthInfo(res);
+  if (!info) return void res.status(500).send();
+
+  const code = await queryCreateAccessCode(req, info.userId, parsed.data.service);
+  if (!code) return void res.status(500).send();
+
+  res.status(200).send({ code });
 }
 
 async function revokeAccess(req: Request, res: Response<AccessSchema.OutputRevokeAccess>): Promise<void> {
   const parsed = revokeAccessSchema.safeParse(req.body);
   if (!parsed.success) return void res.status(500).send();
 
-  res.status(200).send();
+  const info = auth.getAuthInfo(res);
+  if (!info) return void res.status(500).send();
+
+  res.status(200).send({});
 }
 
 
@@ -56,8 +68,24 @@ async function queryCheckAccessToken() {
 
 }
 
-async function queryCreateAccessCode() {
+async function queryCreateAccessCode(req: Request, userId: number, service: string): Promise<string | undefined> {
+  const tkn = token.create();
 
+  const row = {
+    user_id: userId,
+    selector: tkn.selector,
+    validator: crypto.sha256(tkn.validator),
+    created_at: tkn.createdAt,
+    expires_at: tkn.createdAt + 60,
+    user_agent: userAgent.parse(req.headers["user-agent"]),
+    ip: req.ip,
+    service: service,
+  }
+
+  const result = await pg`INSERT INTO sessions ${pg(row)}`;
+  if (!result.count) return undefined;
+
+  return tkn.full;
 }
 
 async function queryExpireAccessCode() {
