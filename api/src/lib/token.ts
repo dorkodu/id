@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { config } from "../config";
 import { crypto } from "./crypto";
 import { date } from "./date";
 import { encoding } from "./encoding";
@@ -29,7 +30,7 @@ function compare(raw: Buffer, encrypted: Buffer) {
 
 function attach(res: Response, token: { value: string, expiresAt: number }) {
   res.cookie("token", token.value, {
-    secure: true,
+    secure: config.env === "production",
     httpOnly: true,
     sameSite: true,
     expires: new Date(token.expiresAt * 1000),

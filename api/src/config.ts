@@ -18,6 +18,7 @@ const smtpPassword = process.env.SMTP_PASSWORD || "";;
 const bcryptRounds = (process.env.BCRYPT_ROUNDS && parseInt(process.env.BCRYPT_ROUNDS)) || 10;
 
 const port = 8001;
+const env = process.env.NODE_ENV || "development";
 
 export const config = {
   postgresHost,
@@ -34,4 +35,5 @@ export const config = {
   bcryptRounds,
 
   port,
+  env,
 }

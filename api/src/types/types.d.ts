@@ -7,9 +7,15 @@ declare global {
       PG_USER?: string;
       PG_PASSWORD?: string;
 
+      SMTP_HOST?: string;
+      SMTP_PORT?: string;
+      SMTP_USER?: string;
+      SMTP_PASSWORD?: string;
+
       BCRYPT_ROUNDS?: string;
 
       PORT?: string;
+      NODE_ENV?: string;
     }
   }
 }
