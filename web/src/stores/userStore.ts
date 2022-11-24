@@ -188,7 +188,7 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
 
     set(state => {
       if (refresh) state.session = { ids: [], entities: {} };
-      state.session.ids = array.sort([...data.map(session => session.id)]);
+      state.session.ids = array.sort([...data.map(session => session.id), ...state.session.ids]);
       data.forEach(session => void (state.session.entities[session.id] = session))
     })
   },
@@ -216,7 +216,7 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
 
     set(state => {
       if (refresh) state.access = { ids: [], entities: {} };
-      state.access.ids = array.sort([...data.map(access => access.id)]);
+      state.access.ids = array.sort([...data.map(access => access.id), ...state.access.ids]);
       data.forEach(access => void (state.access.entities[access.id] = access))
     })
   },
