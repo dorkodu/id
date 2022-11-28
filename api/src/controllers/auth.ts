@@ -196,7 +196,7 @@ async function queryExpireToken(res: Response, tokenId: number, userId: number) 
   token.detach(res);
 }
 
-export function getAuthInfo(res: Response): undefined | { tokenId: number, userId: number } {
+function getAuthInfo(res: Response): undefined | { tokenId: number, userId: number } {
   if (res.locals.tokenId === undefined || res.locals.userId === undefined) return undefined;
   return { tokenId: res.locals.tokenId, userId: res.locals.userId };
 }

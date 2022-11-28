@@ -9,7 +9,7 @@ function create() {
   const validator = crypto.bytes(32);
   const full = `${encoding.fromBinary(selector, "base64url")}:${encoding.fromBinary(validator, "base64url")}`;
   const createdAt = date.utc();
-  const expiresAt = date.utc() + 60 * 60 * 24 * 30;
+  const expiresAt = date.utc() + 60 * 60 * 24 * 30; // 30 days
 
   return { selector, validator, full, createdAt, expiresAt };
 }

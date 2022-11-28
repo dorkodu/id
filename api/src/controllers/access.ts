@@ -52,20 +52,51 @@ async function revokeAccess(req: Request, res: Response<AccessSchema.OutputRevok
   const info = auth.getAuthInfo(res);
   if (!info) return void res.status(500).send();
 
+  await queryExpireAccessToken(parsed.data.accessId, info.userId);
+
   res.status(200).send({});
 }
 
+async function queryCreateAccessToken(userId: number, userAgent: string, ip: string, service: string) {
+  const tkn = token.create();
 
-async function queryCreateAccessToken() {
+  const row = {
+    user_id: userId,
+    selector: tkn.selector,
+    validator: crypto.sha256(tkn.validator),
+    created_at: tkn.createdAt,
+    expires_at: tkn.expiresAt,
+    user_agent: userAgent,
+    ip: ip,
+    service: service,
+  }
 
+  const result = await pg`INSERT INTO access_tokens ${pg(row)}`;
+  if (!result.count) return undefined;
+
+  return tkn.full;
 }
 
-async function queryExpireAccessToken() {
-
+async function queryExpireAccessToken(tokenId: number, userId: number) {
+  await pg`UPDATE access_tokens SET expires_at=${date.old()} WHERE id=${tokenId} AND user_id=${userId}`
 }
 
-async function queryCheckAccessToken() {
+async function queryGetAccessToken(tkn: string) {
+  const rawToken = tkn;
+  const parsedToken = token.parse(rawToken);
+  if (!parsedToken) return undefined;
 
+  const [result]: [{
+    id: number,
+    userId: number,
+    validator: Buffer,
+    expiresAt: number
+  }?] = await pg`
+    SELECT id, user_id, validator, expires_at FROM access_codes 
+    WHERE selector=${parsedToken.selector}
+  `
+
+  return result;
 }
 
 async function queryCreateAccessCode(req: Request, userId: number, service: string): Promise<string | undefined> {
@@ -76,24 +107,41 @@ async function queryCreateAccessCode(req: Request, userId: number, service: stri
     selector: tkn.selector,
     validator: crypto.sha256(tkn.validator),
     created_at: tkn.createdAt,
-    expires_at: tkn.createdAt + 60,
+    expires_at: tkn.createdAt + 60 * 10, // 10 minutes
     user_agent: userAgent.parse(req.headers["user-agent"]),
     ip: req.ip,
     service: service,
   }
 
-  const result = await pg`INSERT INTO sessions ${pg(row)}`;
+  const result = await pg`INSERT INTO access_codes ${pg(row)}`;
   if (!result.count) return undefined;
 
   return tkn.full;
 }
 
-async function queryExpireAccessCode() {
-
+async function queryExpireAccessCode(codeId: number, userId: number) {
+  await pg`UPDATE access_codes SET expires_at=${date.old()} WHERE id=${codeId} AND user_id=${userId}`
 }
 
-async function queryCheckAccessCode() {
+async function queryGetAccessCode(code: string) {
+  const rawToken = code;
+  const parsedToken = token.parse(rawToken);
+  if (!parsedToken) return undefined;
 
+  const [result]: [{
+    id: number,
+    userId: number,
+    validator: Buffer,
+    expiresAt: number,
+    userAgent: string,
+    ip: string,
+    service: string
+  }?] = await pg`
+    SELECT id, user_id, validator, expires_at, user_agent, ip, service FROM access_codes 
+    WHERE selector=${parsedToken.selector}
+  `
+
+  return result;
 }
 
 export default {
@@ -103,8 +151,8 @@ export default {
 
   queryCreateAccessToken,
   queryExpireAccessToken,
-  queryCheckAccessToken,
+  queryGetAccessToken,
   queryCreateAccessCode,
   queryExpireAccessCode,
-  queryCheckAccessCode,
+  queryGetAccessCode,
 }

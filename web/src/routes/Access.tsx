@@ -27,24 +27,14 @@ function Access() {
 
   const accept = async () => {
     if (!service) return;
-    const success = await queryGrantAccess(service);
-    setStatus({ done: true, error: !success });
-    document.location.href = `http://${service}`;
+    const code = await queryGrantAccess(service);
+    setStatus({ done: true, error: !code });
+    if (code) document.location.href = `http://${service}/dorkodu-id?code=${code}`;
   }
 
   const reject = async () => {
     navigate("/dashboard");
   }
-
-  if (!service) return (
-    (
-      <>
-        error: service is not specified
-        <br />
-        <button onClick={gotoDashboard}>goto dashboard</button>
-      </>
-    )
-  )
 
   if (!authorized) return (
     (
@@ -53,6 +43,16 @@ function Access() {
         <br />
         <button onClick={gotoLogin}>login</button>
         <button onClick={gotoSignup}>signup</button>
+      </>
+    )
+  )
+
+  if (!service) return (
+    (
+      <>
+        error: service is not specified
+        <br />
+        <button onClick={gotoDashboard}>goto dashboard</button>
       </>
     )
   )
