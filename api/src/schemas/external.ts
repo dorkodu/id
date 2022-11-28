@@ -16,7 +16,7 @@ export const getUserDataSchema = z.object({
 
 export namespace ExternalSchema {
   export type InputGetAccessToken = z.infer<typeof getAccessTokenSchema>
-  export type OutputGetAccessToken = { userId: number }
+  export type OutputGetAccessToken = { token: string }
 
   export type InputCheckAccess = z.infer<typeof checkAccessSchema>
   export type OutputCheckAccess = { userId: number }
