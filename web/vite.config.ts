@@ -37,7 +37,7 @@ export default defineConfig({
     port: 8000,
     strictPort: true,
     proxy: {
-      "/api": "http://oath_api:8001"
+      "/api": "http://id_api:8001"
     }
   },
   resolve: {

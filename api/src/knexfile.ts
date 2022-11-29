@@ -4,9 +4,9 @@ const config: { [key: string]: Knex.Config } = {
   development: {
     client: "postgresql",
     connection: {
-      host: "oath_postgres",
+      host: "id_postgres",
       port: 5432,
-      database: "oath",
+      database: "id",
       user: "postgres",
       password: "postgres",
     },
@@ -22,7 +22,7 @@ const config: { [key: string]: Knex.Config } = {
   test: {
     client: "postgresql",
     connection: {
-      host: "oath_postgres",
+      host: "id_postgres",
       port: 5432,
       database: "test",
       user: "postgres",

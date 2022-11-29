@@ -1,51 +1,51 @@
 version: '3.8'
 
 services:
-  oath_api:
+  id_api:
     build:
       context: .
       dockerfile: ./api/Dockerfile.dev
     environment:
       - NODE_ENV=development
     volumes:
-      - ./api:/oath/api
-      - ./shared:/oath/shared
-      - /oath/api/node_modules
+      - ./api:/id/api
+      - ./shared:/id/shared
+      - /id/api/node_modules
     ports:
       - "8001:8001"
     restart: always
 
-  oath_web:
+  id_web:
     build:
       context: .
       dockerfile: ./web/Dockerfile.dev
     environment:
       - NODE_ENV=development
     volumes:
-      - ./web:/oath/web
-      - ./shared:/oath/shared
-      - /oath/web/node_modules
+      - ./web:/id/web
+      - ./shared:/id/shared
+      - /id/web/node_modules
     ports:
       - "8000:8000"
     restart: always
 
-  oath_postgres:
+  id_postgres:
     image: postgres:14-alpine
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=oath
+      - POSTGRES_DB=id
     volumes:
       - pgdata:/var/lib/postgresql/data
     restart: always
 
-  oath_keydb:
+  id_keydb:
     image: eqalpha/keydb:x86_64_v6.3.1
     volumes:
       - ./keydb/keydb.conf:/etc/keydb/keydb.conf
     restart: always
 
-  oath_mailslurper:
+  id_mailslurper:
     image: marcopas/docker-mailslurper
     volumes:
       - ./mailslurper/config.json:/opt/mailslurper/config.json

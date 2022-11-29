@@ -15,7 +15,7 @@ const transporter = nodemailer.createTransport({
 function sendNewLocation(email: string, ip: string, userAgent: string): Promise<boolean> {
   return new Promise((resolve) => {
     transporter.sendMail({
-      from: '"Oath" <oath@dorkodu.com>',
+      from: '"ID" <id@dorkodu.com>',
       to: email,
       subject: "New Location",
       text: `${ip} ${userAgent}`,
@@ -30,7 +30,7 @@ function sendNewLocation(email: string, ip: string, userAgent: string): Promise<
 function sendConfirmEmail(email: string, otp: number) {
   return new Promise((resolve) => {
     transporter.sendMail({
-      from: '"Oath" <oath@dorkodu.com>',
+      from: '"ID" <id@dorkodu.com>',
       to: email,
       subject: "Confirm Email",
       text: `${otp}`,
@@ -47,7 +47,7 @@ function sendConfirmEmailChange(email: string, token: string): Promise<boolean> 
 
   return new Promise((resolve) => {
     transporter.sendMail({
-      from: '"Oath" <oath@dorkodu.com>',
+      from: '"ID" <id@dorkodu.com>',
       to: email,
       subject: "Confirm Email Change",
       text: `${link}`,
@@ -64,7 +64,7 @@ function sendRevertEmailChange(email: string, token: string): Promise<boolean> {
 
   return new Promise((resolve) => {
     transporter.sendMail({
-      from: '"Oath" <oath@dorkodu.com>',
+      from: '"ID" <id@dorkodu.com>',
       to: email,
       subject: "Revert Email Change",
       text: `${link}`,
@@ -81,7 +81,7 @@ function sendConfirmPasswordChange(email: string, token: string) {
 
   return new Promise((resolve) => {
     transporter.sendMail({
-      from: '"Oath" <oath@dorkodu.com>',
+      from: '"ID" <id@dorkodu.com>',
       to: email,
       subject: "Confirm Password Change",
       text: `${link}`,
