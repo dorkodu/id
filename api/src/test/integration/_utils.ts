@@ -6,12 +6,12 @@ import { expect } from "vitest"
 import { ApiDetails } from "../../../../shared/src/api_details"
 
 async function resetDatabase() {
-  await pg.begin(pg => [
-    pg`TRUNCATE TABLE users`,
-    pg`TRUNCATE TABLE sessions`,
-    pg`TRUNCATE TABLE email_token`,
-    pg`TRUNCATE TABLE email_otp`,
-  ])
+  await pg`
+    TRUNCATE TABLE
+    users, sessions,
+    email_verify_email, email_confirm_email, email_revert_email, email_change_password,
+    access_tokens, access_codes
+  `;
 }
 
 async function request<T extends keyof ApiRoutes>(route: T, data?: ApiDetails[T]["input"], cookies?: any): Promise<AxiosResponse> {
@@ -38,7 +38,7 @@ async function signup(username: string, email: string, password: string) {
   await initiateSignup(username, email);
 
   const [result0]: [{ otp: number }?] = await pg`
-    SELECT otp FROM email_otp WHERE username=${username} AND email=${email}
+    SELECT otp FROM email_verify_email WHERE username=${username} AND email=${email}
   `;
   if (!result0) throw "Initiate signup error.";
 

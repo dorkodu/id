@@ -88,7 +88,7 @@ describe("auth", () => {
     expect(res0.status).toBe(500);
 
     await pg`
-      UPDATE email_otp SET expires_at=${date.utc()} 
+      UPDATE email_verify_email SET expires_at=${date.utc()} 
       WHERE username=${username} AND email=${email}
     `;
 
@@ -104,7 +104,7 @@ describe("auth", () => {
     expect(res0.status).toBe(500);
 
     await pg`
-      UPDATE email_otp SET tries_left=0 
+      UPDATE email_verify_email SET tries_left=0 
       WHERE username=${username} AND email=${email}
     `;
 
