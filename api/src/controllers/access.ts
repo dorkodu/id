@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { IAccess } from "../../../shared/src/access";
+import { config } from "../config";
 import { crypto } from "../lib/crypto";
 import { date } from "../lib/date";
 import { token } from "../lib/token";
@@ -38,6 +39,9 @@ async function grantAccess(req: Request, res: Response<AccessSchema.OutputGrantA
 
   const info = auth.getAuthInfo(res);
   if (!info) return void res.status(500).send();
+
+  // Check for white-listed services
+  if (!config.serviceWhitelist.includes(parsed.data.service)) return void res.status(500).send();
 
   const code = await queryCreateAccessCode(req, info.userId, parsed.data.service);
   if (!code) return void res.status(500).send();

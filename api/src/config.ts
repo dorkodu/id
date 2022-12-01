@@ -20,6 +20,11 @@ const bcryptRounds = (process.env.BCRYPT_ROUNDS && parseInt(process.env.BCRYPT_R
 const port = 8001;
 const env = process.env.NODE_ENV || "development";
 
+const serviceWhitelist = [
+  "wander.dorkodu.com",
+  "trekie.dorkodu.com",
+];
+
 export const config = {
   postgresHost,
   postgresPort,
@@ -36,4 +41,6 @@ export const config = {
 
   port,
   env,
+
+  serviceWhitelist,
 }
