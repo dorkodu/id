@@ -17,7 +17,7 @@ async function middleware(req: Request, res: Response, next: NextFunction) {
   const tkn = await queryGetToken(req);
   if (!tkn) return next();
   if (!token.compare(parsedToken.validator, tkn.validator)) return next();
-  if (date.utc() > tkn.expiresAt) return next();
+  if (date.utc() >= tkn.expiresAt) return next();
 
   res.locals.userId = tkn.userId;
   res.locals.tokenId = tkn.id;
@@ -46,7 +46,7 @@ async function initiateSignup(req: Request, res: Response<AuthSchema.OutputIniti
   if (result0.count !== 0) return void res.status(500).send();
 
   const [result1]: [{ count: number }?] = await pg`
-    SELECT COUNT(*) FROM email_otp
+    SELECT COUNT(*) FROM email_verify_email
     WHERE username=${username} AND email=${email} AND expires_at>${date.utc()} AND tries_left>0
   `;
   if (!result1) return void res.status(500).send();
@@ -62,11 +62,11 @@ async function initiateSignup(req: Request, res: Response<AuthSchema.OutputIniti
   }
 
   const sent = await mailer.sendConfirmEmail(email, row.otp);
-  if (!sent) return;
+  if (!sent) return void res.status(500).send();
 
   row.sent_at = date.utc();
   row.expires_at = date.utc() + 60 * 10; // 10 minutes
-  await pg`INSERT INTO email_otp ${pg(row)}`;
+  await pg`INSERT INTO email_verify_email ${pg(row)}`;
 
   res.status(200).send({});
 }
@@ -84,9 +84,9 @@ async function confirmSignup(req: Request, res: Response<AuthSchema.OutputConfir
   if (result0.count !== 0) return void res.status(500).send();
 
   const [result1]: [{ id: number, otp: number }?] = await pg`
-    UPDATE email_otp SET tries_left=tries_left-1
+    UPDATE email_verify_email SET tries_left=tries_left-1
     WHERE id=(
-      SELECT id FROM email_otp
+      SELECT id FROM email_verify_email
       WHERE username=${username} AND email=${email} AND expires_at>${date.utc()} AND tries_left>0
       ORDER BY id DESC 
       LIMIT 1
@@ -105,7 +105,7 @@ async function confirmSignup(req: Request, res: Response<AuthSchema.OutputConfir
 
   const [result2, result3] = await pg.begin(pg => [
     pg`INSERT INTO users ${pg(row)} RETURNING id`,
-    pg`UPDATE email_otp SET expires_at=${date.old()} WHERE id=${result1.id}`,
+    pg`UPDATE email_verify_email SET expires_at=${date.utc()} WHERE id=${result1.id}`,
   ]);
   if (!result2.count) return void res.status(500).send();
   if (!result3.count) return void res.status(500).send();
@@ -192,7 +192,7 @@ async function queryCreateToken(req: Request, res: Response, userId: number): Pr
 }
 
 async function queryExpireToken(res: Response, tokenId: number, userId: number) {
-  await pg`UPDATE sessions SET expires_at=${date.old()} WHERE id=${tokenId} AND user_id=${userId}`;
+  await pg`UPDATE sessions SET expires_at=${date.utc()} WHERE id=${tokenId} AND user_id=${userId}`;
   token.detach(res);
 }
 

@@ -35,7 +35,7 @@ export async function up(knex: Knex): Promise<void> {
       table.bigint("expires_at")
     })
 
-    .createTable("email_confirm_password", (table) => {
+    .createTable("email_change_password", (table) => {
       table.bigIncrements("id").primary()
       table.bigint("user_id")
       table.string("email", 320)
@@ -54,5 +54,5 @@ export async function down(knex: Knex): Promise<void> {
     .dropTable("email_confirm_email")
     .dropTable("email_revert_email")
 
-    .dropTable("email_confirm_password")
+    .dropTable("email_change_password")
 }

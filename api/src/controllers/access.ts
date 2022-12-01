@@ -78,7 +78,7 @@ async function queryCreateAccessToken(userId: number, userAgent: string, ip: str
 }
 
 async function queryExpireAccessToken(tokenId: number, userId: number) {
-  await pg`UPDATE access_tokens SET expires_at=${date.old()} WHERE id=${tokenId} AND user_id=${userId}`
+  await pg`UPDATE access_tokens SET expires_at=${date.utc()} WHERE id=${tokenId} AND user_id=${userId}`
 }
 
 async function queryGetAccessToken(tkn: string) {
@@ -120,7 +120,7 @@ async function queryCreateAccessCode(req: Request, userId: number, service: stri
 }
 
 async function queryExpireAccessCode(codeId: number, userId: number) {
-  await pg`UPDATE access_codes SET expires_at=${date.old()} WHERE id=${codeId} AND user_id=${userId}`
+  await pg`UPDATE access_codes SET expires_at=${date.utc()} WHERE id=${codeId} AND user_id=${userId}`
 }
 
 async function queryGetAccessCode(code: string) {

@@ -18,7 +18,7 @@ async function getAccessToken(req: Request, res: Response<ExternalSchema.OutputG
   const result0 = await access.queryGetAccessCode(parsed.data.code);
   if (!result0) return void res.status(500).send();
   if (!token.compare(parsedToken.validator, result0.validator)) return void res.status(500).send();
-  if (date.utc() > result0.expiresAt) return void res.status(500).send();
+  if (date.utc() >= result0.expiresAt) return void res.status(500).send();
 
   const { userId, userAgent, ip, service } = result0;
 
@@ -58,7 +58,7 @@ async function validateAccessToken(accessToken: string): Promise<{ userId: numbe
   const result0 = await access.queryGetAccessToken(accessToken);
   if (!result0) return undefined;
   if (!token.compare(parsedToken.validator, result0.validator)) return undefined;
-  if (date.utc() > result0.expiresAt) return undefined;
+  if (date.utc() >= result0.expiresAt) return undefined;
 
   return { userId: result0.userId };
 }

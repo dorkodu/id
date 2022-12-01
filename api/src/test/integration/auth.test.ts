@@ -88,7 +88,7 @@ describe("auth", () => {
     expect(res0.status).toBe(500);
 
     await pg`
-      UPDATE email_otp SET expires_at=${date.old()} 
+      UPDATE email_otp SET expires_at=${date.utc()} 
       WHERE username=${username} AND email=${email}
     `;
 

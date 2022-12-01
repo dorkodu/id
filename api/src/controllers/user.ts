@@ -95,12 +95,12 @@ async function confirmEmailChange(req: Request, res: Response<UserSchema.OutputC
   const tkn0 = token.parse(parsed.data.token);
   if (!tkn0) return void res.status(500).send();
 
-  const [result0]: [{ id: number, userId: number, email: string, validator: Buffer, issuedAt: number, expiresAt: number }?] = await pg`
-    SELECT id, user_id, email, validator, issued_at, expires_at FROM email_token
+  const [result0]: [{ id: number, userId: number, email: string, validator: Buffer, expiresAt: number }?] = await pg`
+    SELECT id, user_id, email, validator, issued_at, expires_at FROM email_confirm_email
     WHERE selector=${tkn0.selector}
   `;
   if (!result0) return void res.status(500).send();
-  if (date.utc() > result0.expiresAt) return void res.status(500).send();
+  if (date.utc() >= result0.expiresAt) return void res.status(500).send();
   if (!token.compare(tkn0.validator, result0.validator)) return void res.status(500).send();
 
   const [result1]: [{ email: string }?] = await pg` SELECT email FROM users WHERE id=${result0.userId}`;
@@ -108,8 +108,8 @@ async function confirmEmailChange(req: Request, res: Response<UserSchema.OutputC
   if (result1.email === result0.email) return void res.status(500).send();
 
   const [result2]: [{ count: number }?] = await pg`
-    SELECT COUNT(*) FROM email_token
-    WHERE user_id=${result0.userId} AND issued_at>${result0.issuedAt}
+    SELECT COUNT(*) FROM email_confirm_email
+    WHERE id>${result0.id} AND user_id=${result0.userId}
   `;
   if (!result2) return void res.status(500).send();
   if (result2.count !== 0) return void res.status(500).send();
@@ -132,9 +132,9 @@ async function confirmEmailChange(req: Request, res: Response<UserSchema.OutputC
   row.sent_at = date.utc();
   row.expires_at = date.utc() + 60 * 60 * 24 * 30; // 30 days
   const [result3, result4, result5] = await pg.begin(pg => [
-    pg`INSERT INTO email_token ${pg(row)}`,
+    pg`INSERT INTO email_revert_email ${pg(row)}`,
     pg`UPDATE users SET email=${result0.email} WHERE id=${result0.userId}`,
-    pg`UPDATE email_token SET expires_at=${date.old()} WHERE id=${result0.id}`
+    pg`UPDATE email_confirm_email SET expires_at=${date.utc()} WHERE id=${result0.id}`
   ]);
   if (!result3.count) return void res.status(500).send();
   if (!result4.count) return void res.status(500).send();
@@ -150,23 +150,25 @@ async function revertEmailChange(req: Request, res: Response<UserSchema.OutputRe
   const tkn0 = token.parse(parsed.data.token);
   if (!tkn0) return void res.status(500).send();
 
-  const [result0]: [{ id: number, userId: number, email: string, validator: Buffer, issuedAt: number, expiresAt: number }?] = await pg`
-    SELECT id, user_id, email, validator, issued_at, expires_at FROM email_token
+  const [result0]: [{ id: number, userId: number, email: string, validator: Buffer, expiresAt: number }?] = await pg`
+    SELECT id, user_id, email, validator, expires_at FROM email_revert_email
     WHERE selector=${tkn0.selector}
   `;
   if (!result0) return void res.status(500).send();
-  if (date.utc() > result0.expiresAt) return void res.status(500).send();
+  if (date.utc() >= result0.expiresAt) return void res.status(500).send();
   if (!token.compare(tkn0.validator, result0.validator)) return void res.status(500).send();
 
   const [result1]: [{ email: string }?] = await pg` SELECT email FROM users WHERE id=${result0.userId}`;
   if (!result1) return void res.status(500).send();
   if (result1.email === result0.email) return void res.status(500).send();
 
-  const [result3] = await pg.begin(pg => [
+  const [result2, result3, _result4] = await pg.begin(pg => [
     pg`UPDATE users SET email=${result0.email} WHERE id=${result0.userId}`,
-    pg`UPDATE email_token SET expires_at=${date.old()} 
+    pg`UPDATE email_revert_email SET expires_at=${date.utc()} WHERE id=${result0.id}`,
+    pg`UPDATE email_revert_email SET expires_at=${date.utc()} 
        WHERE id>${result0.id} AND user_id=${result0.userId}`
   ]);
+  if (!result2.count) return void res.status(500).send();
   if (!result3.count) return void res.status(500).send();
 
   res.status(200).send({});
@@ -175,6 +177,7 @@ async function revertEmailChange(req: Request, res: Response<UserSchema.OutputRe
 async function initiatePasswordChange(req: Request, res: Response<UserSchema.OutputInitiatePasswordChange>): Promise<void> {
   const parsed = initiatePasswordChangeSchema.safeParse(req.body);
   if (!parsed.success) return void res.status(500).send();
+  res.status(200).send({});
 
   const { username, email } = parsed.data;
 
@@ -184,7 +187,7 @@ async function initiatePasswordChange(req: Request, res: Response<UserSchema.Out
   if (!result0) return;
 
   const [result1]: [{ count: number }?] = await pg`
-    SELECT COUNT(*) FROM email_token
+    SELECT COUNT(*) FROM email_change_password
     WHERE user_id=${result0.id} AND issued_at>${date.utc() - 60 * 60}
   `;
   if (!result1) return;
@@ -206,9 +209,7 @@ async function initiatePasswordChange(req: Request, res: Response<UserSchema.Out
 
   row.sent_at = date.utc();
   row.expires_at = date.utc() + 60 * 60; // 1 hour
-  await pg`INSERT INTO email_token ${pg(row)}`;
-
-  res.status(200).send({});
+  await pg`INSERT INTO email_change_password ${pg(row)}`;
 }
 
 async function confirmPasswordChange(req: Request, res: Response<UserSchema.OutputConfirmPasswordChange>): Promise<void> {
@@ -218,12 +219,12 @@ async function confirmPasswordChange(req: Request, res: Response<UserSchema.Outp
   const tkn = token.parse(parsed.data.token);
   if (!tkn) return void res.status(500).send();
 
-  const [result0]: [{ id: number, userId: number, email: string, validator: Buffer, issuedAt: number, expiresAt: number }?] = await pg`
-    SELECT id, user_id, email, validator, issued_at, expires_at FROM email_token
+  const [result0]: [{ id: number, userId: number, email: string, validator: Buffer, expiresAt: number }?] = await pg`
+    SELECT id, user_id, email, validator, expires_at FROM email_change_password
     WHERE selector=${tkn.selector}
   `;
   if (!result0) return void res.status(500).send();
-  if (date.utc() > result0.expiresAt) return void res.status(500).send();
+  if (date.utc() >= result0.expiresAt) return void res.status(500).send();
   if (!token.compare(tkn.validator, result0.validator)) return void res.status(500).send();
 
   const [result1]: [{ email: string }?] = await pg` SELECT email FROM users WHERE id=${result0.userId}`;
@@ -231,20 +232,19 @@ async function confirmPasswordChange(req: Request, res: Response<UserSchema.Outp
   if (result1.email !== result0.email) return void res.status(500).send();
 
   const [result2]: [{ count: number }?] = await pg`
-    SELECT COUNT(*) FROM email_token
-    WHERE user_id=${result0.userId} AND issued_at>${result0.issuedAt}
+    SELECT COUNT(*) FROM email_change_password
+    WHERE id>${result0.id} AND user_id=${result0.userId}
   `;
   if (!result2) return void res.status(500).send();
   if (result2.count !== 0) return void res.status(500).send();
 
   const password = await crypto.encryptPassword(parsed.data.newPassword);
-  const [result3, result4, result5] = await pg.begin(pg => [
-    pg`UPDATE users SET password=${password}`,
-    pg`UPDATE sessions SET expires_at=${date.old()} WHERE user_id=${result0.userId} AND expires_at>${date.utc()}`,
-    pg`UPDATE email_token SET expires_at=${date.old()} WHERE id=${result0.id}`
+  const [result3, _result4, result5] = await pg.begin(pg => [
+    pg`UPDATE users SET password=${password} WHERE id=${result0.userId}`,
+    pg`UPDATE sessions SET expires_at=${date.utc()} WHERE user_id=${result0.userId} AND expires_at>${date.utc()}`,
+    pg`UPDATE email_change_password SET expires_at=${date.utc()} WHERE id=${result0.id}`
   ])
   if (!result3.count) return void res.status(500).send();
-  if (!result4.count) return void res.status(500).send();
   if (!result5.count) return void res.status(500).send();
 
   res.status(200).send({});
