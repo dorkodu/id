@@ -4,7 +4,6 @@ import { IUser } from "../../../shared/src/user";
 import pg from "../pg";
 import auth from "./auth";
 
-import { EmailTypes } from "../../../shared/src/email_types";
 import { crypto } from "../lib/crypto";
 import { date } from "../lib/date";
 import { mailer } from "../lib/mailer";
@@ -61,8 +60,8 @@ async function initiateEmailChange(req: Request, res: Response<UserSchema.Output
   if (result0.email === parsed.data.newEmail) return void res.status(500).send();
 
   const [result1]: [{ count: number }?] = await pg`
-    SELECT COUNT(*) FROM email_token 
-    WHERE user_id=${info.userId} AND issued_at>${date.utc() - 60 * 60} AND type=${EmailTypes.ConfirmEmailChange}
+    SELECT COUNT(*) FROM email_confirm_email 
+    WHERE user_id=${info.userId} AND issued_at>${date.utc() - 60 * 60}
   `;
   if (!result1) return void res.status(500).send();
   if (result1.count >= 3) return void res.status(500).send();
@@ -77,7 +76,6 @@ async function initiateEmailChange(req: Request, res: Response<UserSchema.Output
     issued_at: date.utc(),
     sent_at: -1,
     expires_at: -1,
-    type: EmailTypes.ConfirmEmailChange,
   }
 
   const sent = await mailer.sendConfirmEmailChange(newEmail, tkn.full);
@@ -111,7 +109,7 @@ async function confirmEmailChange(req: Request, res: Response<UserSchema.OutputC
 
   const [result2]: [{ count: number }?] = await pg`
     SELECT COUNT(*) FROM email_token
-    WHERE user_id=${result0.userId} AND issued_at>${result0.issuedAt} AND type=${EmailTypes.ConfirmEmailChange}
+    WHERE user_id=${result0.userId} AND issued_at>${result0.issuedAt}
   `;
   if (!result2) return void res.status(500).send();
   if (result2.count !== 0) return void res.status(500).send();
@@ -126,7 +124,6 @@ async function confirmEmailChange(req: Request, res: Response<UserSchema.OutputC
     issued_at: date.utc(),
     sent_at: -1,
     expires_at: -1,
-    type: EmailTypes.RevertEmailChange,
   }
 
   const sent = await mailer.sendRevertEmailChange(oldEmail, tkn1.full);
@@ -168,7 +165,7 @@ async function revertEmailChange(req: Request, res: Response<UserSchema.OutputRe
   const [result3] = await pg.begin(pg => [
     pg`UPDATE users SET email=${result0.email} WHERE id=${result0.userId}`,
     pg`UPDATE email_token SET expires_at=${date.old()} 
-       WHERE id>${result0.id} AND user_id=${result0.userId} AND type=${EmailTypes.RevertEmailChange}`
+       WHERE id>${result0.id} AND user_id=${result0.userId}`
   ]);
   if (!result3.count) return void res.status(500).send();
 
@@ -188,7 +185,7 @@ async function initiatePasswordChange(req: Request, res: Response<UserSchema.Out
 
   const [result1]: [{ count: number }?] = await pg`
     SELECT COUNT(*) FROM email_token
-    WHERE user_id=${result0.id} AND issued_at>${date.utc() - 60 * 60} AND type=${EmailTypes.ConfirmPasswordChange}
+    WHERE user_id=${result0.id} AND issued_at>${date.utc() - 60 * 60}
   `;
   if (!result1) return;
   if (result1.count >= 3) return;
@@ -202,7 +199,6 @@ async function initiatePasswordChange(req: Request, res: Response<UserSchema.Out
     issued_at: date.utc(),
     sent_at: -1,
     expires_at: -1,
-    type: EmailTypes.ConfirmPasswordChange,
   }
 
   const sent = await mailer.sendConfirmPasswordChange(email, tkn.full);
@@ -236,7 +232,7 @@ async function confirmPasswordChange(req: Request, res: Response<UserSchema.Outp
 
   const [result2]: [{ count: number }?] = await pg`
     SELECT COUNT(*) FROM email_token
-    WHERE user_id=${result0.userId} AND issued_at>${result0.issuedAt} AND type=${EmailTypes.ConfirmPasswordChange}
+    WHERE user_id=${result0.userId} AND issued_at>${result0.issuedAt}
   `;
   if (!result2) return void res.status(500).send();
   if (result2.count !== 0) return void res.status(500).send();

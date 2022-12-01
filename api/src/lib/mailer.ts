@@ -1,5 +1,5 @@
 import nodemailer from "nodemailer";
-import { EmailTypes } from "../../../shared/src/email_types";
+import { webRoutes } from "../../../shared/src/web_routes";
 import { config } from "../config";
 
 const transporter = nodemailer.createTransport({
@@ -43,7 +43,7 @@ function sendConfirmEmail(email: string, otp: number) {
 }
 
 function sendConfirmEmailChange(email: string, token: string): Promise<boolean> {
-  const link = `http://localhost:8000/${EmailTypes.ConfirmEmailChange}?token=${token}`;
+  const link = `http://localhost:8000/${webRoutes.confirmEmailChange}?token=${token}`;
 
   return new Promise((resolve) => {
     transporter.sendMail({
@@ -60,7 +60,7 @@ function sendConfirmEmailChange(email: string, token: string): Promise<boolean> 
 }
 
 function sendRevertEmailChange(email: string, token: string): Promise<boolean> {
-  const link = `http://localhost:8000/${EmailTypes.RevertEmailChange}?token=${token}`;
+  const link = `http://localhost:8000/${webRoutes.revertEmailChange}?token=${token}`;
 
   return new Promise((resolve) => {
     transporter.sendMail({
@@ -77,7 +77,7 @@ function sendRevertEmailChange(email: string, token: string): Promise<boolean> {
 }
 
 function sendConfirmPasswordChange(email: string, token: string) {
-  const link = `http://localhost:8000/${EmailTypes.ConfirmPasswordChange}?token=${token}`;
+  const link = `http://localhost:8000/${webRoutes.confirmPasswordChange}?token=${token}`;
 
   return new Promise((resolve) => {
     transporter.sendMail({
