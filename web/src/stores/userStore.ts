@@ -138,7 +138,6 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
   queryChangeUsername: async (newUsername: string) => {
     const { data, err } = await api.changeUsername(newUsername);
     if (err || !data) return false;
-    if (!await get().queryGetUser()) return false;
     return true;
   },
 
@@ -151,14 +150,12 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
   queryConfirmEmailChange: async (token: string) => {
     const { data, err } = await api.confirmEmailChange(token);
     if (err || !data) return false;
-    if (!await get().queryGetUser()) return false;
     return true;
   },
 
   queryRevertEmailChange: async (token: string) => {
     const { data, err } = await api.revertEmailChange(token);
     if (err || !data) return false;
-    if (!await get().queryGetUser()) return false;
     return true;
   },
 
