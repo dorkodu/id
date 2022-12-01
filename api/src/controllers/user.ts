@@ -54,7 +54,6 @@ async function initiateEmailChange(req: Request, res: Response<UserSchema.Output
   const info = auth.getAuthInfo(res);
   if (!info) return void res.status(500).send();
 
-
   const [result0]: [{ email: string }?] = await pg`
     SELECT email FROM users WHERE id=${info.userId}
   `;
@@ -166,19 +165,12 @@ async function revertEmailChange(req: Request, res: Response<UserSchema.OutputRe
   if (!result1) return void res.status(500).send();
   if (result1.email === result0.email) return void res.status(500).send();
 
-  const [result2]: [{ count: number }?] = await pg`
-    SELECT COUNT(*) FROM email_token
-    WHERE user_id=${result0.userId} AND issued_at>${result0.issuedAt} AND type=${EmailTypes.RevertEmailChange}
-  `;
-  if (!result2) return void res.status(500).send();
-  if (result2.count !== 0) return void res.status(500).send();
-
-  const [result3, result4] = await pg.begin(pg => [
+  const [result3] = await pg.begin(pg => [
     pg`UPDATE users SET email=${result0.email} WHERE id=${result0.userId}`,
-    pg`UPDATE email_token SET expires_at=${date.old()} WHERE id=${result0.id}`
+    pg`UPDATE email_token SET expires_at=${date.old()} 
+       WHERE id>${result0.id} AND user_id=${result0.userId} AND type=${EmailTypes.RevertEmailChange}`
   ]);
   if (!result3.count) return void res.status(500).send();
-  if (!result4.count) return void res.status(500).send();
 
   res.status(200).send({});
 }
