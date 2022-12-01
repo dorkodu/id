@@ -83,7 +83,7 @@ async function initiateEmailChange(req: Request, res: Response<UserSchema.Output
 
   row.sent_at = date.utc();
   row.expires_at = date.utc() + 60 * 60; // 1 hour
-  await pg`INSERT INTO email_token ${pg(row)}`;
+  await pg`INSERT INTO email_confirm_email ${pg(row)}`;
 
   res.status(200).send({});
 }
