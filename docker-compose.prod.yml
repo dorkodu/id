@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  id_api:
+    build:
+      context: .
+      dockerfile: ./api/Dockerfile.prod
+    environment:
+      - NODE_ENV=production
+    ports:
+      - "9000:9000"
+    restart: always
+
+  id_web:
+    build:
+      context: .
+      dockerfile: ./web/Dockerfile.prod
+    environment:
+      - NODE_ENV=production
+
+  id_postgres:
+    image: postgres:14-alpine
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=id
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: always
+
+  id_keydb:
+    image: eqalpha/keydb:x86_64_v6.3.1
+    restart: always
+
+volumes:
+  pgdata:
