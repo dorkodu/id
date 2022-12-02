@@ -20,7 +20,7 @@
     
     "alwaysStrict": true,
     "allowUnreachableCode": false,
-    "noImplicitAny": true,
+    "noImplicitAny": false,
     "strictNullChecks": true,
     "noImplicitReturns": true,
     "noUncheckedIndexedAccess": true,

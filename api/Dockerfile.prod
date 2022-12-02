@@ -1,4 +1,4 @@
-FROM node:16-alpine as base
+FROM node:16.17.1-alpine as base
 WORKDIR /id
 
 RUN mkdir -p /id/api
@@ -13,13 +13,13 @@ COPY ./shared /id/shared
 RUN cd api && pnpm install --offline
 
 FROM base as test
-#CMD [ "pnpm", "test:integration" ]
+# TODO: Test
 
 FROM base as build
 WORKDIR /id/api
 RUN pnpm build
 
-FROM node:16-alpine
+FROM node:16.17.1-alpine
 WORKDIR /id
 RUN mkdir -p /id/dist
 
@@ -28,6 +28,6 @@ COPY ./api/pnpm-lock.yaml /id
 RUN pnpm fetch --prod
 COPY --from=build /id/api/dist /id/dist
 COPY ./api/package.json /id
-RUN ls && pnpm install --offline --prod
+RUN pnpm install --offline --prod
 
 CMD [ "node", "/id/dist/api/src/index.js" ]
