@@ -8,7 +8,7 @@ services:
     environment:
       - NODE_ENV=production
     ports:
-      - "9000:9000"
+      - "9001:9001"
     restart: always
 
   id_web:
@@ -17,6 +17,12 @@ services:
       dockerfile: ./web/Dockerfile.prod
     environment:
       - NODE_ENV=production
+      - VIRTUAL_HOST=id.dorkodu.com
+      - VIRTUAL_PORT=9000
+      - LETSENCRYPT_HOST=id.dorkodu.com
+      - LETSENCRYPT_EMAIL=hey@dorkodu.com
+    ports:
+      - "9000:9000"
 
   id_postgres:
     image: postgres:14-alpine
