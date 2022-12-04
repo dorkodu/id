@@ -7,9 +7,9 @@ services:
       dockerfile: ./api/Dockerfile.prod
     environment:
       - NODE_ENV=production
-    ports:
-      - "9001:9001"
     restart: always
+    networks:
+      - app
 
   id_web:
     build:
@@ -21,8 +21,11 @@ services:
       - VIRTUAL_PORT=9000
       - LETSENCRYPT_HOST=id.dorkodu.com
       - LETSENCRYPT_EMAIL=hey@dorkodu.com
-    ports:
-      - "9000:9000"
+    expose:
+      - 9000
+    networks:
+      - nginx-proxy
+      - app
 
   id_postgres:
     image: postgres:14-alpine
@@ -33,10 +36,19 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
     restart: always
+    networks:
+      - app
 
   id_keydb:
     image: eqalpha/keydb:x86_64_v6.3.1
     restart: always
+    networks:
+      - app
 
 volumes:
   pgdata:
+
+networks:
+  nginx-proxy:
+    external: true
+  app:

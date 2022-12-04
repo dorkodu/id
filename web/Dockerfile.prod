@@ -19,3 +19,4 @@ RUN pnpm build
 
 FROM nginx:1.23.2-alpine
 COPY --from=base /id/web/dist /etc/nginx/html
+COPY ../nginx/nginx.conf /etc/nginx/conf.d
