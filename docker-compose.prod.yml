@@ -23,6 +23,7 @@ services:
       - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL:-hey@dorkodu.com}
     expose:
       - ${VIRTUAL_PORT:-9000}
+    restart: always
     networks:
       - nginx-proxy
       - app
