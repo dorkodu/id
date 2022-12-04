@@ -17,12 +17,12 @@ services:
       dockerfile: ./web/Dockerfile.prod
     environment:
       - NODE_ENV=production
-      - VIRTUAL_HOST=id.dorkodu.com
-      - VIRTUAL_PORT=9000
-      - LETSENCRYPT_HOST=id.dorkodu.com
-      - LETSENCRYPT_EMAIL=hey@dorkodu.com
+      - VIRTUAL_HOST=${VIRTUAL_HOST:-id.dorkodu.com}
+      - VIRTUAL_PORT=${VIRTUAL_PORT:-9000}
+      - LETSENCRYPT_HOST=${LETSENCRYPT_HOST:-id.dorkodu.com}
+      - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL:-hey@dorkodu.com}
     expose:
-      - 9000
+      - ${VIRTUAL_PORT:-9000}
     networks:
       - nginx-proxy
       - app
@@ -30,9 +30,10 @@ services:
   id_postgres:
     image: postgres:14-alpine
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=id
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_DB=${POSTGRES_DB:-id}
+      - PGPORT=${PGPORT:-7000}
     volumes:
       - pgdata:/var/lib/postgresql/data
     restart: always

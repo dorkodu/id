@@ -12,7 +12,7 @@ services:
       - ./shared:/id/shared
       - /id/api/node_modules
     ports:
-      - "8001:8001"
+      - "${API_PORT:-8001}:${API_PORT:-8001}"
     restart: always
 
   id_web:
@@ -26,15 +26,16 @@ services:
       - ./shared:/id/shared
       - /id/web/node_modules
     ports:
-      - "8000:8000"
+      - "${WEB_PORT:-8000}:${WEB_PORT:-8000}"
     restart: always
 
   id_postgres:
     image: postgres:14-alpine
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=id
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_DB=${POSTGRES_DB:-id}
+      - PGPORT=${PGPORT:-7000}
     volumes:
       - pgdata:/var/lib/postgresql/data
     restart: always
