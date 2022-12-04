@@ -12,10 +12,6 @@ COPY ./api /id/api
 COPY ./shared /id/shared
 RUN cd api && pnpm install --offline
 
-# Perform migrations
-WORKDIR /id/api
-RUN pnpm migrate:prod:latest
-
 FROM base as test
 # TODO: Test
 
