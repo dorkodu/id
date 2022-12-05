@@ -1,10 +1,5 @@
 import type { Knex } from "knex";
 
-import { config as dotenv } from "dotenv";
-import * as path from "path";
-
-dotenv({ path: path.join(__dirname, "../../.env") });
-
 const config: { [key: string]: Knex.Config } = {
   development: {
     client: "postgresql",

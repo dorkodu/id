@@ -1,9 +1,3 @@
-import { config as dotenv } from "dotenv";
-
-import * as path from "path";
-
-dotenv({ path: path.join(__dirname, "../../.env") });
-
 const postgresHost = process.env.POSTGRES_HOST || "id_postgres";
 const postgresPort = (process.env.PGPORT && parseInt(process.env.PGPORT)) || 5432;
 const postgresName = process.env.POSTGRES_DB || "id";
