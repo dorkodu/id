@@ -6,6 +6,8 @@ services:
     build:
       context: .
       dockerfile: ./api/Dockerfile.prod
+    env_file:
+      - ./.env
     environment:
       - NODE_ENV=production
     restart: always
@@ -16,6 +18,8 @@ services:
     build:
       context: .
       dockerfile: ./web/Dockerfile.prod
+    env_file:
+      - ./.env
     environment:
       - NODE_ENV=production
       - VIRTUAL_HOST=${VIRTUAL_HOST:-id.dorkodu.com}
