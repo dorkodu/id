@@ -1,13 +1,14 @@
 import { z } from "zod";
 import type { IAccess } from "../../../shared/src/access"
+import { sharedSchemas } from "./shared";
 
 export const getAccessesSchema = z.object({
-  anchor: z.number(),
-  type: z.enum(["newer", "older"]),
+  anchor: sharedSchemas.anchor,
+  type: sharedSchemas.type,
 }).strict();
 
 export const grantAccessSchema = z.object({
-  service: z.string().max(128),
+  service: sharedSchemas.service,
 }).strict();
 
 export const revokeAccessSchema = z.object({

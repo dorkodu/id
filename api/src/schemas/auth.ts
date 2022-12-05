@@ -13,7 +13,7 @@ export const confirmSignupSchema = z.object({
   username: sharedSchemas.username,
   email: sharedSchemas.email,
   password: sharedSchemas.password,
-  otp: z.string(),
+  otp: sharedSchemas.otp,
 }).strict();
 
 export const loginSchema = z.object({

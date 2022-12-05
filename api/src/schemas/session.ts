@@ -1,12 +1,13 @@
 import { z } from "zod";
 
 import { ISession } from "../../../shared/src/session";
+import { sharedSchemas } from "./shared";
 
 export const getCurrentSessionSchema = z.object({}).strict();
 
 export const getSessionsSchema = z.object({
-  anchor: z.number(),
-  type: z.enum(["newer", "older"])
+  anchor: sharedSchemas.anchor,
+  type: sharedSchemas.type
 }).strict();
 
 export const terminateSessionSchema = z.object({

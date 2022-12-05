@@ -3,15 +3,15 @@ import { IUser } from "../../../shared/src/user";
 import { sharedSchemas } from "./shared";
 
 export const getAccessTokenSchema = z.object({
-  code: z.string(),
+  code: sharedSchemas.code,
 }).strict();
 
 export const checkAccessSchema = z.object({
-  token: sharedSchemas.token
+  token: sharedSchemas.token,
 }).strict();
 
 export const getUserDataSchema = z.object({
-  token: sharedSchemas.token
+  token: sharedSchemas.token,
 }).strict();
 
 export namespace ExternalSchema {
