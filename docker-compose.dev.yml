@@ -46,6 +46,16 @@ services:
       - ./keydb/keydb.conf:/etc/keydb/keydb.conf
     restart: always
 
+  id_nginx:
+    image: nginx:1.23.2-alpine
+    volumes:
+      - type: bind
+        source: ./nginx/nginx.dev.conf
+        target: /etc/nginx/conf.d/nginx.dev.conf
+    ports:
+      - "${VIRTUAL_PORT:-9000}:${VIRTUAL_PORT:-9000}"
+    restart: always
+
   id_mailslurper:
     image: marcopas/docker-mailslurper
     volumes:
