@@ -1,4 +1,5 @@
 version: '3.8'
+name: id_dev
 
 services:
   id_api:
