@@ -13,6 +13,7 @@ services:
     restart: always
     networks:
       - app
+      - nginx-proxy
 
   id_web:
     build:
@@ -22,16 +23,6 @@ services:
       - ./.env
     environment:
       - NODE_ENV=production
-      - VIRTUAL_HOST=${VIRTUAL_HOST:-id.dorkodu.com}
-      - VIRTUAL_PORT=${VIRTUAL_PORT:-9000}
-      - LETSENCRYPT_HOST=${LETSENCRYPT_HOST:-id.dorkodu.com}
-      - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL:-hey@dorkodu.com}
-    expose:
-      - ${VIRTUAL_PORT:-9000}
-    restart: always
-    networks:
-      - nginx-proxy
-      - app
 
   id_postgres:
     image: postgres:14-alpine

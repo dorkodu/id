@@ -17,6 +17,9 @@ services:
     ports:
       - "${API_PORT:-8001}:${API_PORT:-8001}"
     restart: always
+    networks:
+      - app
+      - nginx-proxy
 
   id_web:
     build:
@@ -33,6 +36,9 @@ services:
     ports:
       - "${WEB_PORT:-8000}:${WEB_PORT:-8000}"
     restart: always
+    networks:
+      - app
+      - nginx-proxy
 
   id_postgres:
     image: postgres:14-alpine
@@ -44,22 +50,16 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
     restart: always
+    networks:
+      - app
 
   id_keydb:
     image: eqalpha/keydb:x86_64_v6.3.1
     volumes:
       - ./keydb/keydb.conf:/etc/keydb/keydb.conf
     restart: always
-
-  id_nginx:
-    image: nginx:1.23.2-alpine
-    volumes:
-      - type: bind
-        source: ./nginx/nginx.dev.conf
-        target: /etc/nginx/conf.d/nginx.dev.conf
-    ports:
-      - "${VIRTUAL_PORT:-9000}:${VIRTUAL_PORT:-9000}"
-    restart: always
+    networks:
+      - app
 
   id_mailslurper:
     image: marcopas/docker-mailslurper
@@ -70,6 +70,13 @@ services:
       - "8080:8080"
       - "8085:8085"
     restart: always
+    networks:
+      - app
 
 volumes:
   pgdata:
+
+networks:
+  nginx-proxy:
+    external: true
+  app:
