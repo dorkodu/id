@@ -137,7 +137,7 @@ async function login(req: Request, res: Response<AuthSchema.OutputLogin>): Promi
 
   res.status(200).send({});
 
-  const ip = req.ip;
+  const ip = req.headers["x-real-ip"] as string;
   const ua = userAgent.parse(req.headers["user-agent"]);
   const [result1]: [{ count: number }?] = await pg`
     SELECT COUNT(*) FROM sessions
@@ -181,7 +181,7 @@ async function queryCreateToken(req: Request, res: Response, userId: number): Pr
     created_at: tkn.createdAt,
     expires_at: tkn.expiresAt,
     user_agent: userAgent.parse(req.headers["user-agent"]),
-    ip: req.ip
+    ip: req.headers["x-real-ip"] as string
   }
 
   const result = await pg`INSERT INTO sessions ${pg(row)}`;

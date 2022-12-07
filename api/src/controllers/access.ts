@@ -113,7 +113,7 @@ async function queryCreateAccessCode(req: Request, userId: number, service: stri
     created_at: tkn.createdAt,
     expires_at: tkn.createdAt + 60 * 10, // 10 minutes
     user_agent: userAgent.parse(req.headers["user-agent"]),
-    ip: req.ip,
+    ip: req.headers["x-real-ip"] as string,
     service: service,
   }
 
