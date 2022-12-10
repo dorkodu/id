@@ -10,12 +10,17 @@ services:
       - ./.env
     environment:
       - NODE_ENV=development
+      - VIRTUAL_HOST=${VIRTUAL_HOST:-id.dorkodu.com}
+      - VIRTUAL_PORT=${API_PORT:-8001}
+      - LETSENCRYPT_HOST=${LETSENCRYPT_HOST:-id.dorkodu.com}
+      - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL:-hey@dorkodu.com}
+      - VIRTUAL_PATH=/api
+    expose:
+      - ${API_PORT:-8001}
     volumes:
       - ./api:/id/api
       - ./shared:/id/shared
       - /id/api/node_modules
-    ports:
-      - "${API_PORT:-8001}:${API_PORT:-8001}"
     restart: always
     networks:
       - app
@@ -29,12 +34,17 @@ services:
       - ./.env
     environment:
       - NODE_ENV=development
+      - VIRTUAL_HOST=${VIRTUAL_HOST:-id.dorkodu.com}
+      - VIRTUAL_PORT=${WEB_PORT:-8000}
+      - LETSENCRYPT_HOST=${LETSENCRYPT_HOST:-id.dorkodu.com}
+      - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL:-hey@dorkodu.com}
+      - VIRTUAL_PATH=/
+    expose:
+      - ${WEB_PORT:-8000}
     volumes:
       - ./web:/id/web
       - ./shared:/id/shared
       - /id/web/node_modules
-    ports:
-      - "${WEB_PORT:-8000}:${WEB_PORT:-8000}"
     restart: always
     networks:
       - app

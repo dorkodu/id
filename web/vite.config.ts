@@ -21,7 +21,6 @@ export default defineConfig({
     viteCompression({ algorithm: "gzip" }),
     viteCompression({ algorithm: "brotliCompress" }),
     VitePWA({
-      devOptions: { enabled: true },
       minify: true,
       registerType: "prompt",
       injectRegister: "inline",
