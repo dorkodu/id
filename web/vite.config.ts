@@ -43,5 +43,8 @@ export default defineConfig({
     alias: {
       "@shared": path.resolve(__dirname, '../shared/src'),
     }
+  },
+  build: {
+    reportCompressedSize: false,
   }
 })
