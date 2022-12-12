@@ -22,7 +22,7 @@ export default defineConfig({
     viteCompression({ algorithm: "brotliCompress" }),
     VitePWA({
       minify: true,
-      registerType: "prompt",
+      registerType: "autoUpdate",
       injectRegister: "inline",
       workbox: {
         globPatterns: ["**/*.{html,css,js,ico}"]
