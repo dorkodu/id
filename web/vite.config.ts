@@ -48,5 +48,5 @@ export default defineConfig({
   build: {
     reportCompressedSize: false,
   },
-  base: process.env.NODE_ENV === "development" ? "https://cdn.dorkodu.com/" : ""
+  base: process.env.NODE_ENV === "production" ? "https://cdn.dorkodu.com/id/" : ""
 })
