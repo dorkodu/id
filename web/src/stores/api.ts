@@ -1,7 +1,9 @@
-import type { ApiDetails } from "@shared/api_details";
-import { apiRoutes, ApiRoutes } from "@shared/api_routes";
+import type { Router } from "../../../api/src/controllers/_router";
+import sage from "@dorkodu/sage-client";
 
-async function request<T extends keyof ApiRoutes>(route: T, data: ApiDetails[T]["input"]): Promise<{ data: ApiDetails[T]["output"] | undefined, err: boolean }> {
+export const router = sage.router<Router>();
+
+export async function request(data: any) {
   const options: RequestInit = { method: "POST" }
   if (data !== undefined) {
     options.headers = { "Content-Type": "application/json" };
@@ -9,111 +11,13 @@ async function request<T extends keyof ApiRoutes>(route: T, data: ApiDetails[T][
   }
 
   try {
-    const res = await fetch(apiRoutes[route], options);
-    const data = await res.json().catch(() => undefined)
-    const err = !res.ok;
-    const out = { data, err };
+    const res = await fetch("/api", options);
+    const data = await res.json().catch(() => undefined);
 
-    console.log(out);
+    console.log(data);
 
-    return out;
+    return data;
   } catch {
-    return { data: undefined, err: true }
+    return undefined;
   }
-}
-
-async function auth() {
-  return await request("auth", {});
-}
-
-async function initiateSignup(username: string, email: string) {
-  return await request("initiateSignup", { username, email });
-}
-
-async function confirmSignup(username: string, email: string, password: string, otp: string) {
-  return await request("confirmSignup", { username, email, password, otp });
-}
-
-async function login(info: string, password: string) {
-  return await request("login", { info, password });
-}
-
-async function logout() {
-  return await request("logout", {});
-}
-
-async function getUser() {
-  return await request("getUser", {});
-}
-
-async function changeUsername(newUsername: string) {
-  return await request("changeUsername", { newUsername });
-}
-
-async function initiateEmailChange(newEmail: string) {
-  return await request("initiateEmailChange", { newEmail });
-}
-
-async function confirmEmailChange(token: string) {
-  return await request("confirmEmailChange", { token });
-}
-
-async function revertEmailChange(token: string) {
-  return await request("revertEmailChange", { token });
-}
-
-async function initiatePasswordChange(username: string, email: string) {
-  return await request("initiatePasswordChange", { username, email });
-}
-
-async function confirmPasswordChange(newPassword: string, token: string) {
-  return await request("confirmPasswordChange", { newPassword, token });
-}
-
-async function getCurrentSession() {
-  return await request("getCurrentSession", {});
-}
-
-async function getSessions(anchor: number, type: "newer" | "older") {
-  return await request("getSessions", { anchor, type });
-}
-
-async function terminateSession(sessionId: number) {
-  return await request("terminateSession", { sessionId });
-}
-
-async function getAccesses(anchor: number, type: "newer" | "older") {
-  return await request("getAccesses", { anchor, type });
-}
-
-async function grantAccess(service: string) {
-  return await request("grantAccess", { service });
-}
-
-async function revokeAccess(accessId: number) {
-  return await request("revokeAccess", { accessId });
-}
-
-export default {
-  auth,
-  initiateSignup,
-  confirmSignup,
-  login,
-  logout,
-
-  getUser,
-  changeUsername,
-  initiateEmailChange,
-  confirmEmailChange,
-  revertEmailChange,
-  initiatePasswordChange,
-  confirmPasswordChange,
-
-  getCurrentSession,
-  getSessions,
-  terminateSession,
-
-  getAccesses,
-  grantAccess,
-  revokeAccess,
 }

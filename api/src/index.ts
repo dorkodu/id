@@ -14,8 +14,8 @@ async function main() {
   app.use(express.json());
   app.use(cookieParser());
 
-  app.use("/api", (req, res, next) => {
-    res.status(200).send(router.handle(() => ({ req, res, next }), req.body));
+  app.use("/api", async (req, res, next) => {
+    res.status(200).send(await router.handle(() => ({ req, res, next }), req.body));
   });
 
   app.listen(config.port, () => { console.log(`Server has started on port ${config.port}`) });
