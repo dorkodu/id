@@ -3,14 +3,8 @@ import cookieParser from "cookie-parser";
 
 import { config } from "./config";
 
-import externalRoutes from "./routes/external";
-import accessRoutes from "./routes/access";
-import authRoutes from "./routes/auth";
-import userRoutes from "./routes/user";
-import sessionRoutes from "./routes/session";
-
-import auth from "./controllers/auth";
 import keydb from "./keydb";
+import { router } from "./controllers/_router";
 
 async function main() {
   const app = express();
@@ -20,11 +14,9 @@ async function main() {
   app.use(express.json());
   app.use(cookieParser());
 
-  app.use(externalRoutes);
-  app.use(auth.middleware, accessRoutes);
-  app.use(auth.middleware, authRoutes);
-  app.use(auth.middleware, userRoutes);
-  app.use(auth.middleware, sessionRoutes);
+  app.use("/api", (req, res, next) => {
+    res.status(200).send(router.handle(() => ({ req, res, next }), req.body));
+  });
 
   app.listen(config.port, () => { console.log(`Server has started on port ${config.port}`) });
 }

@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 import { crypto } from "../lib/crypto";
 import { date } from "../lib/date";
 import { mailer } from "../lib/mailer";
@@ -6,158 +6,181 @@ import { token } from "../lib/token";
 import { userAgent } from "../lib/user_agent";
 
 import pg from "../pg";
-import { authSchema, AuthSchema, confirmSignupSchema, initiateSignupSchema, loginSchema, logoutSchema } from "../schemas/auth";
+import { authSchema, confirmSignupSchema, initiateSignupSchema, loginSchema, logoutSchema } from "../schemas/auth";
 import { sharedSchemas } from "../schemas/shared";
+import { RouterContext } from "./_router";
+import sage from "@dorkodu/sage-server";
+import { z } from "zod";
 
-async function middleware(req: Request, res: Response, next: NextFunction) {
-  const rawToken = token.get(req);
+async function middleware(ctx: RouterContext) {
+  const rawToken = token.get(ctx.req);
   const parsedToken = rawToken ? token.parse(rawToken) : undefined;
-  if (!parsedToken) return next();
+  if (!parsedToken) return;
 
-  const tkn = await queryGetToken(req);
-  if (!tkn) return next();
-  if (!token.compare(parsedToken.validator, tkn.validator)) return next();
-  if (date.utc() >= tkn.expiresAt) return next();
+  const tkn = await queryGetToken(ctx.req);
+  if (!tkn) return;
+  if (!token.compare(parsedToken.validator, tkn.validator)) return;
+  if (date.utc() >= tkn.expiresAt) return;
 
-  res.locals.userId = tkn.userId;
-  res.locals.tokenId = tkn.id;
-
-  next();
+  ctx.userId = tkn.userId;
+  ctx.tokenId = tkn.id;
 }
 
-async function auth(req: Request, res: Response<AuthSchema.OutputAuth>) {
-  const parsed = authSchema.safeParse(req.body);
-  if (!parsed.success) return void res.status(500).send();
+const auth = sage.route(
+  {} as RouterContext,
+  {} as z.infer<typeof authSchema>,
+  async (input, ctx) => {
+    const parsed = authSchema.safeParse(input);
+    if (!parsed.success) return undefined;
 
-  if (!getAuthInfo(res)) return void res.status(500).send();
-  return void res.status(200).send({});
-}
-
-async function initiateSignup(req: Request, res: Response<AuthSchema.OutputInitiateSignup>): Promise<void> {
-  const parsed = initiateSignupSchema.safeParse(req.body);
-  if (!parsed.success) return void res.status(500).send();
-
-  const { username, email } = parsed.data;
-
-  const [result0]: [{ count: number }?] = await pg`
-    SELECT COUNT(*) FROM users WHERE username=${username} OR email=${email}
-  `;
-  if (!result0) return void res.status(500).send();
-  if (result0.count !== 0) return void res.status(500).send();
-
-  const [result1]: [{ count: number }?] = await pg`
-    SELECT COUNT(*) FROM email_verify_email
-    WHERE username=${username} AND email=${email} AND expires_at>${date.utc()} AND tries_left>0
-  `;
-  if (!result1) return void res.status(500).send();
-  if (result1.count !== 0) return void res.status(500).send();
-
-  const row = {
-    username: username,
-    email: email,
-    otp: crypto.otp(),
-    sent_at: -1,
-    expires_at: -1,
-    tries_left: 3
+    if (!getAuthInfo(ctx.res)) return undefined;
+    return {};
   }
+)
 
-  const sent = await mailer.sendConfirmEmail(email, row.otp);
-  if (!sent) return void res.status(500).send();
+const initiateSignup = sage.route(
+  {} as RouterContext,
+  {} as z.infer<typeof initiateSignupSchema>,
+  async (input, _ctx) => {
+    const parsed = initiateSignupSchema.safeParse(input);
+    if (!parsed.success) return undefined;
 
-  row.sent_at = date.utc();
-  row.expires_at = date.utc() + 60 * 10; // 10 minutes
-  await pg`INSERT INTO email_verify_email ${pg(row)}`;
+    const { username, email } = parsed.data;
 
-  res.status(200).send({});
-}
+    const [result0]: [{ count: number }?] = await pg`
+      SELECT COUNT(*) FROM users WHERE username=${username} OR email=${email}
+    `;
+    if (!result0) return undefined;
+    if (result0.count !== 0) return undefined;
 
-async function confirmSignup(req: Request, res: Response<AuthSchema.OutputConfirmSignup>): Promise<void> {
-  const parsed = confirmSignupSchema.safeParse(req.body);
-  if (!parsed.success) return void res.status(500).send();
-
-  const { username, email, password, otp } = parsed.data;
-
-  const [result0]: [{ count: number }?] = await pg`
-    SELECT COUNT(*) FROM users WHERE username=${username} OR email=${email}
-  `;
-  if (!result0) return void res.status(500).send();
-  if (result0.count !== 0) return void res.status(500).send();
-
-  const [result1]: [{ id: number, otp: number }?] = await pg`
-    UPDATE email_verify_email SET tries_left=tries_left-1
-    WHERE id=(
-      SELECT id FROM email_verify_email
+    const [result1]: [{ count: number }?] = await pg`
+      SELECT COUNT(*) FROM email_verify_email
       WHERE username=${username} AND email=${email} AND expires_at>${date.utc()} AND tries_left>0
-      ORDER BY id DESC 
-      LIMIT 1
-    )
-    RETURNING id, otp
-  `;
-  if (!result1) return void res.status(500).send();
-  if (result1.otp.toString() !== otp) return void res.status(500).send();
+    `;
+    if (!result1) return undefined;
+    if (result1.count !== 0) return undefined;
 
-  const row = {
-    username: username,
-    email: email,
-    password: await crypto.encryptPassword(password),
-    joined_at: date.utc(),
+    const row = {
+      username: username,
+      email: email,
+      otp: crypto.otp(),
+      sent_at: -1,
+      expires_at: -1,
+      tries_left: 3
+    }
+
+    const sent = await mailer.sendConfirmEmail(email, row.otp);
+    if (!sent) return undefined;
+
+    row.sent_at = date.utc();
+    row.expires_at = date.utc() + 60 * 10; // 10 minutes
+    await pg`INSERT INTO email_verify_email ${pg(row)}`;
+
+    return {};
   }
+)
 
-  const [result2, result3] = await pg.begin(pg => [
-    pg`INSERT INTO users ${pg(row)} RETURNING id`,
-    pg`UPDATE email_verify_email SET expires_at=${date.utc()} WHERE id=${result1.id}`,
-  ]);
-  if (!result2.count) return void res.status(500).send();
-  if (!result3.count) return void res.status(500).send();
+const confirmSignup = sage.route(
+  {} as RouterContext,
+  {} as z.infer<typeof confirmSignupSchema>,
+  async (input, ctx) => {
+    const parsed = confirmSignupSchema.safeParse(input);
+    if (!parsed.success) return undefined;
 
-  const userId: number | undefined = result2[0]?.id;
-  if (userId === undefined) return void res.status(500).send();
-  if (!await queryCreateToken(req, res, userId)) return void res.status(500).send();
-  return void res.status(200).send({});
-}
+    const { username, email, password, otp } = parsed.data;
 
-async function login(req: Request, res: Response<AuthSchema.OutputLogin>): Promise<void> {
-  const parsed = loginSchema.safeParse(req.body);
-  if (!parsed.success) return void res.status(500).send();
+    const [result0]: [{ count: number }?] = await pg`
+      SELECT COUNT(*) FROM users WHERE username=${username} OR email=${email}
+    `;
+    if (!result0) return undefined;
+    if (result0.count !== 0) return undefined;
 
-  const { info, password } = parsed.data;
-  const usernameParsed = sharedSchemas.username.safeParse(info);
-  const username = usernameParsed.success ? usernameParsed.data : undefined;
-  const emailParsed = sharedSchemas.email.safeParse(info);
-  const email = emailParsed.success ? emailParsed.data : undefined;
+    const [result1]: [{ id: number, otp: number }?] = await pg`
+      UPDATE email_verify_email SET tries_left=tries_left-1
+      WHERE id=(
+        SELECT id FROM email_verify_email
+        WHERE username=${username} AND email=${email} AND expires_at>${date.utc()} AND tries_left>0
+        ORDER BY id DESC 
+        LIMIT 1
+      )
+      RETURNING id, otp
+    `;
+    if (!result1) return undefined;
+    if (result1.otp.toString() !== otp) return undefined;
 
-  let [result0]: [{ id: number, email: string, password: Buffer }?] = [undefined];
-  if (username) [result0] = await pg`SELECT id, email, password FROM users WHERE username=${username}`;
-  else if (email) [result0] = await pg`SELECT id, email, password FROM users WHERE email=${email}`;
-  else return void res.status(500).send();
+    const row = {
+      username: username,
+      email: email,
+      password: await crypto.encryptPassword(password),
+      joined_at: date.utc(),
+    }
 
-  if (!result0) return void res.status(500).send();
-  if (!await crypto.comparePassword(password, result0.password)) return void res.status(500).send();
-  if (!await queryCreateToken(req, res, result0.id)) return void res.status(500).send();
+    const [result2, result3] = await pg.begin(pg => [
+      pg`INSERT INTO users ${pg(row)} RETURNING id`,
+      pg`UPDATE email_verify_email SET expires_at=${date.utc()} WHERE id=${result1.id}`,
+    ]);
+    if (!result2.count) return undefined;
+    if (!result3.count) return undefined;
 
-  res.status(200).send({});
+    const userId: number | undefined = result2[0]?.id;
+    if (userId === undefined) return undefined;
+    if (!await queryCreateToken(ctx.req, ctx.res, userId)) return undefined;
+    return {};
+  }
+)
 
-  const ip = req.headers["x-real-ip"] as string;
-  const ua = userAgent.parse(req.headers["user-agent"]);
-  const [result1]: [{ count: number }?] = await pg`
-    SELECT COUNT(*) FROM sessions
-    WHERE user_id=${result0.id} AND ip=${ip}
-  `;
-  if (!result1) return;
-  if (result1.count > 1) return;
+const login = sage.route(
+  {} as RouterContext,
+  {} as z.infer<typeof loginSchema>,
+  async (input, ctx) => {
+    const parsed = loginSchema.safeParse(input);
+    if (!parsed.success) return undefined;
 
-  await mailer.sendNewLocation(result0.email, ip, ua);
-}
+    const { info, password } = parsed.data;
+    const usernameParsed = sharedSchemas.username.safeParse(info);
+    const username = usernameParsed.success ? usernameParsed.data : undefined;
+    const emailParsed = sharedSchemas.email.safeParse(info);
+    const email = emailParsed.success ? emailParsed.data : undefined;
 
-async function logout(req: Request, res: Response<AuthSchema.OutputLogout>) {
-  const parsed = logoutSchema.safeParse(req.body);
-  if (!parsed.success) return void res.status(500).send();
+    let [result0]: [{ id: number, email: string, password: Buffer }?] = [undefined];
+    if (username) [result0] = await pg`SELECT id, email, password FROM users WHERE username=${username}`;
+    else if (email) [result0] = await pg`SELECT id, email, password FROM users WHERE email=${email}`;
+    else return undefined;
 
-  const authInfo = getAuthInfo(res);
-  if (!authInfo) return void res.status(500).send();
-  await queryExpireToken(res, authInfo.tokenId, authInfo.userId);
-  return void res.status(200).send({});
-}
+    if (!result0) return undefined;
+    if (!await crypto.comparePassword(password, result0.password)) return undefined;
+    if (!await queryCreateToken(ctx.req, ctx.res, result0.id)) return undefined;
+
+    (async () => {
+      const ip = ctx.req.headers["x-real-ip"] as string;
+      const ua = userAgent.parse(ctx.req.headers["user-agent"]);
+      const [result1]: [{ count: number }?] = await pg`
+        SELECT COUNT(*) FROM sessions
+        WHERE user_id=${result0.id} AND ip=${ip}
+      `;
+      if (!result1) return;
+      if (result1.count > 1) return;
+
+      await mailer.sendNewLocation(result0.email, ip, ua);
+    })();
+
+    return {};
+  }
+)
+
+const logout = sage.route(
+  {} as RouterContext,
+  {} as z.infer<typeof logoutSchema>,
+  async (input, ctx) => {
+    const parsed = logoutSchema.safeParse(input);
+    if (!parsed.success) return undefined;
+
+    const authInfo = getAuthInfo(ctx.res);
+    if (!authInfo) return undefined;
+    await queryExpireToken(ctx.res, authInfo.tokenId, authInfo.userId);
+    return {};
+  }
+)
 
 async function queryGetToken(req: Request) {
   const rawToken = token.get(req);
@@ -201,4 +224,12 @@ function getAuthInfo(res: Response): undefined | { tokenId: number, userId: numb
   return { tokenId: res.locals.tokenId, userId: res.locals.userId };
 }
 
-export default { middleware, auth, initiateSignup, confirmSignup, login, logout, getAuthInfo }
+export default {
+  middleware,
+  auth,
+  initiateSignup,
+  confirmSignup,
+  login,
+  logout,
+  getAuthInfo,
+}

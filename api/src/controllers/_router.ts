@@ -1,21 +1,32 @@
 import sage from "@dorkodu/sage-server";
 import { NextFunction, Request, Response } from "express";
 
+import auth from "./auth";
 import user from "./user";
 import session from "./session";
 import access from "./access";
 import external from "./external";
 
 export interface RouterContext {
-  req: Request;
-  res: Response;
-  next: NextFunction;
+  readonly req: Request;
+  readonly res: Response;
+  readonly next: NextFunction;
+
+  userId?: number;
+  tokenId?: number;
 }
 
 export type Router = typeof router
 export const router = sage.router(
   {} as RouterContext,
   {
+    /* auth */
+    auth: auth.auth,
+    initiateSignup: auth.initiateSignup,
+    confirmSignup: auth.confirmSignup,
+    login: auth.login,
+    logout: auth.logout,
+
     /* user */
     getUser: user.getUser,
 
