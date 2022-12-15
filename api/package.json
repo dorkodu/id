@@ -4,18 +4,15 @@
   "scripts": {
     "build": "rimraf ./dist && tsc",
     "dev": "ts-node-dev --poll --respawn --quiet src/index.ts",
-
     "test:unit": "vitest run --dir ./src/test/unit",
     "test:unit:watch": "vitest watch --dir ./src/test/unit",
     "test:integration": "vitest run --dir ./src/test/integration",
     "test:integration:watch": "vitest watch --dir ./src/test/integration",
-
     "migrate:dev:latest": "NODE_ENV=development knex migrate:latest --knexfile ./src/knexfile.ts",
     "migrate:dev:rollback": "NODE_ENV=development knex migrate:rollback --all --knexfile ./src/knexfile.ts",
     "migrate:dev:up": "NODE_ENV=development knex migrate:up --knexfile ./src/knexfile.ts",
     "migrate:dev:down": "NODE_ENV=development knex migrate:down --knexfile ./src/knexfile.ts",
     "migrate:dev:reset": "pnpm migrate:dev:rollback && pnpm migrate:dev:latest",
-    
     "migrate:prod:latest": "NODE_ENV=production knex migrate:latest --knexfile ./src/knexfile.ts",
     "migrate:prod:rollback": "NODE_ENV=production knex migrate:rollback --all --knexfile ./src/knexfile.ts",
     "migrate:prod:up": "NODE_ENV=production knex migrate:up --knexfile ./src/knexfile.ts",
@@ -23,19 +20,20 @@
     "migrate:prod:reset": "pnpm migrate:dev:rollback && pnpm migrate:dev:latest"
   },
   "dependencies": {
+    "@dorkodu/sage-server": "^0.1.0",
+    "bcrypt": "^5.1.0",
+    "cookie": "^0.5.0",
     "cookie-parser": "^1.4.6",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "node-cron": "^3.0.2",
     "nodejs-snowflake": "^2.0.1",
     "nodemailer": "^6.8.0",
+    "pg": "^8.8.0",
     "postgres": "^3.3.1",
     "redis": "^4.5.0",
     "ua-parser-js": "^1.0.32",
-    "zod": "^3.19.1",
-    "bcrypt": "^5.1.0",
-    "cookie": "^0.5.0",
-    "pg": "^8.8.0"
+    "zod": "^3.19.1"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",

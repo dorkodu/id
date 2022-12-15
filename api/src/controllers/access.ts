@@ -1,4 +1,6 @@
-import { Request, Response } from "express";
+import sage from "@dorkodu/sage-server";
+import { Request } from "express";
+import { z } from "zod";
 import { IAccess } from "../../../shared/src/access";
 import { config } from "../config";
 import { crypto } from "../lib/crypto";
@@ -8,58 +10,71 @@ import { userAgent } from "../lib/user_agent";
 import pg from "../pg";
 
 import {
-  AccessSchema, getAccessesSchema, grantAccessSchema,
+  getAccessesSchema, grantAccessSchema,
   revokeAccessSchema
 } from "../schemas/access";
 import auth from "./auth";
+import { RouterContext } from "./_router";
 
-async function getAccesses(req: Request, res: Response<AccessSchema.OutputGetAccesses>): Promise<void> {
-  const parsed = getAccessesSchema.safeParse(req.body);
-  if (!parsed.success) return void res.status(500).send();
+const getAccesses = sage.route(
+  {} as RouterContext,
+  {} as z.infer<typeof getAccessesSchema>,
+  async (input, ctx) => {
+    const parsed = getAccessesSchema.safeParse(input);
+    if (!parsed.success) return undefined;
 
-  const info = auth.getAuthInfo(res);
-  if (!info) return void res.status(500).send();
+    const info = auth.getAuthInfo(ctx.res);
+    if (!info) return undefined;
 
-  const { anchor, type } = parsed.data;
-  const result = await pg<IAccess[]>`
-    SELECT id, created_at, expires_at, user_agent, ip, service FROM access_tokens
-    WHERE user_id=${info.userId} AND expires_at>${date.utc()}
-    ${anchor === -1 ? pg`` : type === "newer" ? pg`AND id>${anchor}` : pg`AND id<${anchor}`}
-    ORDER BY id ${anchor === -1 ? pg`DESC` : type === "newer" ? pg`ASC` : pg`DESC`}
-    LIMIT 10
-  `;
-  if (!result.length) return void res.status(500).send();
+    const { anchor, type } = parsed.data;
+    const result = await pg<IAccess[]>`
+      SELECT id, created_at, expires_at, user_agent, ip, service FROM access_tokens
+      WHERE user_id=${info.userId} AND expires_at>${date.utc()}
+      ${anchor === -1 ? pg`` : type === "newer" ? pg`AND id>${anchor}` : pg`AND id<${anchor}`}
+      ORDER BY id ${anchor === -1 ? pg`DESC` : type === "newer" ? pg`ASC` : pg`DESC`}
+      LIMIT 10
+    `;
+    if (!result.length) return undefined;
 
-  return void res.status(200).send(result);
-}
+    return result;
+  }
+)
 
-async function grantAccess(req: Request, res: Response<AccessSchema.OutputGrantAccess>): Promise<void> {
-  const parsed = grantAccessSchema.safeParse(req.body);
-  if (!parsed.success) return void res.status(500).send();
+const grantAccess = sage.route(
+  {} as RouterContext,
+  {} as z.infer<typeof grantAccessSchema>,
+  async (input, ctx) => {
+    const parsed = grantAccessSchema.safeParse(input);
+    if (!parsed.success) return undefined;
 
-  const info = auth.getAuthInfo(res);
-  if (!info) return void res.status(500).send();
+    const info = auth.getAuthInfo(ctx.res);
+    if (!info) return undefined;
 
-  // Check for white-listed services
-  if (!config.serviceWhitelist.includes(parsed.data.service)) return void res.status(500).send();
+    // Check for white-listed services
+    if (!config.serviceWhitelist.includes(parsed.data.service)) return undefined;
 
-  const code = await queryCreateAccessCode(req, info.userId, parsed.data.service);
-  if (!code) return void res.status(500).send();
+    const code = await queryCreateAccessCode(ctx.req, info.userId, parsed.data.service);
+    if (!code) return undefined;
 
-  res.status(200).send({ code });
-}
+    return { code };
+  }
+)
 
-async function revokeAccess(req: Request, res: Response<AccessSchema.OutputRevokeAccess>): Promise<void> {
-  const parsed = revokeAccessSchema.safeParse(req.body);
-  if (!parsed.success) return void res.status(500).send();
+const revokeAccess = sage.route(
+  {} as RouterContext,
+  {} as z.infer<typeof revokeAccessSchema>,
+  async (input, ctx) => {
+    const parsed = revokeAccessSchema.safeParse(input);
+    if (!parsed.success) return undefined;
 
-  const info = auth.getAuthInfo(res);
-  if (!info) return void res.status(500).send();
+    const info = auth.getAuthInfo(ctx.res);
+    if (!info) return undefined;
 
-  await queryExpireAccessToken(parsed.data.accessId, info.userId);
+    await queryExpireAccessToken(parsed.data.accessId, info.userId);
 
-  res.status(200).send({});
-}
+    return {};
+  }
+)
 
 async function queryCreateAccessToken(userId: number, userAgent: string, ip: string, service: string) {
   const tkn = token.create();
