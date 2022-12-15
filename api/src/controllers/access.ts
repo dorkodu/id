@@ -23,7 +23,7 @@ const getAccesses = sage.route(
     const parsed = getAccessesSchema.safeParse(input);
     if (!parsed.success) return undefined;
 
-    const info = auth.getAuthInfo(ctx);
+    const info = await auth.getAuthInfo(ctx);
     if (!info) return undefined;
 
     const { anchor, type } = parsed.data;
@@ -47,7 +47,7 @@ const grantAccess = sage.route(
     const parsed = grantAccessSchema.safeParse(input);
     if (!parsed.success) return undefined;
 
-    const info = auth.getAuthInfo(ctx);
+    const info = await auth.getAuthInfo(ctx);
     if (!info) return undefined;
 
     // Check for white-listed services
@@ -67,7 +67,7 @@ const revokeAccess = sage.route(
     const parsed = revokeAccessSchema.safeParse(input);
     if (!parsed.success) return undefined;
 
-    const info = auth.getAuthInfo(ctx);
+    const info = await auth.getAuthInfo(ctx);
     if (!info) return undefined;
 
     await queryExpireAccessToken(parsed.data.accessId, info.userId);

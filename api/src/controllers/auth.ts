@@ -6,7 +6,7 @@ import { token } from "../lib/token";
 import { userAgent } from "../lib/user_agent";
 
 import pg from "../pg";
-import { authSchema, confirmSignupSchema, initiateSignupSchema, loginSchema, logoutSchema } from "../schemas/auth";
+import { confirmSignupSchema, initiateSignupSchema, loginSchema } from "../schemas/auth";
 import { sharedSchemas } from "../schemas/shared";
 import { RouterContext } from "./_router";
 import sage from "@dorkodu/sage-server";
@@ -28,12 +28,9 @@ async function middleware(ctx: RouterContext) {
 
 const auth = sage.route(
   {} as RouterContext,
-  {} as z.infer<typeof authSchema>,
-  async (input, ctx) => {
-    const parsed = authSchema.safeParse(input);
-    if (!parsed.success) return undefined;
-
-    if (!getAuthInfo(ctx)) return undefined;
+  undefined,
+  async (_input, ctx) => {
+    if (!await getAuthInfo(ctx)) return undefined;
     return {};
   }
 )
@@ -170,12 +167,9 @@ const login = sage.route(
 
 const logout = sage.route(
   {} as RouterContext,
-  {} as z.infer<typeof logoutSchema>,
-  async (input, ctx) => {
-    const parsed = logoutSchema.safeParse(input);
-    if (!parsed.success) return undefined;
-
-    const authInfo = getAuthInfo(ctx);
+  undefined,
+  async (_input, ctx) => {
+    const authInfo = await getAuthInfo(ctx);
     if (!authInfo) return undefined;
     await queryExpireToken(ctx.res, authInfo.tokenId, authInfo.userId);
     return {};
@@ -219,7 +213,10 @@ async function queryExpireToken(res: Response, tokenId: number, userId: number) 
   token.detach(res);
 }
 
-function getAuthInfo(ctx: RouterContext): undefined | { tokenId: number, userId: number } {
+async function getAuthInfo(ctx: RouterContext) {
+  if (!ctx.triedAuth) await middleware(ctx);
+  ctx.triedAuth = true;
+
   if (ctx.tokenId === undefined || ctx.userId === undefined) return undefined;
   return { tokenId: ctx.tokenId, userId: ctx.userId };
 }

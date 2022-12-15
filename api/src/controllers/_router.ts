@@ -12,6 +12,7 @@ export interface RouterContext {
   readonly res: Response;
   readonly next: NextFunction;
 
+  triedAuth?: boolean;
   userId?: number;
   tokenId?: number;
 }
