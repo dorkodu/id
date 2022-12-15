@@ -1,55 +1,69 @@
-import { Request, Response } from "express";
 import { IUser } from "../../../shared/src/user";
 import { date } from "../lib/date";
 import { token } from "../lib/token";
 import pg from "../pg";
-import { checkAccessSchema, ExternalSchema, getAccessTokenSchema, getUserDataSchema } from "../schemas/external";
+import { checkAccessSchema, getAccessTokenSchema, getUserDataSchema } from "../schemas/external";
 import access from "./access";
+import sage from "@dorkodu/sage-server";
+import { RouterContext } from "./_router";
+import { z } from "zod";
 
 /* These functions are used by external apps that use Dorkodu ID for authentication. */
 
-async function getAccessToken(req: Request, res: Response<ExternalSchema.OutputGetAccessToken>): Promise<void> {
-  const parsed = getAccessTokenSchema.safeParse(req.body);
-  if (!parsed.success) return void res.status(500).send();
+const getAccessToken = sage.route(
+  {} as RouterContext,
+  {} as z.infer<typeof getAccessTokenSchema>,
+  async (input, _ctx) => {
+    const parsed = getAccessTokenSchema.safeParse(input);
+    if (!parsed.success) return undefined;
 
-  const parsedToken = token.parse(parsed.data.code);
-  if (!parsedToken) return void res.status(500).send();
+    const parsedToken = token.parse(parsed.data.code);
+    if (!parsedToken) return undefined;
 
-  const result0 = await access.queryGetAccessCode(parsed.data.code);
-  if (!result0) return void res.status(500).send();
-  if (!token.compare(parsedToken.validator, result0.validator)) return void res.status(500).send();
-  if (date.utc() >= result0.expiresAt) return void res.status(500).send();
+    const result0 = await access.queryGetAccessCode(parsed.data.code);
+    if (!result0) return undefined;
+    if (!token.compare(parsedToken.validator, result0.validator)) return undefined;
+    if (date.utc() >= result0.expiresAt) return undefined;
 
-  const { userId, userAgent, ip, service } = result0;
+    const { userId, userAgent, ip, service } = result0;
 
-  const accessToken = await access.queryCreateAccessToken(userId, userAgent, ip, service);
-  if (!accessToken) return void res.status(500).send();
+    const accessToken = await access.queryCreateAccessToken(userId, userAgent, ip, service);
+    if (!accessToken) return undefined;
 
-  res.status(200).send({ token: accessToken });
-}
+    return { token: accessToken };
+  }
+)
 
-async function checkAccess(req: Request, res: Response<ExternalSchema.OutputCheckAccess>): Promise<void> {
-  const parsed = checkAccessSchema.safeParse(req.body);
-  if (!parsed.success) return void res.status(500).send();
+const checkAccess = sage.route(
+  {} as RouterContext,
+  {} as z.infer<typeof checkAccessSchema>,
+  async (input, _ctx) => {
+    const parsed = checkAccessSchema.safeParse(input);
+    if (!parsed.success) return undefined;
 
-  const result0 = await validateAccessToken(parsed.data.token);
-  if (!result0) return void res.status(500).send();
-  res.status(200).send({ userId: result0.userId });
-}
+    const result0 = await validateAccessToken(parsed.data.token);
+    if (!result0) return undefined;
+    return { userId: result0.userId };
+  }
+)
 
-async function getUserData(req: Request, res: Response<ExternalSchema.OutputGetUserData>): Promise<void> {
-  const parsed = getUserDataSchema.safeParse(req.body);
-  if (!parsed.success) return void res.status(500).send();
+const getUserData = sage.route(
+  {} as RouterContext,
+  {} as z.infer<typeof getUserDataSchema>,
+  async (input, _ctx) => {
+    const parsed = getUserDataSchema.safeParse(input);
+    if (!parsed.success) return undefined;
 
-  const result0 = await validateAccessToken(parsed.data.token);
-  if (!result0) return void res.status(500).send();
+    const result0 = await validateAccessToken(parsed.data.token);
+    if (!result0) return undefined;
 
-  const [result]: [IUser?] = await pg`
-    SELECT id, username, email, joined_at FROM users WHERE id=${result0.userId}
-  `;
-  if (!result) return void res.status(500).send();
-  res.status(200).send(result);
-}
+    const [result]: [IUser?] = await pg`
+      SELECT id, username, email, joined_at FROM users WHERE id=${result0.userId}
+    `;
+    if (!result) return undefined;
+    return result;
+  }
+)
 
 async function validateAccessToken(accessToken: string): Promise<{ userId: number } | undefined> {
   const parsedToken = token.parse(accessToken);
@@ -63,4 +77,8 @@ async function validateAccessToken(accessToken: string): Promise<{ userId: numbe
   return { userId: result0.userId };
 }
 
-export default { getAccessToken, checkAccess, getUserData }
+export default {
+  getAccessToken,
+  checkAccess,
+  getUserData,
+}
