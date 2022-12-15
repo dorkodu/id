@@ -33,7 +33,7 @@ const auth = sage.route(
     const parsed = authSchema.safeParse(input);
     if (!parsed.success) return undefined;
 
-    if (!getAuthInfo(ctx.res)) return undefined;
+    if (!getAuthInfo(ctx)) return undefined;
     return {};
   }
 )
@@ -175,7 +175,7 @@ const logout = sage.route(
     const parsed = logoutSchema.safeParse(input);
     if (!parsed.success) return undefined;
 
-    const authInfo = getAuthInfo(ctx.res);
+    const authInfo = getAuthInfo(ctx);
     if (!authInfo) return undefined;
     await queryExpireToken(ctx.res, authInfo.tokenId, authInfo.userId);
     return {};
@@ -219,9 +219,9 @@ async function queryExpireToken(res: Response, tokenId: number, userId: number) 
   token.detach(res);
 }
 
-function getAuthInfo(res: Response): undefined | { tokenId: number, userId: number } {
-  if (res.locals.tokenId === undefined || res.locals.userId === undefined) return undefined;
-  return { tokenId: res.locals.tokenId, userId: res.locals.userId };
+function getAuthInfo(ctx: RouterContext): undefined | { tokenId: number, userId: number } {
+  if (ctx.tokenId === undefined || ctx.userId === undefined) return undefined;
+  return { tokenId: ctx.tokenId, userId: ctx.userId };
 }
 
 export default {

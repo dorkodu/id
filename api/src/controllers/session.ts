@@ -14,7 +14,7 @@ const getCurrentSession = sage.route(
     const parsed = getCurrentSessionSchema.safeParse(input);
     if (!parsed.success) return undefined;
 
-    const info = auth.getAuthInfo(ctx.res);
+    const info = auth.getAuthInfo(ctx);
     if (!info) return undefined;
 
     const [result]: [ISession?] = await pg`
@@ -33,7 +33,7 @@ const getSessions = sage.route(
     const parsed = getSessionsSchema.safeParse(input);
     if (!parsed.success) return undefined;
 
-    const info = auth.getAuthInfo(ctx.res);
+    const info = auth.getAuthInfo(ctx);
     if (!info) return undefined;
 
     const { anchor, type } = parsed.data;
@@ -57,7 +57,7 @@ const terminateSession = sage.route(
     const parsed = terminateSessionSchema.safeParse(input);
     if (!parsed.success) return undefined;
 
-    const info = auth.getAuthInfo(ctx.res);
+    const info = auth.getAuthInfo(ctx);
     if (!info) return undefined;
 
     const { sessionId } = parsed.data;

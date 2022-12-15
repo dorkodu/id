@@ -21,15 +21,4 @@ declare global {
   }
 }
 
-import 'express';
-
-declare module 'express' {
-  export interface Response {
-    locals: {
-      userId?: number;
-      tokenId?: number;
-    }
-  }
-}
-
 export { }

@@ -26,7 +26,7 @@ const getUser = sage.route(
     const parsed = getUserSchema.safeParse(input);
     if (!parsed.success) return undefined;
 
-    const info = auth.getAuthInfo(ctx.res);
+    const info = auth.getAuthInfo(ctx);
     if (!info) return undefined;
 
     const [result]: [IUser?] = await pg`
@@ -44,7 +44,7 @@ const changeUsername = sage.route(
     const parsed = changeUsernameSchema.safeParse(input);
     if (!parsed.success) return undefined;
 
-    const info = auth.getAuthInfo(ctx.res);
+    const info = auth.getAuthInfo(ctx);
     if (!info) return undefined;
 
     const { newUsername } = parsed.data;
@@ -61,7 +61,7 @@ const initiateEmailChange = sage.route(
     const parsed = initiateEmailChangeSchema.safeParse(input);
     if (!parsed.success) return undefined;
 
-    const info = auth.getAuthInfo(ctx.res);
+    const info = auth.getAuthInfo(ctx);
     if (!info) return undefined;
 
     const [result0]: [{ email: string }?] = await pg`
