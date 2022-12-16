@@ -14,8 +14,6 @@ export async function request(data: any) {
     const res = await fetch("/api", options);
     const data = await res.json().catch(() => undefined);
 
-    console.log(data);
-
     return data;
   } catch {
     return undefined;

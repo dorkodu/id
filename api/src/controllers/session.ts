@@ -43,7 +43,7 @@ const getSessions = sage.route(
     `;
     if (!result.length) return undefined;
 
-    return result;
+    return result as ISession[];
   }
 )
 

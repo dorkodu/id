@@ -5,12 +5,16 @@ import Access from "../components/Access";
 import Spinner from "../components/Spinner";
 import { date } from "../lib/date";
 import { useUserStore } from "../stores/userStore"
+import { request, router } from "../stores/api";
+import { array } from "../lib/array";
 
 function Dashboard() {
   const navigate = useNavigate();
 
-  const queryGetUser = useUserStore(state => state.queryGetUser);
-  const queryGetCurrentSession = useUserStore(state => state.queryGetCurrentSession);
+  const sessionIds = useUserStore(state => state.session.ids);
+  const accessIds = useUserStore(state => state.access.ids);
+  const setSessions = useUserStore(state => state.setSessions);
+  const setAccesses = useUserStore(state => state.setAccesses);
   const queryGetSessions = useUserStore(state => state.queryGetSessions);
   const queryGetAccesses = useUserStore(state => state.queryGetAccesses);
   const queryLogout = useUserStore(state => state.queryLogout);
@@ -22,10 +26,22 @@ function Dashboard() {
 
   useEffect(() => {
     (async () => {
-      queryGetUser();
-      queryGetCurrentSession();
-      queryGetSessions("newer", true);
-      queryGetAccesses("newer", true);
+      const sessionAnchor = array.getAnchor(sessionIds, "newer", true);
+      const accessAnchor = array.getAnchor(accessIds, "newer", true);
+
+      const res = await router.get({
+        a: router.query("getUser", undefined, { ctx: "ctx", }),
+        b: router.query("getCurrentSession", undefined, { ctx: "ctx", wait: "a" }),
+        c: router.query("getSessions", { anchor: sessionAnchor, type: "newer" }, { ctx: "ctx", wait: "a" }),
+        d: router.query("getAccesses", { anchor: accessAnchor, type: "newer" }, { ctx: "ctx", wait: "a" }),
+      }, (query) => request(query));
+
+      useUserStore.setState(state => {
+        state.user = res?.a;
+        state.currentSession = res?.b;
+      })
+      setSessions(res?.c, true);
+      setAccesses(res?.d, true);
     })();
   }, []);
 

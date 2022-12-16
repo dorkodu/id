@@ -36,7 +36,7 @@ const getAccesses = sage.route(
     `;
     if (!result.length) return undefined;
 
-    return result;
+    return result as IAccess[];
   }
 )
 
