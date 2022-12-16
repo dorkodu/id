@@ -13,8 +13,12 @@ function Dashboard() {
 
   const sessionIds = useUserStore(state => state.session.ids);
   const accessIds = useUserStore(state => state.access.ids);
+  
+  const setUser = useUserStore(state => state.setUser);
+  const setCurrentSession = useUserStore(state => state.setCurrentSession);
   const setSessions = useUserStore(state => state.setSessions);
   const setAccesses = useUserStore(state => state.setAccesses);
+
   const queryGetSessions = useUserStore(state => state.queryGetSessions);
   const queryGetAccesses = useUserStore(state => state.queryGetAccesses);
   const queryLogout = useUserStore(state => state.queryLogout);
@@ -36,10 +40,8 @@ function Dashboard() {
         d: router.query("getAccesses", { anchor: accessAnchor, type: "newer" }, { ctx: "ctx", wait: "a" }),
       }, (query) => request(query));
 
-      useUserStore.setState(state => {
-        state.user = res?.a;
-        state.currentSession = res?.b;
-      })
+      setUser(res?.a);
+      setCurrentSession(res?.b);
       setSessions(res?.c, true);
       setAccesses(res?.d, true);
     })();

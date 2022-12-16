@@ -27,6 +27,8 @@ interface Action {
   getSessions: () => ISession[];
   getAccesses: () => IAccess[];
 
+  setUser: (data: IUser | undefined) => void;
+  setCurrentSession: (data: ISession | undefined) => void;
   setSessions: (data: ISession[] | undefined, refresh?: boolean) => void;
   setAccesses: (data: IAccess[] | undefined, refresh?: boolean) => void;
 
@@ -89,6 +91,14 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
     })
 
     return accesss;
+  },
+
+  setUser: (data) => {
+    set(state => { state.user = data })
+  },
+
+  setCurrentSession: (data) => {
+    set(state => { state.currentSession = data })
   },
 
   setSessions: (data: ISession[] | undefined, refresh?: boolean) => {
@@ -260,11 +270,7 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
     if (!res || !res.a) return;
     const data = res.a;
 
-    set(state => {
-      if (refresh) state.session = { ids: [], entities: {} };
-      state.session.ids = array.sort([...data.map(session => session.id), ...state.session.ids]);
-      data.forEach(session => void (state.session.entities[session.id] = session))
-    })
+    get().setSessions(data, refresh);
   },
 
   queryTerminateSession: async (sessionId: number) => {
@@ -297,11 +303,7 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
     if (!res || !res.a) return;
     const data = res.a;
 
-    set(state => {
-      if (refresh) state.access = { ids: [], entities: {} };
-      state.access.ids = array.sort([...data.map(access => access.id), ...state.access.ids]);
-      data.forEach(access => void (state.access.entities[access.id] = access))
-    })
+    get().setAccesses(data, refresh);
   },
 
   queryGrantAccess: async (service: string) => {
