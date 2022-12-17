@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { config } from "../config";
 import { crypto } from "./crypto";
 import { date } from "./date";
 import { encoding } from "./encoding";
