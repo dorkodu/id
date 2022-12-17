@@ -9,11 +9,12 @@ export async function up(knex: Knex): Promise<void> {
       table.binary("password", 60)
       table.bigint("joined_at")
     })
+
     .createTable("sessions", (table) => {
       table.bigIncrements("id").primary()
       table.bigint("user_id")
       table.binary("selector", 32).unique()
-      table.binary("validator", 32).unique()
+      table.binary("validator", 32)
       table.bigint("created_at")
       table.bigint("expires_at")
       table.string("user_agent", 256)
