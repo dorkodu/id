@@ -15,7 +15,6 @@ async function main() {
   app.use(cookieParser());
 
   app.use("/api", async (req, res, next) => {
-    // TODO: Error handling or zod
     res.status(200).send(await schema.execute(() => ({ req, res, next }), req.body));
   });
 
