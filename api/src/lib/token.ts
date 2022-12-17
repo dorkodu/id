@@ -30,7 +30,7 @@ function compare(raw: Buffer, encrypted: Buffer) {
 
 function attach(res: Response, token: { value: string, expiresAt: number }) {
   res.cookie("token", token.value, {
-    secure: config.env === "production",
+    secure: true,
     httpOnly: true,
     sameSite: true,
     expires: new Date(token.expiresAt * 1000),
