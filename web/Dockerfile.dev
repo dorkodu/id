@@ -4,7 +4,7 @@ WORKDIR /id
 RUN mkdir -p /id/web
 RUN mkdir -p /id/shared
 
-RUN npm install -g pnpm
+RUN npm install -g pnpm && pnpm config set store-dir /root/.local/share/pnpm/store/v3
 
 COPY ./web/pnpm-lock.yaml /id/web
 RUN cd web && pnpm fetch

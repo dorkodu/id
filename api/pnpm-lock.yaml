@@ -1,7 +1,7 @@
 lockfileVersion: 5.4
 
 specifiers:
-  '@dorkodu/sage-server': ^0.1.1
+  '@dorkodu/sage-server': ^0.1.2
   '@types/bcrypt': ^5.0.0
   '@types/cookie': ^0.5.1
   '@types/cookie-parser': ^1.4.3
@@ -33,7 +33,7 @@ specifiers:
   zod: ^3.19.1
 
 dependencies:
-  '@dorkodu/sage-server': 0.1.1
+  '@dorkodu/sage-server': 0.1.2
   bcrypt: 5.1.0
   cookie: 0.5.0
   cookie-parser: 1.4.6
@@ -75,8 +75,8 @@ packages:
       '@jridgewell/trace-mapping': 0.3.9
     dev: true
 
-  /@dorkodu/sage-server/0.1.1:
-    resolution: {integrity: sha512-U4MmQR8hUopZ9hqmMrhlDKAjuCYDXEnMfNB7eHaqwjzI0amJmn0VjDhPrYGYgWcVB9t6CUdhaIIrTsYmBrbrLw==}
+  /@dorkodu/sage-server/0.1.2:
+    resolution: {integrity: sha512-DWzN/YTIcwRcXZ0cQQD/kbs0LPhzV9RRsydzJA23qtdMeWN24bRwfxYGZ+Il/fQJPn2U4KX6w8nmakghn3iSmA==}
     dev: false
 
   /@esbuild/android-arm/0.15.13:
