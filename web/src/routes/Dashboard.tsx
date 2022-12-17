@@ -5,7 +5,7 @@ import Access from "../components/Access";
 import Spinner from "../components/Spinner";
 import { date } from "../lib/date";
 import { useUserStore } from "../stores/userStore"
-import { request, router } from "../stores/api";
+import { request, sage } from "../stores/api";
 import { array } from "../lib/array";
 
 function Dashboard() {
@@ -13,7 +13,7 @@ function Dashboard() {
 
   const sessionIds = useUserStore(state => state.session.ids);
   const accessIds = useUserStore(state => state.access.ids);
-  
+
   const setUser = useUserStore(state => state.setUser);
   const setCurrentSession = useUserStore(state => state.setCurrentSession);
   const setSessions = useUserStore(state => state.setSessions);
@@ -33,11 +33,11 @@ function Dashboard() {
       const sessionAnchor = array.getAnchor(sessionIds, "newer", true);
       const accessAnchor = array.getAnchor(accessIds, "newer", true);
 
-      const res = await router.get({
-        a: router.query("getUser", undefined, { ctx: "ctx", }),
-        b: router.query("getCurrentSession", undefined, { ctx: "ctx", wait: "a" }),
-        c: router.query("getSessions", { anchor: sessionAnchor, type: "newer" }, { ctx: "ctx", wait: "a" }),
-        d: router.query("getAccesses", { anchor: accessAnchor, type: "newer" }, { ctx: "ctx", wait: "a" }),
+      const res = await sage.get({
+        a: sage.query("getUser", undefined, { ctx: "ctx", }),
+        b: sage.query("getCurrentSession", undefined, { ctx: "ctx", wait: "a" }),
+        c: sage.query("getSessions", { anchor: sessionAnchor, type: "newer" }, { ctx: "ctx", wait: "a" }),
+        d: sage.query("getAccesses", { anchor: accessAnchor, type: "newer" }, { ctx: "ctx", wait: "a" }),
       }, (query) => request(query));
 
       setUser(res?.a);

@@ -15,13 +15,13 @@ import {
   revertEmailChangeSchema
 } from "../schemas/user";
 import sage from "@dorkodu/sage-server";
-import { RouterContext } from "./_router";
+import { SchemaContext } from "./_schema";
 import { z } from "zod";
 
-const getUser = sage.route(
-  {} as RouterContext,
+const getUser = sage.resource(
+  {} as SchemaContext,
   undefined,
-  async (_input, ctx) => {
+  async (_arg, ctx) => {
     const info = await auth.getAuthInfo(ctx);
     if (!info) return undefined;
 
@@ -33,11 +33,11 @@ const getUser = sage.route(
   }
 )
 
-const changeUsername = sage.route(
-  {} as RouterContext,
+const changeUsername = sage.resource(
+  {} as SchemaContext,
   {} as z.infer<typeof changeUsernameSchema>,
-  async (input, ctx) => {
-    const parsed = changeUsernameSchema.safeParse(input);
+  async (arg, ctx) => {
+    const parsed = changeUsernameSchema.safeParse(arg);
     if (!parsed.success) return undefined;
 
     const info = await auth.getAuthInfo(ctx);
@@ -50,11 +50,11 @@ const changeUsername = sage.route(
   }
 )
 
-const initiateEmailChange = sage.route(
-  {} as RouterContext,
+const initiateEmailChange = sage.resource(
+  {} as SchemaContext,
   {} as z.infer<typeof initiateEmailChangeSchema>,
-  async (input, ctx) => {
-    const parsed = initiateEmailChangeSchema.safeParse(input);
+  async (arg, ctx) => {
+    const parsed = initiateEmailChangeSchema.safeParse(arg);
     if (!parsed.success) return undefined;
 
     const info = await auth.getAuthInfo(ctx);
@@ -96,11 +96,11 @@ const initiateEmailChange = sage.route(
   }
 )
 
-const confirmEmailChange = sage.route(
-  {} as RouterContext,
+const confirmEmailChange = sage.resource(
+  {} as SchemaContext,
   {} as z.infer<typeof confirmEmailChangeSchema>,
-  async (input, _ctx) => {
-    const parsed = confirmEmailChangeSchema.safeParse(input);
+  async (arg, _ctx) => {
+    const parsed = confirmEmailChangeSchema.safeParse(arg);
     if (!parsed.success) return undefined;
 
     const tkn0 = token.parse(parsed.data.token);
@@ -155,11 +155,11 @@ const confirmEmailChange = sage.route(
   }
 )
 
-const revertEmailChange = sage.route(
-  {} as RouterContext,
+const revertEmailChange = sage.resource(
+  {} as SchemaContext,
   {} as z.infer<typeof revertEmailChangeSchema>,
-  async (input, _ctx) => {
-    const parsed = revertEmailChangeSchema.safeParse(input);
+  async (arg, _ctx) => {
+    const parsed = revertEmailChangeSchema.safeParse(arg);
     if (!parsed.success) return undefined;
 
     const tkn0 = token.parse(parsed.data.token);
@@ -190,11 +190,11 @@ const revertEmailChange = sage.route(
   }
 )
 
-const initiatePasswordChange = sage.route(
-  {} as RouterContext,
+const initiatePasswordChange = sage.resource(
+  {} as SchemaContext,
   {} as z.infer<typeof initiatePasswordChangeSchema>,
-  async (input, _ctx) => {
-    const parsed = initiatePasswordChangeSchema.safeParse(input);
+  async (arg, _ctx) => {
+    const parsed = initiatePasswordChangeSchema.safeParse(arg);
     if (!parsed.success) return undefined;
 
     (async () => {
@@ -235,11 +235,11 @@ const initiatePasswordChange = sage.route(
   }
 )
 
-const confirmPasswordChange = sage.route(
-  {} as RouterContext,
+const confirmPasswordChange = sage.resource(
+  {} as SchemaContext,
   {} as z.infer<typeof confirmPasswordChangeSchema>,
-  async (input, _ctx) => {
-    const parsed = confirmPasswordChangeSchema.safeParse(input);
+  async (arg, _ctx) => {
+    const parsed = confirmPasswordChangeSchema.safeParse(arg);
     if (!parsed.success) return undefined;
 
     const tkn = token.parse(parsed.data.token);

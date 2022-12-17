@@ -1,7 +1,7 @@
-import type { Router } from "../../../api/src/controllers/_router";
-import sage from "@dorkodu/sage-client";
+import type { Schema } from "../../../api/src/controllers/_schema";
+import client from "@dorkodu/sage-client";
 
-export const router = sage.router<Router>();
+export const sage = client.use<Schema>();
 
 export async function request(data: any) {
   const options: RequestInit = { method: "POST" }

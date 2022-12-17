@@ -5,16 +5,16 @@ import pg from "../pg";
 import { checkAccessSchema, getAccessTokenSchema, getUserDataSchema } from "../schemas/external";
 import access from "./access";
 import sage from "@dorkodu/sage-server";
-import { RouterContext } from "./_router";
+import { SchemaContext } from "./_schema";
 import { z } from "zod";
 
 /* These functions are used by external apps that use Dorkodu ID for authentication. */
 
-const getAccessToken = sage.route(
-  {} as RouterContext,
+const getAccessToken = sage.resource(
+  {} as SchemaContext,
   {} as z.infer<typeof getAccessTokenSchema>,
-  async (input, _ctx) => {
-    const parsed = getAccessTokenSchema.safeParse(input);
+  async (arg, _ctx) => {
+    const parsed = getAccessTokenSchema.safeParse(arg);
     if (!parsed.success) return undefined;
 
     const parsedToken = token.parse(parsed.data.code);
@@ -34,11 +34,11 @@ const getAccessToken = sage.route(
   }
 )
 
-const checkAccess = sage.route(
-  {} as RouterContext,
+const checkAccess = sage.resource(
+  {} as SchemaContext,
   {} as z.infer<typeof checkAccessSchema>,
-  async (input, _ctx) => {
-    const parsed = checkAccessSchema.safeParse(input);
+  async (arg, _ctx) => {
+    const parsed = checkAccessSchema.safeParse(arg);
     if (!parsed.success) return undefined;
 
     const result0 = await validateAccessToken(parsed.data.token);
@@ -47,11 +47,11 @@ const checkAccess = sage.route(
   }
 )
 
-const getUserData = sage.route(
-  {} as RouterContext,
+const getUserData = sage.resource(
+  {} as SchemaContext,
   {} as z.infer<typeof getUserDataSchema>,
-  async (input, _ctx) => {
-    const parsed = getUserDataSchema.safeParse(input);
+  async (arg, _ctx) => {
+    const parsed = getUserDataSchema.safeParse(arg);
     if (!parsed.success) return undefined;
 
     const result0 = await validateAccessToken(parsed.data.token);

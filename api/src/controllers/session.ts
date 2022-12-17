@@ -4,13 +4,13 @@ import pg from "../pg";
 import { getSessionsSchema, terminateSessionSchema } from "../schemas/session";
 import auth from "./auth";
 import sage from "@dorkodu/sage-server";
-import { RouterContext } from "./_router";
+import { SchemaContext } from "./_schema";
 import { z } from "zod";
 
-const getCurrentSession = sage.route(
-  {} as RouterContext,
+const getCurrentSession = sage.resource(
+  {} as SchemaContext,
   undefined,
-  async (_input, ctx) => {
+  async (_arg, ctx) => {
     const info = await auth.getAuthInfo(ctx);
     if (!info) return undefined;
 
@@ -23,11 +23,11 @@ const getCurrentSession = sage.route(
   }
 )
 
-const getSessions = sage.route(
-  {} as RouterContext,
+const getSessions = sage.resource(
+  {} as SchemaContext,
   {} as z.infer<typeof getSessionsSchema>,
-  async (input, ctx) => {
-    const parsed = getSessionsSchema.safeParse(input);
+  async (arg, ctx) => {
+    const parsed = getSessionsSchema.safeParse(arg);
     if (!parsed.success) return undefined;
 
     const info = await auth.getAuthInfo(ctx);
@@ -47,11 +47,11 @@ const getSessions = sage.route(
   }
 )
 
-const terminateSession = sage.route(
-  {} as RouterContext,
+const terminateSession = sage.resource(
+  {} as SchemaContext,
   {} as z.infer<typeof terminateSessionSchema>,
-  async (input, ctx) => {
-    const parsed = terminateSessionSchema.safeParse(input);
+  async (arg, ctx) => {
+    const parsed = terminateSessionSchema.safeParse(arg);
     if (!parsed.success) return undefined;
 
     const info = await auth.getAuthInfo(ctx);

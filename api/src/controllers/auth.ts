@@ -8,11 +8,11 @@ import { userAgent } from "../lib/user_agent";
 import pg from "../pg";
 import { confirmSignupSchema, initiateSignupSchema, loginSchema } from "../schemas/auth";
 import { sharedSchemas } from "../schemas/shared";
-import { RouterContext } from "./_router";
+import { SchemaContext } from "./_schema";
 import sage from "@dorkodu/sage-server";
 import { z } from "zod";
 
-async function middleware(ctx: RouterContext) {
+async function middleware(ctx: SchemaContext) {
   const rawToken = token.get(ctx.req);
   const parsedToken = rawToken ? token.parse(rawToken) : undefined;
   if (!parsedToken) return;
@@ -26,20 +26,20 @@ async function middleware(ctx: RouterContext) {
   ctx.tokenId = tkn.id;
 }
 
-const auth = sage.route(
-  {} as RouterContext,
+const auth = sage.resource(
+  {} as SchemaContext,
   undefined,
-  async (_input, ctx) => {
+  async (_arg, ctx) => {
     if (!await getAuthInfo(ctx)) return undefined;
     return {};
   }
 )
 
-const initiateSignup = sage.route(
-  {} as RouterContext,
+const initiateSignup = sage.resource(
+  {} as SchemaContext,
   {} as z.infer<typeof initiateSignupSchema>,
-  async (input, _ctx) => {
-    const parsed = initiateSignupSchema.safeParse(input);
+  async (arg, _ctx) => {
+    const parsed = initiateSignupSchema.safeParse(arg);
     if (!parsed.success) return undefined;
 
     const { username, email } = parsed.data;
@@ -77,11 +77,11 @@ const initiateSignup = sage.route(
   }
 )
 
-const confirmSignup = sage.route(
-  {} as RouterContext,
+const confirmSignup = sage.resource(
+  {} as SchemaContext,
   {} as z.infer<typeof confirmSignupSchema>,
-  async (input, ctx) => {
-    const parsed = confirmSignupSchema.safeParse(input);
+  async (arg, ctx) => {
+    const parsed = confirmSignupSchema.safeParse(arg);
     if (!parsed.success) return undefined;
 
     const { username, email, password, otp } = parsed.data;
@@ -126,11 +126,11 @@ const confirmSignup = sage.route(
   }
 )
 
-const login = sage.route(
-  {} as RouterContext,
+const login = sage.resource(
+  {} as SchemaContext,
   {} as z.infer<typeof loginSchema>,
-  async (input, ctx) => {
-    const parsed = loginSchema.safeParse(input);
+  async (arg, ctx) => {
+    const parsed = loginSchema.safeParse(arg);
     if (!parsed.success) return undefined;
 
     const { info, password } = parsed.data;
@@ -165,10 +165,10 @@ const login = sage.route(
   }
 )
 
-const logout = sage.route(
-  {} as RouterContext,
+const logout = sage.resource(
+  {} as SchemaContext,
   undefined,
-  async (_input, ctx) => {
+  async (_arg, ctx) => {
     const authInfo = await getAuthInfo(ctx);
     if (!authInfo) return undefined;
     await queryExpireToken(ctx.res, authInfo.tokenId, authInfo.userId);
@@ -213,7 +213,7 @@ async function queryExpireToken(res: Response, tokenId: number, userId: number) 
   token.detach(res);
 }
 
-async function getAuthInfo(ctx: RouterContext) {
+async function getAuthInfo(ctx: SchemaContext) {
   if (!ctx.triedAuth) await middleware(ctx);
   ctx.triedAuth = true;
 

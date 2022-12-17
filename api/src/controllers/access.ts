@@ -14,13 +14,13 @@ import {
   revokeAccessSchema
 } from "../schemas/access";
 import auth from "./auth";
-import { RouterContext } from "./_router";
+import { SchemaContext } from "./_schema";
 
-const getAccesses = sage.route(
-  {} as RouterContext,
+const getAccesses = sage.resource(
+  {} as SchemaContext,
   {} as z.infer<typeof getAccessesSchema>,
-  async (input, ctx) => {
-    const parsed = getAccessesSchema.safeParse(input);
+  async (arg, ctx) => {
+    const parsed = getAccessesSchema.safeParse(arg);
     if (!parsed.success) return undefined;
 
     const info = await auth.getAuthInfo(ctx);
@@ -40,11 +40,11 @@ const getAccesses = sage.route(
   }
 )
 
-const grantAccess = sage.route(
-  {} as RouterContext,
+const grantAccess = sage.resource(
+  {} as SchemaContext,
   {} as z.infer<typeof grantAccessSchema>,
-  async (input, ctx) => {
-    const parsed = grantAccessSchema.safeParse(input);
+  async (arg, ctx) => {
+    const parsed = grantAccessSchema.safeParse(arg);
     if (!parsed.success) return undefined;
 
     const info = await auth.getAuthInfo(ctx);
@@ -60,11 +60,11 @@ const grantAccess = sage.route(
   }
 )
 
-const revokeAccess = sage.route(
-  {} as RouterContext,
+const revokeAccess = sage.resource(
+  {} as SchemaContext,
   {} as z.infer<typeof revokeAccessSchema>,
-  async (input, ctx) => {
-    const parsed = revokeAccessSchema.safeParse(input);
+  async (arg, ctx) => {
+    const parsed = revokeAccessSchema.safeParse(arg);
     if (!parsed.success) return undefined;
 
     const info = await auth.getAuthInfo(ctx);

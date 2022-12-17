@@ -7,7 +7,7 @@ import session from "./session";
 import access from "./access";
 import external from "./external";
 
-export interface RouterContext {
+export interface SchemaContext {
   readonly req: Request;
   readonly res: Response;
   readonly next: NextFunction;
@@ -17,9 +17,9 @@ export interface RouterContext {
   tokenId?: number;
 }
 
-export type Router = typeof router
-export const router = sage.router(
-  {} as RouterContext,
+export type Schema = typeof schema
+export const schema = sage.schema(
+  {} as SchemaContext,
   {
     /* auth */
     auth: auth.auth,
