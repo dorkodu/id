@@ -12,7 +12,7 @@ export async function up(knex: Knex): Promise<void> {
     .createTable("sessions", (table) => {
       table.bigIncrements("id").primary()
       table.bigint("user_id")
-      table.binary("selector", 16).unique()
+      table.binary("selector", 32).unique()
       table.binary("validator", 32).unique()
       table.bigint("created_at")
       table.bigint("expires_at")

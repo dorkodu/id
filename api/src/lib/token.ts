@@ -5,7 +5,7 @@ import { date } from "./date";
 import { encoding } from "./encoding";
 
 function create() {
-  const selector = crypto.bytes(16);
+  const selector = crypto.bytes(32);
   const validator = crypto.bytes(32);
   const full = `${encoding.fromBinary(selector, "base64url")}:${encoding.fromBinary(validator, "base64url")}`;
   const createdAt = date.utc();
