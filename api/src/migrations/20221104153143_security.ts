@@ -4,6 +4,7 @@ export async function up(knex: Knex): Promise<void> {
   return knex.schema
     .createTable("email_new_location", (table) => {
       table.bigIncrements("id").primary()
+      table.bigint("user_id")
       table.string("email", 320)
       table.binary("selector", 32).unique()
       table.binary("validator", 32)
