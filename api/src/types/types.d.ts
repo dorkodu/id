@@ -13,6 +13,8 @@ declare global {
       SMTP_PASSWORD?: string;
 
       BCRYPT_ROUNDS?: string;
+      EPOCH_TIME?: string;
+      MACHINE_ID?: string;
 
       PORT?: string;
       NODE_ENV?: string;
