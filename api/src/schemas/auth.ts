@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { sharedSchemas } from "./shared";
+import { sharedSchemas } from "./_shared";
 
 export const initiateSignupSchema = z.object({
   username: sharedSchemas.username,
@@ -10,7 +10,6 @@ export const confirmSignupSchema = z.object({
   username: sharedSchemas.username,
   email: sharedSchemas.email,
   password: sharedSchemas.password,
-  otp: sharedSchemas.otp,
 }).strict();
 
 export const loginSchema = z.object({

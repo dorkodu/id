@@ -7,7 +7,7 @@ import { userAgent } from "../lib/user_agent";
 
 import pg from "../pg";
 import { confirmSignupSchema, initiateSignupSchema, loginSchema } from "../schemas/auth";
-import { sharedSchemas } from "../schemas/shared";
+import { sharedSchemas } from "../schemas/_shared";
 import { SchemaContext } from "./_schema";
 import sage from "@dorkodu/sage-server";
 import { z } from "zod";

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { sharedSchemas } from "./shared";
+import { sharedSchemas } from "./_shared";
 
 export const getSessionsSchema = z.object({
   anchor: sharedSchemas.anchor,

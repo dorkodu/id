@@ -1,12 +1,12 @@
 import { z } from "zod";
-import { sharedSchemas } from "./shared";
+import { sharedSchemas } from "./_shared";
 
 export const changeUsernameSchema = z.object({
   newUsername: sharedSchemas.username,
 }).strict();
 
 export const initiateEmailChangeSchema = z.object({
-  newEmail: sharedSchemas.email
+  newEmail: sharedSchemas.email,
 }).strict();
 
 export const confirmEmailChangeSchema = z.object({
