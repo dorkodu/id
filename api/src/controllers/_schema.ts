@@ -13,8 +13,8 @@ export interface SchemaContext {
   readonly next: NextFunction;
 
   triedAuth?: boolean;
-  userId?: number;
-  tokenId?: number;
+  userId?: string;
+  tokenId?: string;
 }
 
 export type Schema = typeof schema

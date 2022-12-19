@@ -229,9 +229,9 @@ async function queryCreateSession(req: Request, res: Response, userId: string): 
   return true;
 }
 
-async function queryExpireSession(_res: Response, _tokenId: number, _userId: number) {
-  //await pg`UPDATE sessions SET expires_at=${Date.now()} WHERE id=${tokenId} AND user_id=${userId}`;
-  //token.detach(res, "session");
+async function queryExpireSession(res: Response, tokenId: string, userId: string) {
+  await pg`UPDATE sessions SET expires_at=${Date.now()} WHERE id=${tokenId} AND user_id=${userId}`;
+  token.detach(res, "session");
 }
 
 async function getAuthInfo(ctx: SchemaContext) {
