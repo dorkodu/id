@@ -12,6 +12,7 @@ import { crypto } from "../lib/crypto";
 import { mailer } from "../lib/mailer";
 import { util } from "../lib/util";
 import { userAgent } from "../lib/user_agent";
+import { sharedSchemas } from "../schemas/_shared";
 
 async function middleware(ctx: SchemaContext) {
   const rawToken = token.get(ctx.req, "session");
@@ -74,7 +75,7 @@ const signup = sage.resource(
     row.sent_at = date.utc();
     row.expires_at = date.minute(10);
     const result1 = await pg`INSERT INTO email_verify_signup ${pg(row)}`;
-    if (!result1) return undefined;
+    if (result1.count === 0) return undefined;
 
     // Attach a temporary cookie for signup confirmation
     token.attach(ctx.res, { value: tkn.full, expiresAt: row.expires_at }, "temp");
@@ -163,20 +164,69 @@ const confirmSignup = sage.resource(
 const login = sage.resource(
   {} as SchemaContext,
   {} as z.infer<typeof loginSchema>,
-  async (_arg, _ctx) => {
+  async (arg, ctx) => {
+    const parsed = loginSchema.safeParse(arg);
+    if (!parsed.success) return undefined;
+
+    const { info, password } = parsed.data;
+
+    const usernameParsed = sharedSchemas.username.safeParse(info);
+    const username = usernameParsed.success ? usernameParsed.data : undefined;
+    const emailParsed = sharedSchemas.email.safeParse(info);
+    const email = emailParsed.success ? emailParsed.data : undefined;
+
+    let [result0]: [{ id: string, email: string, password: Buffer }?] = [undefined];
+    if (username) [result0] = await pg`SELECT id, email, password FROM users WHERE username=${username}`;
+    else if (email) [result0] = await pg`SELECT id, email, password FROM users WHERE email=${email}`;
+    else return undefined;
+
+    if (!result0) return undefined;
+    if (!await crypto.comparePassword(password, result0.password)) return undefined;
+
+    const ip = util.getIP(ctx.req);
+    const ua = userAgent.get(ctx.req);
+
+    // If there is no session & no login verification with this ip
+    // for the given users, send an email link which expires in 10 minutes 
+    const [result1]: [{ count: string }?] = await pg`
+      SELECT COUNT(*) FROM sessions
+      WHERE user_id=${result0.id} AND ip=${ip}
+    `;
+    if (!result1 || util.intParse(result1.count, 0) === 0) {
+      const [result2]: [{ count: string }?] = await pg`
+        SELECT COUNT(*) FROM email_verify_login
+        WHERE user_id=${result0.id} AND ip=${ip} AND verified=TRUE
+      `;
+      if (!result2 || util.intParse(result2.count, 0) === 0) {
+        const tkn = token.create();
+        const row = {
+          id: snowflake.id("email_verify_login"),
+          userId: result0.id,
+          selector: tkn.selector,
+          validator: crypto.sha256(tkn.validator),
+          issued_at: date.utc(),
+          sent_at: -1,
+          expires_at: -1,
+          verified: false
+        }
+
+        const sent = await mailer.sendVerifyLogin(result0.email, tkn.full, ip, ua);
+        if (!sent) return undefined;
+
+        row.sent_at = date.utc();
+        row.expires_at = date.minute(10);
+        const result1 = await pg`INSERT INTO email_verify_login ${pg(row)}`;
+        if (result1.count === 0) return undefined;
+
+        return { err: "" };
+      }
+    }
+
     return {};
   }
 )
 
 const verifyLogin = sage.resource(
-  {} as SchemaContext,
-  undefined,
-  async (_arg, _ctx) => {
-    return {}
-  }
-)
-
-const confirmLogin = sage.resource(
   {} as SchemaContext,
   undefined,
   async (_arg, _ctx) => {
@@ -250,7 +300,6 @@ export default {
 
   login,
   verifyLogin,
-  confirmLogin,
 
   logout,
 

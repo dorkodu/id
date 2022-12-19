@@ -5,7 +5,6 @@ export async function up(knex: Knex): Promise<void> {
     .createTable("email_verify_login", (table) => {
       table.bigint("id").primary()
       table.bigint("user_id")
-      table.string("email", 320)
       table.binary("selector", 32).unique()
       table.binary("validator", 32)
       table.bigint("issued_at")
@@ -51,7 +50,6 @@ export async function up(knex: Knex): Promise<void> {
     .createTable("email_change_password", (table) => {
       table.bigint("id").primary()
       table.bigint("user_id")
-      table.string("email", 320)
       table.binary("selector", 32).unique()
       table.binary("validator", 32)
       table.bigint("issued_at")

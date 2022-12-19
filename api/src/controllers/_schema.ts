@@ -30,7 +30,6 @@ export const schema = sage.schema(
 
     login: auth.login,
     verifyLogin: auth.verifyLogin,
-    confirmLogin: auth.confirmLogin,
 
     logout: auth.logout,
 
