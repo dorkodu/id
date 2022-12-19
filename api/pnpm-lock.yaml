@@ -17,8 +17,8 @@ specifiers:
   dotenv: ^16.0.3
   express: ^4.18.2
   knex: ^2.3.0
+  long: ^5.2.1
   node-cron: ^3.0.2
-  nodejs-snowflake: ^2.0.1
   nodemailer: ^6.8.0
   pg: ^8.8.0
   postgres: ^3.3.1
@@ -39,8 +39,8 @@ dependencies:
   cookie-parser: 1.4.6
   dotenv: 16.0.3
   express: 4.18.2
+  long: 5.2.1
   node-cron: 3.0.2
-  nodejs-snowflake: 2.0.1
   nodemailer: 6.8.0
   pg: 8.8.0
   postgres: 3.3.1
@@ -1194,6 +1194,10 @@ packages:
     resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
     dev: true
 
+  /long/5.2.1:
+    resolution: {integrity: sha512-GKSNGeNAtw8IryjjkhZxuKB3JzlcLTwjtiQCHKvqQet81I93kXslhDQruGI/QsddO83mcDToBVy7GqGS/zYf/A==}
+    dev: false
+
   /loupe/2.3.6:
     resolution: {integrity: sha512-RaPMZKiMy8/JruncMU5Bt6na1eftNoo++R4Y+N2FrxkDVTrGvcyzFTsaGif4QTeKESheMGegbhw6iUAq+5A8zA==}
     dependencies:
@@ -1320,10 +1324,6 @@ packages:
         optional: true
     dependencies:
       whatwg-url: 5.0.0
-    dev: false
-
-  /nodejs-snowflake/2.0.1:
-    resolution: {integrity: sha512-zMfDorNNsJm1OWWx/OUUGVT0bQ3TwC2ti4URD8UjnpffVLtLpy3eBDIaV5TnLs91YrRhwBD6L0StqU6YtnZt9A==}
     dev: false
 
   /nodemailer/6.8.0:
