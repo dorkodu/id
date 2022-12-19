@@ -1,5 +1,4 @@
 import nodemailer from "nodemailer";
-import { webRoutes } from "../../../shared/src/web_routes";
 import { config } from "../config";
 
 const url = "https://id.dorkodu.com";
@@ -48,57 +47,15 @@ function sendVerifySignup(email: string, token: string, ip: string, userAgent: s
   })
 }
 
-function sendConfirmEmailChange(email: string, token: string): Promise<boolean> {
-  //const link = `http://localhost:8000/${webRoutes.confirmEmailChange}?token=${token}`;
-  //
-  //return new Promise((resolve) => {
-  //  transporter.sendMail({
-  //    from: '"ID" <id@dorkodu.com>',
-  //    to: email,
-  //    subject: "Confirm Email Change",
-  //    text: `${link}`,
-  //    html: `<a href="${link}">${link}</a>`,
-  //  }, async (err, info) => {
-  //    const sent = !err && (!info.rejected.length || info.rejected[0] !== email);
-  //    resolve(sent);
-  //  })
-  //})
+function sendConfirmEmailChange(_email: string, _token: string): Promise<boolean> {
   return Promise.resolve(true);
 }
 
-function sendRevertEmailChange(email: string, token: string): Promise<boolean> {
-  //const link = `http://localhost:8000/${webRoutes.revertEmailChange}?token=${token}`;
-  //
-  //return new Promise((resolve) => {
-  //  transporter.sendMail({
-  //    from: '"ID" <id@dorkodu.com>',
-  //    to: email,
-  //    subject: "Revert Email Change",
-  //    text: `${link}`,
-  //    html: `<a href="${link}">${link}</a>`,
-  //  }, async (err, info) => {
-  //    const sent = !err && (!info.rejected.length || info.rejected[0] !== email);
-  //    resolve(sent);
-  //  })
-  //})
+function sendRevertEmailChange(_email: string, _token: string): Promise<boolean> {
   return Promise.resolve(true);
 }
 
-function sendConfirmPasswordChange(email: string, token: string): Promise<boolean> {
-  //const link = `http://localhost:8000/${webRoutes.confirmPasswordChange}?token=${token}`;
-  //
-  //return new Promise((resolve) => {
-  //  transporter.sendMail({
-  //    from: '"ID" <id@dorkodu.com>',
-  //    to: email,
-  //    subject: "Confirm Password Change",
-  //    text: `${link}`,
-  //    html: `<a href="${link}">${link}</a>`,
-  //  }, async (err, info) => {
-  //    const sent = !err && (!info.rejected.length || info.rejected[0] !== email);
-  //    resolve(sent);
-  //  })
-  //})
+function sendConfirmPasswordChange(_email: string, _token: string): Promise<boolean> {
   return Promise.resolve(true);
 }
 
