@@ -2,7 +2,7 @@ import { Knex } from "knex";
 
 export async function up(knex: Knex): Promise<void> {
   return knex.schema
-    .createTable("email_new_location", (table) => {
+    .createTable("email_verify_login", (table) => {
       table.bigIncrements("id").primary()
       table.bigint("user_id")
       table.string("email", 320)
@@ -11,12 +11,10 @@ export async function up(knex: Knex): Promise<void> {
       table.bigint("issued_at")
       table.bigint("sent_at")
       table.bigint("expires_at")
-      table.string("user_agent", 256)
-      table.specificType("ip", "inet")
       table.boolean("verified")
     })
 
-    .createTable("email_verify_email", (table) => {
+    .createTable("email_verify_signup", (table) => {
       table.bigIncrements("id").primary()
       table.string("username", 16)
       table.string("email", 320)
@@ -64,9 +62,9 @@ export async function up(knex: Knex): Promise<void> {
 
 export async function down(knex: Knex): Promise<void> {
   return knex.schema
-    .dropTable("email_new_location")
+    .dropTable("email_verify_login")
 
-    .dropTable("email_verify_email")
+    .dropTable("email_verify_signup")
 
     .dropTable("email_confirm_email")
     .dropTable("email_revert_email")
