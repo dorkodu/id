@@ -33,8 +33,11 @@ interface Action {
   setAccesses: (data: IAccess[] | undefined, refresh?: boolean) => void;
 
   queryAuth: () => Promise<boolean>;
-  queryInitiateSignup: (username: string, email: string) => Promise<boolean>;
-  queryConfirmSignup: (username: string, email: string, password: string, otp: string) => Promise<boolean>;
+
+  querySignup: (username: string, email: string) => Promise<boolean>;
+  queryVerifySignup: () => Promise<boolean>;
+  queryConfirmSignup: (username: string, email: string, password: string) => Promise<boolean>;
+
   queryLogin: (info: string, password: string) => Promise<boolean>;
   queryLogout: () => Promise<boolean>;
 
@@ -131,9 +134,9 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
     return authorized;
   },
 
-  queryInitiateSignup: async (username: string, email: string) => {
+  querySignup: async (username, email) => {
     const res = await sage.get(
-      { a: sage.query("initiateSignup", { username, email }) },
+      { a: sage.query("signup", { username, email }) },
       (query) => request(query)
     )
 
@@ -141,9 +144,19 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
     return true;
   },
 
-  queryConfirmSignup: async (username: string, email: string, password: string, otp: string) => {
+  queryVerifySignup: async () => {
     const res = await sage.get(
-      { a: sage.query("confirmSignup", { username, email, password, otp }) },
+      { a: sage.query("verifySignup", undefined) },
+      (query) => request(query)
+    )
+
+    if (!res || !res.a) return false;
+    return true;
+  },
+
+  queryConfirmSignup: async (username, email, password) => {
+    const res = await sage.get(
+      { a: sage.query("confirmSignup", { username, email, password }) },
       (query) => request(query)
     )
 

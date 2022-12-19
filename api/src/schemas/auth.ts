@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { sharedSchemas } from "./_shared";
 
-export const initiateSignupSchema = z.object({
+export const signupSchema = z.object({
   username: sharedSchemas.username,
   email: sharedSchemas.email,
 }).strict();

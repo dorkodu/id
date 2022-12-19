@@ -1,42 +1,45 @@
-import { useLayoutEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useUserStore } from "../stores/userStore";
 
 function Signup() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const queryInitiateSignup = useUserStore(state => state.queryInitiateSignup);
+
+  const querySignup = useUserStore(state => state.querySignup);
+  const queryVerifySignup = useUserStore(state => state.queryVerifySignup);
   const queryConfirmSignup = useUserStore(state => state.queryConfirmSignup);
 
-  const [stage, setStage] = useState<"initiate" | "confirm">("initiate");
-  const [info, setInfo] = useState({ username: "", email: "" });
+  const initialStage = searchParams.get("token") ? "verify" : "signup";
+  const [stage, setStage] = useState<"signup" | "verify" | "confirm">(initialStage);
+  const [status, setStatus] = useState<boolean | undefined>(undefined);
 
   const signupUsername = useRef<HTMLInputElement>(null);
   const signupEmail = useRef<HTMLInputElement>(null);
   const signupPassword = useRef<HTMLInputElement>(null);
-  const signupOTP = useRef<HTMLInputElement>(null);
 
-  useLayoutEffect(() => {
-    signupUsername.current && (signupUsername.current.value = info.username);
-    signupEmail.current && (signupEmail.current.value = info.email);
-  }, [stage])
+  useEffect(() => { if (stage === "verify") verifySignup() }, [])
 
-  const initiateSignup = async () => {
+  const signup = async () => {
     const username = signupUsername.current?.value;
     const email = signupEmail.current?.value;
     if (!username || !email) return;
-    if (!await queryInitiateSignup(username, email)) return;
+    if (!await querySignup(username, email)) return;
     setStage("confirm");
-    setInfo({ username, email });
+  }
+
+  const verifySignup = async () => {
+    const token = searchParams.get("token");
+    if (!token) return;
+
+    const verified = await queryVerifySignup();
+    setStatus(verified);
   }
 
   const confirmSignup = async () => {
-    const username = signupUsername.current?.value;
-    const email = signupEmail.current?.value;
     const password = signupPassword.current?.value;
-    const otp = signupOTP.current?.value;
-    if (!username || !email || !password || !otp) return;
-    if (!await queryConfirmSignup(username, email, password, otp)) return;
+    if (!password) return;
+    if (!await queryConfirmSignup(password)) return;
 
     const redirect = searchParams.get("redirect");
     if (!redirect) navigate("/dashboard");
@@ -45,28 +48,20 @@ function Signup() {
 
   return (
     <>
-      {stage === "initiate" &&
+      {stage !== "verify" &&
         <>
-          <input ref={signupUsername} type={"text"} placeholder={"username..."} />
+          <input ref={signupUsername} type={"text"} placeholder={"username..."} disabled={stage === "confirm"} />
           <br />
-          <input ref={signupEmail} type={"email"} placeholder={"email..."} />
+          <input ref={signupEmail} type={"email"} placeholder={"email..."} disabled={stage === "confirm"} />
           <br />
-          <button onClick={initiateSignup}>signup</button>
+          <input ref={signupPassword} type={"password"} placeholder={"password..."} disabled={stage === "confirm"} />
+          <br />
+          <button onClick={() => stage === "signup" ? signup() : confirmSignup()}>signup</button>
         </>
       }
-      {stage === "confirm" &&
-        <>
-          <input ref={signupUsername} type={"text"} placeholder={"username..."} />
-          <br />
-          <input ref={signupEmail} type={"email"} placeholder={"email..."} />
-          <br />
-          <input ref={signupPassword} type={"password"} placeholder={"password..."} />
-          <br />
-          <input ref={signupOTP} type={"text"} placeholder={"otp..."} />
-          <br />
-          <button onClick={confirmSignup}>signup</button>
-        </>
-      }
+      {stage === "verify" && status === undefined && <>loading...</>}
+      {stage === "verify" && status === true && <>verified.</>}
+      {stage === "verify" && status === false && <>couldn't verify.</>}
     </>
   )
 }

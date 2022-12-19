@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { token } from "../lib/token";
 
 import pg from "../pg";
-import { loginSchema } from "../schemas/auth";
+import { confirmSignupSchema, loginSchema, signupSchema } from "../schemas/auth";
 import { SchemaContext } from "./_schema";
 import sage from "@dorkodu/sage-server";
 import { z } from "zod";
@@ -32,9 +32,9 @@ const auth = sage.resource(
 
 const signup = sage.resource(
   {} as SchemaContext,
-  undefined,
+  {} as z.infer<typeof signupSchema>,
   async (_arg, _ctx) => {
-
+    return {}
   }
 )
 
@@ -42,14 +42,15 @@ const verifySignup = sage.resource(
   {} as SchemaContext,
   undefined,
   async (_arg, _ctx) => {
-
+    return {}
   }
 )
 
 const confirmSignup = sage.resource(
   {} as SchemaContext,
-  undefined,
+  {} as z.infer<typeof confirmSignupSchema>,
   async (_arg, _ctx) => {
+    return {}
   }
 )
 
@@ -65,7 +66,7 @@ const verifyLogin = sage.resource(
   {} as SchemaContext,
   undefined,
   async (_arg, _ctx) => {
-
+    return {}
   }
 )
 
@@ -73,7 +74,7 @@ const confirmLogin = sage.resource(
   {} as SchemaContext,
   undefined,
   async (_arg, _ctx) => {
-
+    return {}
   }
 )
 
