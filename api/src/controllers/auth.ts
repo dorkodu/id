@@ -13,18 +13,18 @@ import { mailer } from "../lib/mailer";
 import { util } from "../lib/util";
 import { userAgent } from "../lib/user_agent";
 
-async function middleware(ctx: SchemaContext) {
-  const rawToken = token.get(ctx.req, "session");
-  const parsedToken = rawToken ? token.parse(rawToken) : undefined;
-  if (!parsedToken) return;
-
-  const tkn = await queryGetSession(ctx.req);
-  if (!tkn) return;
-  if (!token.compare(parsedToken.validator, tkn.validator)) return;
-  if (date.utc() >= tkn.expiresAt) return;
-
-  ctx.userId = tkn.userId;
-  ctx.tokenId = tkn.id;
+async function middleware(_ctx: SchemaContext) {
+  //const rawToken = token.get(ctx.req, "session");
+  //const parsedToken = rawToken ? token.parse(rawToken) : undefined;
+  //if (!parsedToken) return;
+  //
+  //const tkn = await queryGetSession(ctx.req);
+  //if (!tkn) return;
+  //if (!token.compare(parsedToken.validator, tkn.validator)) return;
+  //if (date.utc() >= tkn.expiresAt) return;
+  //
+  //ctx.userId = tkn.userId;
+  //ctx.tokenId = tkn.id;
 }
 
 const auth = sage.resource(
@@ -115,7 +115,46 @@ const verifySignup = sage.resource(
 const confirmSignup = sage.resource(
   {} as SchemaContext,
   {} as z.infer<typeof confirmSignupSchema>,
-  async (_arg, _ctx) => {
+  async (arg, ctx) => {
+    const parsed = confirmSignupSchema.safeParse(arg);
+    if (!parsed.success) return undefined;
+
+    const { username, email, password } = parsed.data;
+
+    const rawToken = token.get(ctx.req, "temp");
+    const parsedToken = rawToken ? token.parse(rawToken) : undefined;
+    if (!parsedToken) return undefined;
+
+    const [result0]: [{
+      username: string,
+      email: string,
+      validator: Buffer,
+      expiresAt: string,
+      verified: boolean
+    }?] = await pg`
+      SELECT username, email, validator, expires_at, verified FROM email_verify_signup
+      WHERE selector=${parsedToken.selector} AND sent_at!='-1'
+    `
+    if (!result0) return undefined;
+    if (!result0.verified) return undefined;
+    if (result0.username !== username) return undefined;
+    if (result0.email !== email) return undefined;
+    if (date.utc() >= util.intParse(result0.expiresAt, -1)) return undefined;
+    if (!token.compare(parsedToken.validator, result0.validator)) return undefined;
+
+    const row = {
+      id: snowflake.id("users"),
+      username: username,
+      email: email,
+      password: await crypto.encryptPassword(password),
+      joined_at: date.utc(),
+    }
+
+    const result1 = await pg`INSERT INTO users ${pg(row)}`;
+    if (result1.count === 0) return undefined;
+
+    if (!await queryCreateSession(ctx.req, ctx.res, row.id)) return undefined;
+
     return {}
   }
 )
@@ -155,43 +194,44 @@ const logout = sage.resource(
   }
 )
 
-async function queryGetSession(req: Request) {
-  const rawToken = token.get(req, "session");
-  const parsedToken = rawToken ? token.parse(rawToken) : undefined;
-  if (!parsedToken) return undefined;
-
-  const [result]: [{ id: number, userId: number, validator: Buffer, expiresAt: number }?] = await pg`
-    SELECT id, user_id, validator, expires_at FROM sessions WHERE selector=${parsedToken.selector}
-  `;
-
-  return result;
-}
-
 /*
-async function queryCreateSession(req: Request, res: Response, userId: number): Promise<boolean> {
-  const tkn = token.create(Date.now(), date.day(30));
-
-  const row = {
-    user_id: userId,
-    selector: tkn.selector,
-    validator: crypto.sha256(tkn.validator),
-    created_at: tkn.createdAt,
-    expires_at: tkn.expiresAt,
-    user_agent: userAgent.parse(req.headers["user-agent"]),
-    ip: req.headers["x-real-ip"] as string
-  }
-
-  const result = await pg`INSERT INTO sessions ${pg(row)}`;
-  if (!result.count) return false;
-
-  token.attach(res, { value: tkn.full, expiresAt: tkn.expiresAt }, "session");
-  return true;
+async function queryGetSession(_req: Request) {
+  //const rawToken = token.get(req, "session");
+  //const parsedToken = rawToken ? token.parse(rawToken) : undefined;
+  //if (!parsedToken) return undefined;
+  //
+  //const [result]: [{ id: number, userId: number, validator: Buffer, expiresAt: number }?] = await pg`
+  //  SELECT id, user_id, validator, expires_at FROM sessions WHERE selector=${parsedToken.selector}
+  //`;
+  //
+  //return result;
 }
 */
 
-async function queryExpireSession(res: Response, tokenId: number, userId: number) {
-  await pg`UPDATE sessions SET expires_at=${Date.now()} WHERE id=${tokenId} AND user_id=${userId}`;
-  token.detach(res, "session");
+async function queryCreateSession(req: Request, res: Response, userId: string): Promise<boolean> {
+  const tkn = token.create();
+
+  const row = {
+    id: snowflake.id("sessions"),
+    user_id: userId,
+    selector: tkn.selector,
+    validator: crypto.sha256(tkn.validator),
+    created_at: date.utc(),
+    expires_at: date.day(30),
+    user_agent: userAgent.get(req),
+    ip: util.getIP(req),
+  }
+
+  const result = await pg`INSERT INTO sessions ${pg(row)}`;
+  if (result.count === 0) return false;
+
+  token.attach(res, { value: tkn.full, expiresAt: row.expires_at }, "session");
+  return true;
+}
+
+async function queryExpireSession(_res: Response, _tokenId: number, _userId: number) {
+  //await pg`UPDATE sessions SET expires_at=${Date.now()} WHERE id=${tokenId} AND user_id=${userId}`;
+  //token.detach(res, "session");
 }
 
 async function getAuthInfo(ctx: SchemaContext) {
