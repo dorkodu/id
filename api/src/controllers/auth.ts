@@ -154,6 +154,7 @@ const confirmSignup = sage.resource(
     if (result1.count === 0) return undefined;
 
     if (!await queryCreateSession(ctx.req, ctx.res, row.id)) return undefined;
+    token.detach(ctx.res, "temp");
 
     return {}
   }
