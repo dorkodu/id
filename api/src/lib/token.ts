@@ -1,14 +1,11 @@
 import { Request, Response } from "express";
 import { crypto } from "./crypto";
-import { date } from "./date";
 import { encoding } from "./encoding";
 
-function create() {
+function create(createdAt: number, expiresAt: number) {
   const selector = crypto.bytes(32);
   const validator = crypto.bytes(32);
   const full = `${encoding.fromBinary(selector, "base64url")}:${encoding.fromBinary(validator, "base64url")}`;
-  const createdAt = date.utc();
-  const expiresAt = date.utc() + 60 * 60 * 24 * 30; // 30 days
 
   return { selector, validator, full, createdAt, expiresAt };
 }
@@ -27,21 +24,21 @@ function compare(raw: Buffer, encrypted: Buffer) {
   return encoding.compareBinary(crypto.sha256(raw), encrypted);
 }
 
-function attach(res: Response, token: { value: string, expiresAt: number }) {
-  res.cookie("token", token.value, {
+function attach(res: Response, token: { value: string, expiresAt: number }, cookie: string) {
+  res.cookie(cookie, token.value, {
     secure: true,
     httpOnly: true,
     sameSite: true,
-    expires: new Date(token.expiresAt * 1000),
+    expires: new Date(token.expiresAt),
   });
 }
 
-function detach(res: Response) {
-  res.clearCookie("token");
+function detach(res: Response, cookie: string) {
+  res.clearCookie(cookie);
 }
 
-function get(req: Request): string | undefined {
-  return req.cookies["token"];
+function get(req: Request, cookie: string): string | undefined {
+  return req.cookies[cookie];
 }
 
 export const token = {
