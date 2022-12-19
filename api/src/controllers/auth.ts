@@ -13,18 +13,18 @@ import { mailer } from "../lib/mailer";
 import { util } from "../lib/util";
 import { userAgent } from "../lib/user_agent";
 
-async function middleware(_ctx: SchemaContext) {
-  //const rawToken = token.get(ctx.req, "session");
-  //const parsedToken = rawToken ? token.parse(rawToken) : undefined;
-  //if (!parsedToken) return;
-  //
-  //const tkn = await queryGetSession(ctx.req);
-  //if (!tkn) return;
-  //if (!token.compare(parsedToken.validator, tkn.validator)) return;
-  //if (date.utc() >= tkn.expiresAt) return;
-  //
-  //ctx.userId = tkn.userId;
-  //ctx.tokenId = tkn.id;
+async function middleware(ctx: SchemaContext) {
+  const rawToken = token.get(ctx.req, "session");
+  const parsedToken = rawToken ? token.parse(rawToken) : undefined;
+  if (!parsedToken) return;
+
+  const session = await queryGetSession(ctx.req);
+  if (!session) return;
+  if (!token.compare(parsedToken.validator, session.validator)) return;
+  if (date.utc() >= util.intParse(session.expiresAt, -1)) return;
+
+  ctx.userId = session.userId;
+  ctx.sessionId = session.id;
 }
 
 const auth = sage.resource(
@@ -189,24 +189,22 @@ const logout = sage.resource(
   async (_arg, ctx) => {
     const authInfo = await getAuthInfo(ctx);
     if (!authInfo) return undefined;
-    await queryExpireSession(ctx.res, authInfo.tokenId, authInfo.userId);
+    await queryExpireSession(ctx.res, authInfo.sessionId, authInfo.userId);
     return {};
   }
 )
 
-/*
-async function queryGetSession(_req: Request) {
-  //const rawToken = token.get(req, "session");
-  //const parsedToken = rawToken ? token.parse(rawToken) : undefined;
-  //if (!parsedToken) return undefined;
-  //
-  //const [result]: [{ id: number, userId: number, validator: Buffer, expiresAt: number }?] = await pg`
-  //  SELECT id, user_id, validator, expires_at FROM sessions WHERE selector=${parsedToken.selector}
-  //`;
-  //
-  //return result;
+async function queryGetSession(req: Request) {
+  const rawToken = token.get(req, "session");
+  const parsedToken = rawToken ? token.parse(rawToken) : undefined;
+  if (!parsedToken) return undefined;
+
+  const [result]: [{ id: string, userId: string, validator: Buffer, expiresAt: string }?] = await pg`
+    SELECT id, user_id, validator, expires_at FROM sessions WHERE selector=${parsedToken.selector}
+  `;
+
+  return result;
 }
-*/
 
 async function queryCreateSession(req: Request, res: Response, userId: string): Promise<boolean> {
   const tkn = token.create();
@@ -229,8 +227,8 @@ async function queryCreateSession(req: Request, res: Response, userId: string): 
   return true;
 }
 
-async function queryExpireSession(res: Response, tokenId: string, userId: string) {
-  await pg`UPDATE sessions SET expires_at=${Date.now()} WHERE id=${tokenId} AND user_id=${userId}`;
+async function queryExpireSession(res: Response, sessionId: string, userId: string) {
+  await pg`UPDATE sessions SET expires_at=${Date.now()} WHERE id=${sessionId} AND user_id=${userId}`;
   token.detach(res, "session");
 }
 
@@ -238,8 +236,8 @@ async function getAuthInfo(ctx: SchemaContext) {
   if (!ctx.triedAuth) await middleware(ctx);
   ctx.triedAuth = true;
 
-  if (ctx.tokenId === undefined || ctx.userId === undefined) return undefined;
-  return { tokenId: ctx.tokenId, userId: ctx.userId };
+  if (ctx.sessionId === undefined || ctx.userId === undefined) return undefined;
+  return { sessionId: ctx.sessionId, userId: ctx.userId };
 }
 
 export default {

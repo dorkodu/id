@@ -14,7 +14,7 @@ export interface SchemaContext {
 
   triedAuth?: boolean;
   userId?: string;
-  tokenId?: string;
+  sessionId?: string;
 }
 
 export type Schema = typeof schema
