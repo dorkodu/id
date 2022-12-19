@@ -3,7 +3,7 @@ import { Knex } from "knex";
 export async function up(knex: Knex): Promise<void> {
   return knex.schema
     .createTable("users", (table) => {
-      table.bigIncrements("id").primary()
+      table.bigint("id").primary()
       table.string("username", 16).unique()
       table.string("email", 320).unique()
       table.binary("password", 60)
@@ -11,7 +11,7 @@ export async function up(knex: Knex): Promise<void> {
     })
 
     .createTable("sessions", (table) => {
-      table.bigIncrements("id").primary()
+      table.bigint("id").primary()
       table.bigint("user_id")
       table.binary("selector", 32).unique()
       table.binary("validator", 32)

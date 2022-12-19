@@ -6,12 +6,12 @@ const cookies = {
   session: "session"
 }
 
-function create(createdAt: number, expiresAt: number) {
+function create() {
   const selector = crypto.bytes(32);
   const validator = crypto.bytes(32);
   const full = `${encoding.fromBinary(selector, "base64url")}:${encoding.fromBinary(validator, "base64url")}`;
 
-  return { selector, validator, full, createdAt, expiresAt };
+  return { selector, validator, full };
 }
 
 function parse(token: string): undefined | { selector: Buffer, validator: Buffer } {

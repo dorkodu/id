@@ -59,8 +59,8 @@ const generators = {
   "users": new Snowflake(),
   "sessions": new Snowflake(),
 
-  "email_new_location": new Snowflake(),
-  "email_verify_email": new Snowflake(),
+  "email_verify_login": new Snowflake(),
+  "email_verify_signup": new Snowflake(),
   "email_confirm_email": new Snowflake(),
   "email_revert_email": new Snowflake(),
   "email_change_password": new Snowflake(),

@@ -22,7 +22,7 @@ function sendVerifyLogin(email: string, token: string, ip: string, userAgent: st
       to: email,
       subject: "Verify Login",
       text: `${ip} ${userAgent} ${link}`,
-      html: `<div>${ip}</div><div>${userAgent}</div><div>${link}</div>`,
+      html: `<div>${ip}</div><div>${userAgent}</div><a href="${link}">${link}</a>`,
     }, async (err, info) => {
       const sent = !err && (!info.rejected.length || info.rejected[0] !== email);
       resolve(sent);
@@ -39,7 +39,7 @@ function sendVerifySignup(email: string, token: string, ip: string, userAgent: s
       to: email,
       subject: "Verify Signup",
       text: `${ip} ${userAgent} ${link}`,
-      html: `<div>${ip}</div><div>${userAgent}</div><div>${link}</div>`,
+      html: `<div>${ip}</div><div>${userAgent}</div><a href="${link}">${link}</a>`,
     }, async (err, info) => {
       const sent = !err && (!info.rejected.length || info.rejected[0] !== email);
       resolve(sent);

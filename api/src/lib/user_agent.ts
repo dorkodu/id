@@ -1,4 +1,9 @@
+import { Request } from "express";
 import { UAParser } from "ua-parser-js";
+
+function get(req: Request) {
+  return parse(req.headers["user-agent"]);
+}
 
 function parse(userAgent: string | undefined): string {
   if (!userAgent) return "";
@@ -21,5 +26,6 @@ function parse(userAgent: string | undefined): string {
 }
 
 export const userAgent = {
+  get,
   parse,
 }

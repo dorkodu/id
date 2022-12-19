@@ -37,9 +37,11 @@ function Signup() {
   }
 
   const confirmSignup = async () => {
+    const username = signupUsername.current?.value;
+    const email = signupEmail.current?.value;
     const password = signupPassword.current?.value;
-    if (!password) return;
-    if (!await queryConfirmSignup(password)) return;
+    if (!username || !email || !password) return;
+    if (!await queryConfirmSignup(username, email, password)) return;
 
     const redirect = searchParams.get("redirect");
     if (!redirect) navigate("/dashboard");

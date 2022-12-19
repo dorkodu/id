@@ -1,3 +1,7 @@
+function utc() {
+  return Date.now();
+}
+
 function minute(minutes: number) {
   return Date.now() + minutes * (60 * 1000);
 }
@@ -11,6 +15,7 @@ function day(days: number) {
 }
 
 export const date = {
+  utc,
   minute,
   hour,
   day,

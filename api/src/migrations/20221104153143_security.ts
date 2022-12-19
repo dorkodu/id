@@ -3,7 +3,7 @@ import { Knex } from "knex";
 export async function up(knex: Knex): Promise<void> {
   return knex.schema
     .createTable("email_verify_login", (table) => {
-      table.bigIncrements("id").primary()
+      table.bigint("id").primary()
       table.bigint("user_id")
       table.string("email", 320)
       table.binary("selector", 32).unique()
@@ -15,7 +15,7 @@ export async function up(knex: Knex): Promise<void> {
     })
 
     .createTable("email_verify_signup", (table) => {
-      table.bigIncrements("id").primary()
+      table.bigint("id").primary()
       table.string("username", 16)
       table.string("email", 320)
       table.binary("selector", 32).unique()
@@ -27,7 +27,7 @@ export async function up(knex: Knex): Promise<void> {
     })
 
     .createTable("email_confirm_email", (table) => {
-      table.bigIncrements("id").primary()
+      table.bigint("id").primary()
       table.bigint("user_id")
       table.string("email", 320)
       table.binary("selector", 32).unique()
@@ -38,7 +38,7 @@ export async function up(knex: Knex): Promise<void> {
     })
 
     .createTable("email_revert_email", (table) => {
-      table.bigIncrements("id").primary()
+      table.bigint("id").primary()
       table.bigint("user_id")
       table.string("email", 320)
       table.binary("selector", 32).unique()
@@ -49,7 +49,7 @@ export async function up(knex: Knex): Promise<void> {
     })
 
     .createTable("email_change_password", (table) => {
-      table.bigIncrements("id").primary()
+      table.bigint("id").primary()
       table.bigint("user_id")
       table.string("email", 320)
       table.binary("selector", 32).unique()

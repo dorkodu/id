@@ -6,6 +6,12 @@ import { confirmSignupSchema, loginSchema, signupSchema } from "../schemas/auth"
 import { SchemaContext } from "./_schema";
 import sage from "@dorkodu/sage-server";
 import { z } from "zod";
+import { snowflake } from "../lib/snowflake";
+import { date } from "../lib/date";
+import { crypto } from "../lib/crypto";
+import { mailer } from "../lib/mailer";
+import { util } from "../lib/util";
+import { userAgent } from "../lib/user_agent";
 
 async function middleware(ctx: SchemaContext) {
   const rawToken = token.get(ctx.req, "session");
@@ -33,7 +39,43 @@ const auth = sage.resource(
 const signup = sage.resource(
   {} as SchemaContext,
   {} as z.infer<typeof signupSchema>,
-  async (_arg, _ctx) => {
+  async (arg, ctx) => {
+    const parsed = signupSchema.safeParse(arg);
+    if (!parsed.success) return undefined;
+
+    const { username, email } = parsed.data;
+
+    // Check if username or email is already used
+    const [result0]: [{ count: string }?] = await pg`
+      SELECT COUNT(*) FROM users WHERE username=${username} OR email=${email}
+    `;
+    if (!result0) return undefined;
+    if (parseInt(result0.count) === NaN || parseInt(result0.count) !== 0) return undefined;
+
+    // Create data necessary (sent_at & expires_at are set after email is sent)
+    const tkn = token.create();
+    const row = {
+      id: snowflake.id("email_verify_signup"),
+      username: username,
+      email: email,
+      selector: tkn.selector,
+      validator: crypto.sha256(tkn.validator),
+      issued_at: date.utc(),
+      sent_at: -1,
+      expires_at: -1,
+      verified: false
+    }
+
+    // Try to send a signup verification mail
+    const sent = await mailer.sendVerifySignup(email, tkn.full, util.getIP(ctx.req), userAgent.get(ctx.req));
+    if (!sent) return undefined;
+
+    // Set sent_at to now, expires_at to 10 minutes & insert to the database
+    row.sent_at = date.utc();
+    row.expires_at = date.minute(10);
+    const result1 = await pg`INSERT INTO email_verify_signup ${pg(row)}`;
+    if (!result1) return undefined;
+
     return {}
   }
 )
