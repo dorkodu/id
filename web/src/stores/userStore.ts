@@ -38,7 +38,9 @@ interface Action {
   queryVerifySignup: (token: string) => Promise<boolean>;
   queryConfirmSignup: (username: string, email: string, password: string) => Promise<boolean>;
 
-  queryLogin: (info: string, password: string) => Promise<boolean>;
+  queryLogin: (info: string, password: string) => Promise<"ok" | "err" | "verify">;
+  queryVerifyLogin: (token: string) => Promise<boolean>;
+
   queryLogout: () => Promise<boolean>;
 
   queryGetUser: () => Promise<boolean>;
@@ -173,6 +175,16 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
 
     if (!res || !res.a) return false;
     set(state => { state.authorized = true })
+    return true;
+  },
+
+  queryVerifyLogin: async (token) => {
+    const res = await sage.get(
+      { a: sage.query("verifyLogin", { token }) },
+      (query) => request(query)
+    )
+
+    if (!res || !res.a) return false;
     return true;
   },
 

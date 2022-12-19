@@ -1,13 +1,22 @@
-import { useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useUserStore } from "../stores/userStore";
 
 function Login() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+
   const queryLogin = useUserStore(state => state.queryLogin);
+  const queryVerifyLogin = useUserStore(state => state.queryVerifyLogin);
+
+  const initialStage = searchParams.get("token") ? "verify" : "login";
+  const [stage] = useState<"login" | "verify">(initialStage);
+  const [status, setStatus] = useState<boolean | undefined>(undefined);
+
   const loginInfo = useRef<HTMLInputElement>(null);
   const loginPassword = useRef<HTMLInputElement>(null);
+
+  useEffect(() => { if (stage === "verify") verifyLogin() }, [])
 
   const login = async () => {
     const info = loginInfo.current?.value;
@@ -20,13 +29,32 @@ function Login() {
     else navigate(redirect);
   }
 
+  const verifyLogin = async () => {
+    const token = searchParams.get("token");
+    if (!token) return;
+
+    const verified = await queryVerifyLogin(token);
+    setStatus(verified);
+  }
+
   return (
     <>
-      <input ref={loginInfo} type={"text"} placeholder={"username or email..."} />
-      <br />
-      <input ref={loginPassword} type={"password"} placeholder={"password..."} />
-      <br />
-      <button onClick={login}>login</button>
+      {stage === "login" &&
+        <>
+          <input ref={loginInfo} type={"text"} placeholder={"username or email..."} />
+          <br />
+          <input ref={loginPassword} type={"password"} placeholder={"password..."} />
+          <br />
+          <button onClick={login}>login</button>
+        </>
+      }
+      {stage === "verify" &&
+        <>
+          {stage === "verify" && status === undefined && <>loading...</>}
+          {stage === "verify" && status === true && <>verified.</>}
+          {stage === "verify" && status === false && <>couldn't verify.</>}
+        </>
+      }
     </>
   )
 }

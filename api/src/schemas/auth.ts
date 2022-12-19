@@ -20,3 +20,7 @@ export const loginSchema = z.object({
   info: z.string(),
   password: sharedSchemas.password,
 }).strict();
+
+export const verifyLoginSchema = z.object({
+  token: sharedSchemas.token,
+}).strict();

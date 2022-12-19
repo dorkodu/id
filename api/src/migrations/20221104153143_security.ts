@@ -11,6 +11,7 @@ export async function up(knex: Knex): Promise<void> {
       table.bigint("sent_at")
       table.bigint("expires_at")
       table.boolean("verified")
+      table.specificType("ip", "inet")
     })
 
     .createTable("email_verify_signup", (table) => {

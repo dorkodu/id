@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { token } from "../lib/token";
 
 import pg from "../pg";
-import { confirmSignupSchema, loginSchema, signupSchema, verifySignupSchema } from "../schemas/auth";
+import { confirmSignupSchema, loginSchema, signupSchema, verifyLoginSchema, verifySignupSchema } from "../schemas/auth";
 import { SchemaContext } from "./_schema";
 import sage from "@dorkodu/sage-server";
 import { z } from "zod";
@@ -130,16 +130,18 @@ const confirmSignup = sage.resource(
       username: string,
       email: string,
       validator: Buffer,
+      sentAt: string,
       expiresAt: string,
       verified: boolean
     }?] = await pg`
-      SELECT username, email, validator, expires_at, verified FROM email_verify_signup
-      WHERE selector=${parsedToken.selector} AND sent_at!='-1'
+      SELECT username, email, validator, sent_at, expires_at, verified FROM email_verify_signup
+      WHERE selector=${parsedToken.selector}
     `
     if (!result0) return undefined;
     if (!result0.verified) return undefined;
     if (result0.username !== username) return undefined;
     if (result0.email !== email) return undefined;
+    if (util.intParse(result0.sentAt, -1) === -1) return undefined;
     if (date.utc() >= util.intParse(result0.expiresAt, -1)) return undefined;
     if (!token.compare(parsedToken.validator, result0.validator)) return undefined;
 
@@ -207,7 +209,8 @@ const login = sage.resource(
           issued_at: date.utc(),
           sent_at: -1,
           expires_at: -1,
-          verified: false
+          verified: false,
+          ip: ip,
         }
 
         const sent = await mailer.sendVerifyLogin(result0.email, tkn.full, ip, ua);
@@ -222,14 +225,44 @@ const login = sage.resource(
       }
     }
 
+    if (!await queryCreateSession(ctx.req, ctx.res, result0.id)) return undefined;
+
     return {};
   }
 )
 
 const verifyLogin = sage.resource(
   {} as SchemaContext,
-  undefined,
-  async (_arg, _ctx) => {
+  {} as z.infer<typeof verifyLoginSchema>,
+  async (arg, _ctx) => {
+    const parsed = verifyLoginSchema.safeParse(arg);
+    if (!parsed.success) return undefined;
+
+    const rawToken = parsed.data.token;
+    const parsedToken = rawToken ? token.parse(rawToken) : undefined;
+    if (!parsedToken) return undefined;
+
+    const [result0]: [{
+      id: string,
+      validator: Buffer,
+      sentAt: string,
+      expiresAt: string,
+      verified: boolean
+    }?] = await pg`
+      SELECT id, validator, sent_at, expires_at FROM email_verify_login
+      WHERE selector=${parsedToken.selector}
+    `
+    if (!result0) return undefined;
+    if (util.intParse(result0.sentAt, -1) === -1) return undefined;
+    if (date.utc() >= util.intParse(result0.expiresAt, -1)) return undefined;
+    if (!token.compare(parsedToken.validator, result0.validator)) return undefined;
+
+    const result1 = await pg`
+      UPDATE email_verify_login SET verified=TRUE
+      WHERE id=${result0.id}
+    `
+    if (result1.count === 0) return undefined;
+
     return {}
   }
 )
