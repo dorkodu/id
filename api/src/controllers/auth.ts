@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { token } from "../lib/token";
 
 import pg from "../pg";
-import { confirmSignupSchema, loginSchema, signupSchema } from "../schemas/auth";
+import { confirmSignupSchema, loginSchema, signupSchema, verifySignupSchema } from "../schemas/auth";
 import { SchemaContext } from "./_schema";
 import sage from "@dorkodu/sage-server";
 import { z } from "zod";
@@ -85,9 +85,12 @@ const signup = sage.resource(
 
 const verifySignup = sage.resource(
   {} as SchemaContext,
-  undefined,
-  async (_arg, ctx) => {
-    const rawToken = token.get(ctx.req, "temp");
+  {} as z.infer<typeof verifySignupSchema>,
+  async (arg, _ctx) => {
+    const parsed = verifySignupSchema.safeParse(arg);
+    if (!parsed.success) return undefined;
+
+    const rawToken = parsed.data.token;
     const parsedToken = rawToken ? token.parse(rawToken) : undefined;
     if (!parsedToken) return undefined;
 

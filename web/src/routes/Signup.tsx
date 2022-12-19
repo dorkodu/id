@@ -32,7 +32,7 @@ function Signup() {
     const token = searchParams.get("token");
     if (!token) return;
 
-    const verified = await queryVerifySignup();
+    const verified = await queryVerifySignup(token);
     setStatus(verified);
   }
 
