@@ -2,6 +2,8 @@ import nodemailer from "nodemailer";
 import { webRoutes } from "../../../shared/src/web_routes";
 import { config } from "../config";
 
+const url = "https://id.dorkodu.com";
+
 const transporter = nodemailer.createTransport({
   pool: true,
   host: config.smtpHost,
@@ -12,14 +14,16 @@ const transporter = nodemailer.createTransport({
   },
 })
 
-function sendNewLocation(email: string, ip: string, userAgent: string): Promise<boolean> {
+function sendVerifyLogin(email: string, token: string, ip: string, userAgent: string): Promise<boolean> {
+  const link = `${url}/login?token=${token}`;
+
   return new Promise((resolve) => {
     transporter.sendMail({
       from: '"ID" <id@dorkodu.com>',
       to: email,
-      subject: "New Location",
-      text: `${ip} ${userAgent}`,
-      html: `<div>${ip}</div><div>${userAgent}</div>`,
+      subject: "Verify Login",
+      text: `${ip} ${userAgent} ${link}`,
+      html: `<div>${ip}</div><div>${userAgent}</div><div>${link}</div>`,
     }, async (err, info) => {
       const sent = !err && (!info.rejected.length || info.rejected[0] !== email);
       resolve(sent);
@@ -27,14 +31,16 @@ function sendNewLocation(email: string, ip: string, userAgent: string): Promise<
   })
 }
 
-function sendConfirmEmail(email: string, otp: number) {
+function sendVerifySignup(email: string, token: string, ip: string, userAgent: string) {
+  const link = `${url}/signup?token=${token}`;
+
   return new Promise((resolve) => {
     transporter.sendMail({
       from: '"ID" <id@dorkodu.com>',
       to: email,
-      subject: "Confirm Email",
-      text: `${otp}`,
-      html: `your code: ${otp}`,
+      subject: "Verify Signup",
+      text: `${ip} ${userAgent} ${link}`,
+      html: `<div>${ip}</div><div>${userAgent}</div><div>${link}</div>`,
     }, async (err, info) => {
       const sent = !err && (!info.rejected.length || info.rejected[0] !== email);
       resolve(sent);
@@ -43,60 +49,65 @@ function sendConfirmEmail(email: string, otp: number) {
 }
 
 function sendConfirmEmailChange(email: string, token: string): Promise<boolean> {
-  const link = `http://localhost:8000/${webRoutes.confirmEmailChange}?token=${token}`;
-
-  return new Promise((resolve) => {
-    transporter.sendMail({
-      from: '"ID" <id@dorkodu.com>',
-      to: email,
-      subject: "Confirm Email Change",
-      text: `${link}`,
-      html: `<a href="${link}">${link}</a>`,
-    }, async (err, info) => {
-      const sent = !err && (!info.rejected.length || info.rejected[0] !== email);
-      resolve(sent);
-    })
-  })
+  //const link = `http://localhost:8000/${webRoutes.confirmEmailChange}?token=${token}`;
+  //
+  //return new Promise((resolve) => {
+  //  transporter.sendMail({
+  //    from: '"ID" <id@dorkodu.com>',
+  //    to: email,
+  //    subject: "Confirm Email Change",
+  //    text: `${link}`,
+  //    html: `<a href="${link}">${link}</a>`,
+  //  }, async (err, info) => {
+  //    const sent = !err && (!info.rejected.length || info.rejected[0] !== email);
+  //    resolve(sent);
+  //  })
+  //})
+  return Promise.resolve(true);
 }
 
 function sendRevertEmailChange(email: string, token: string): Promise<boolean> {
-  const link = `http://localhost:8000/${webRoutes.revertEmailChange}?token=${token}`;
-
-  return new Promise((resolve) => {
-    transporter.sendMail({
-      from: '"ID" <id@dorkodu.com>',
-      to: email,
-      subject: "Revert Email Change",
-      text: `${link}`,
-      html: `<a href="${link}">${link}</a>`,
-    }, async (err, info) => {
-      const sent = !err && (!info.rejected.length || info.rejected[0] !== email);
-      resolve(sent);
-    })
-  })
+  //const link = `http://localhost:8000/${webRoutes.revertEmailChange}?token=${token}`;
+  //
+  //return new Promise((resolve) => {
+  //  transporter.sendMail({
+  //    from: '"ID" <id@dorkodu.com>',
+  //    to: email,
+  //    subject: "Revert Email Change",
+  //    text: `${link}`,
+  //    html: `<a href="${link}">${link}</a>`,
+  //  }, async (err, info) => {
+  //    const sent = !err && (!info.rejected.length || info.rejected[0] !== email);
+  //    resolve(sent);
+  //  })
+  //})
+  return Promise.resolve(true);
 }
 
-function sendConfirmPasswordChange(email: string, token: string) {
-  const link = `http://localhost:8000/${webRoutes.confirmPasswordChange}?token=${token}`;
-
-  return new Promise((resolve) => {
-    transporter.sendMail({
-      from: '"ID" <id@dorkodu.com>',
-      to: email,
-      subject: "Confirm Password Change",
-      text: `${link}`,
-      html: `<a href="${link}">${link}</a>`,
-    }, async (err, info) => {
-      const sent = !err && (!info.rejected.length || info.rejected[0] !== email);
-      resolve(sent);
-    })
-  })
+function sendConfirmPasswordChange(email: string, token: string): Promise<boolean> {
+  //const link = `http://localhost:8000/${webRoutes.confirmPasswordChange}?token=${token}`;
+  //
+  //return new Promise((resolve) => {
+  //  transporter.sendMail({
+  //    from: '"ID" <id@dorkodu.com>',
+  //    to: email,
+  //    subject: "Confirm Password Change",
+  //    text: `${link}`,
+  //    html: `<a href="${link}">${link}</a>`,
+  //  }, async (err, info) => {
+  //    const sent = !err && (!info.rejected.length || info.rejected[0] !== email);
+  //    resolve(sent);
+  //  })
+  //})
+  return Promise.resolve(true);
 }
 
 export const mailer = {
-  sendNewLocation,
-  sendConfirmEmail,
+  sendVerifyLogin,
+  sendVerifySignup,
+
   sendConfirmEmailChange,
   sendRevertEmailChange,
+
   sendConfirmPasswordChange,
 }

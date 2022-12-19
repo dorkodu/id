@@ -2,6 +2,10 @@ import { Request, Response } from "express";
 import { crypto } from "./crypto";
 import { encoding } from "./encoding";
 
+const cookies = {
+  session: "session"
+}
+
 function create(createdAt: number, expiresAt: number) {
   const selector = crypto.bytes(32);
   const validator = crypto.bytes(32);
@@ -24,8 +28,8 @@ function compare(raw: Buffer, encrypted: Buffer) {
   return encoding.compareBinary(crypto.sha256(raw), encrypted);
 }
 
-function attach(res: Response, token: { value: string, expiresAt: number }, cookie: string) {
-  res.cookie(cookie, token.value, {
+function attach(res: Response, token: { value: string, expiresAt: number }, cookie: keyof typeof cookies) {
+  res.cookie(cookies[cookie], token.value, {
     secure: true,
     httpOnly: true,
     sameSite: true,
@@ -33,12 +37,12 @@ function attach(res: Response, token: { value: string, expiresAt: number }, cook
   });
 }
 
-function detach(res: Response, cookie: string) {
-  res.clearCookie(cookie);
+function detach(res: Response, cookie: keyof typeof cookies) {
+  res.clearCookie(cookies[cookie]);
 }
 
-function get(req: Request, cookie: string): string | undefined {
-  return req.cookies[cookie];
+function get(req: Request, cookie: keyof typeof cookies): string | undefined {
+  return req.cookies[cookies[cookie]];
 }
 
 export const token = {
