@@ -1,81 +1,37 @@
 import sage from "@dorkodu/sage-server";
-import { Request } from "express";
 import { z } from "zod";
-import { IAccess } from "../../../shared/src/access";
-import { config } from "../config";
-import { crypto } from "../lib/crypto";
-import { date } from "../lib/date";
-import { token } from "../lib/token";
-import { userAgent } from "../lib/user_agent";
-import pg from "../pg";
 
 import {
   getAccessesSchema, grantAccessSchema,
   revokeAccessSchema
 } from "../schemas/access";
-import auth from "./auth";
 import { SchemaContext } from "./_schema";
 
 const getAccesses = sage.resource(
   {} as SchemaContext,
   {} as z.infer<typeof getAccessesSchema>,
-  async (arg, ctx) => {
-    const parsed = getAccessesSchema.safeParse(arg);
-    if (!parsed.success) return undefined;
-
-    const info = await auth.getAuthInfo(ctx);
-    if (!info) return undefined;
-
-    const { anchor, type } = parsed.data;
-    const result = await pg<IAccess[]>`
-      SELECT id, created_at, expires_at, user_agent, ip, service FROM access_tokens
-      WHERE user_id=${info.userId} AND expires_at>${date.utc()}
-      ${anchor === -1 ? pg`` : type === "newer" ? pg`AND id>${anchor}` : pg`AND id<${anchor}`}
-      ORDER BY id ${anchor === -1 ? pg`DESC` : type === "newer" ? pg`ASC` : pg`DESC`}
-      LIMIT 10
-    `;
-    if (!result.length) return undefined;
-
-    return result as IAccess[];
+  async (_arg, _ctx) => {
+    return undefined;
   }
 )
 
 const grantAccess = sage.resource(
   {} as SchemaContext,
   {} as z.infer<typeof grantAccessSchema>,
-  async (arg, ctx) => {
-    const parsed = grantAccessSchema.safeParse(arg);
-    if (!parsed.success) return undefined;
-
-    const info = await auth.getAuthInfo(ctx);
-    if (!info) return undefined;
-
-    // Check for white-listed services
-    if (!config.serviceWhitelist.includes(parsed.data.service)) return undefined;
-
-    const code = await queryCreateAccessCode(ctx.req, info.userId, parsed.data.service);
-    if (!code) return undefined;
-
-    return { code };
+  async (_arg, _ctx) => {
+    return undefined;
   }
 )
 
 const revokeAccess = sage.resource(
   {} as SchemaContext,
   {} as z.infer<typeof revokeAccessSchema>,
-  async (arg, ctx) => {
-    const parsed = revokeAccessSchema.safeParse(arg);
-    if (!parsed.success) return undefined;
-
-    const info = await auth.getAuthInfo(ctx);
-    if (!info) return undefined;
-
-    await queryExpireAccessToken(parsed.data.accessId, info.userId);
-
-    return {};
+  async (_arg, _ctx) => {
+    return undefined;
   }
 )
 
+/*
 async function queryCreateAccessToken(userId: number, userAgent: string, ip: string, service: string) {
   const tkn = token.create();
 
@@ -162,16 +118,17 @@ async function queryGetAccessCode(code: string) {
 
   return result;
 }
+*/
 
 export default {
   getAccesses,
   grantAccess,
   revokeAccess,
 
-  queryCreateAccessToken,
-  queryExpireAccessToken,
-  queryGetAccessToken,
-  queryCreateAccessCode,
-  queryExpireAccessCode,
-  queryGetAccessCode,
+  //queryCreateAccessToken,
+  //queryExpireAccessToken,
+  //queryGetAccessToken,
+  //queryCreateAccessCode,
+  //queryExpireAccessCode,
+  //queryGetAccessCode,
 }

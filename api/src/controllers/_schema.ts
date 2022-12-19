@@ -23,9 +23,15 @@ export const schema = sage.schema(
   {
     /* auth */
     auth: auth.auth,
-    initiateSignup: auth.initiateSignup,
+
+    signup: auth.signup,
+    verifySignup: auth.verifySignup,
     confirmSignup: auth.confirmSignup,
+
     login: auth.login,
+    verifyLogin: auth.verifyLogin,
+    confirmLogin: auth.confirmLogin,
+
     logout: auth.logout,
 
     /* user */
