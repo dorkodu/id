@@ -3,7 +3,8 @@ import { crypto } from "./crypto";
 import { encoding } from "./encoding";
 
 const cookies = {
-  session: "session"
+  session: "session",
+  temp: "temp",
 }
 
 function create() {

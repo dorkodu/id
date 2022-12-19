@@ -21,7 +21,7 @@ async function middleware(ctx: SchemaContext) {
   const tkn = await queryGetSession(ctx.req);
   if (!tkn) return;
   if (!token.compare(parsedToken.validator, tkn.validator)) return;
-  if (Date.now() >= tkn.expiresAt) return;
+  if (date.utc() >= tkn.expiresAt) return;
 
   ctx.userId = tkn.userId;
   ctx.tokenId = tkn.id;
@@ -50,7 +50,7 @@ const signup = sage.resource(
       SELECT COUNT(*) FROM users WHERE username=${username} OR email=${email}
     `;
     if (!result0) return undefined;
-    if (parseInt(result0.count) === NaN || parseInt(result0.count) !== 0) return undefined;
+    if (util.intParse(result0.count, 0) !== 0) return undefined;
 
     // Create data necessary (sent_at & expires_at are set after email is sent)
     const tkn = token.create();
@@ -76,6 +76,9 @@ const signup = sage.resource(
     const result1 = await pg`INSERT INTO email_verify_signup ${pg(row)}`;
     if (!result1) return undefined;
 
+    // Attach a temporary cookie for signup confirmation
+    token.attach(ctx.res, { value: tkn.full, expiresAt: row.expires_at }, "temp");
+
     return {}
   }
 )
@@ -83,7 +86,25 @@ const signup = sage.resource(
 const verifySignup = sage.resource(
   {} as SchemaContext,
   undefined,
-  async (_arg, _ctx) => {
+  async (_arg, ctx) => {
+    const rawToken = token.get(ctx.req, "temp");
+    const parsedToken = rawToken ? token.parse(rawToken) : undefined;
+    if (!parsedToken) return undefined;
+
+    const [result0]: [{ id: string, validator: Buffer, expiresAt: string }?] = await pg`
+      SELECT id, validator, expires_at FROM email_verify_signup
+      WHERE selector=${parsedToken.selector} AND sent_at!='-1'
+    `
+    if (!result0) return undefined;
+    if (!token.compare(parsedToken.validator, result0.validator)) return undefined;
+    if (date.utc() >= util.intParse(result0.expiresAt, -1)) return undefined;
+
+    const result1 = await pg`
+      UPDATE email_verify_signup SET verified=TRUE
+      WHERE id=${result0.id}
+    `
+    if (result1.count === 0) return undefined;
+
     return {}
   }
 )
