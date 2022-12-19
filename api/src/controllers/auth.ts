@@ -13,14 +13,14 @@ import sage from "@dorkodu/sage-server";
 import { z } from "zod";
 
 async function middleware(ctx: SchemaContext) {
-  const rawToken = token.get(ctx.req);
+  const rawToken = token.get(ctx.req, "session");
   const parsedToken = rawToken ? token.parse(rawToken) : undefined;
   if (!parsedToken) return;
 
-  const tkn = await queryGetToken(ctx.req);
+  const tkn = await queryGetSession(ctx.req);
   if (!tkn) return;
   if (!token.compare(parsedToken.validator, tkn.validator)) return;
-  if (date.utc() >= tkn.expiresAt) return;
+  if (Date.now() >= tkn.expiresAt) return;
 
   ctx.userId = tkn.userId;
   ctx.tokenId = tkn.id;
@@ -35,94 +35,26 @@ const auth = sage.resource(
   }
 )
 
-const initiateSignup = sage.resource(
+const signup = sage.resource(
   {} as SchemaContext,
-  {} as z.infer<typeof initiateSignupSchema>,
-  async (arg, _ctx) => {
-    const parsed = initiateSignupSchema.safeParse(arg);
-    if (!parsed.success) return undefined;
+  undefined,
+  async (_arg, _ctx) => {
 
-    const { username, email } = parsed.data;
+  }
+)
 
-    const [result0]: [{ count: number }?] = await pg`
-      SELECT COUNT(*) FROM users WHERE username=${username} OR email=${email}
-    `;
-    if (!result0) return undefined;
-    if (result0.count !== 0) return undefined;
+const verifySignup = sage.resource(
+  {} as SchemaContext,
+  undefined,
+  async (_arg, _ctx) => {
 
-    const [result1]: [{ count: number }?] = await pg`
-      SELECT COUNT(*) FROM email_verify_email
-      WHERE username=${username} AND email=${email} AND expires_at>${date.utc()} AND tries_left>0
-    `;
-    if (!result1) return undefined;
-    if (result1.count !== 0) return undefined;
-
-    const row = {
-      username: username,
-      email: email,
-      otp: crypto.otp(),
-      sent_at: -1,
-      expires_at: -1,
-      tries_left: 3
-    }
-
-    const sent = await mailer.sendConfirmEmail(email, row.otp);
-    if (!sent) return undefined;
-
-    row.sent_at = date.utc();
-    row.expires_at = date.utc() + 60 * 10; // 10 minutes
-    await pg`INSERT INTO email_verify_email ${pg(row)}`;
-
-    return {};
   }
 )
 
 const confirmSignup = sage.resource(
   {} as SchemaContext,
-  {} as z.infer<typeof confirmSignupSchema>,
-  async (arg, ctx) => {
-    const parsed = confirmSignupSchema.safeParse(arg);
-    if (!parsed.success) return undefined;
-
-    const { username, email, password, otp } = parsed.data;
-
-    const [result0]: [{ count: number }?] = await pg`
-      SELECT COUNT(*) FROM users WHERE username=${username} OR email=${email}
-    `;
-    if (!result0) return undefined;
-    if (result0.count !== 0) return undefined;
-
-    const [result1]: [{ id: number, otp: number }?] = await pg`
-      UPDATE email_verify_email SET tries_left=tries_left-1
-      WHERE id=(
-        SELECT id FROM email_verify_email
-        WHERE username=${username} AND email=${email} AND expires_at>${date.utc()} AND tries_left>0
-        ORDER BY id DESC 
-        LIMIT 1
-      )
-      RETURNING id, otp
-    `;
-    if (!result1) return undefined;
-    if (result1.otp.toString() !== otp) return undefined;
-
-    const row = {
-      username: username,
-      email: email,
-      password: await crypto.encryptPassword(password),
-      joined_at: date.utc(),
-    }
-
-    const [result2, result3] = await pg.begin(pg => [
-      pg`INSERT INTO users ${pg(row)} RETURNING id`,
-      pg`UPDATE email_verify_email SET expires_at=${date.utc()} WHERE id=${result1.id}`,
-    ]);
-    if (!result2.count) return undefined;
-    if (!result3.count) return undefined;
-
-    const userId: number | undefined = result2[0]?.id;
-    if (userId === undefined) return undefined;
-    if (!await queryCreateToken(ctx.req, ctx.res, userId)) return undefined;
-    return {};
+  undefined,
+  async (_arg, _ctx) => {
   }
 )
 
@@ -146,22 +78,38 @@ const login = sage.resource(
 
     if (!result0) return undefined;
     if (!await crypto.comparePassword(password, result0.password)) return undefined;
-    if (!await queryCreateToken(ctx.req, ctx.res, result0.id)) return undefined;
-
-    (async () => {
-      const ip = ctx.req.headers["x-real-ip"] as string;
-      const ua = userAgent.parse(ctx.req.headers["user-agent"]);
-      const [result1]: [{ count: number }?] = await pg`
-        SELECT COUNT(*) FROM sessions
-        WHERE user_id=${result0.id} AND ip=${ip}
-      `;
-      if (!result1) return;
-      if (result1.count > 1) return;
-
-      await mailer.sendNewLocation(result0.email, ip, ua);
-    })();
+    //if (!await queryCreateSession(ctx.req, ctx.res, result0.id)) return undefined;
+    //
+    //(async () => {
+    //  const ip = ctx.req.headers["x-real-ip"] as string;
+    //  const ua = userAgent.parse(ctx.req.headers["user-agent"]);
+    //  const [result1]: [{ count: number }?] = await pg`
+    //    SELECT COUNT(*) FROM sessions
+    //    WHERE user_id=${result0.id} AND ip=${ip}
+    //  `;
+    //  if (!result1) return;
+    //  if (result1.count > 1) return;
+    //
+    //  await mailer.sendNewLocation(result0.email, ip, ua);
+    //})();
 
     return {};
+  }
+)
+
+const verifyLogin = sage.resource(
+  {} as SchemaContext,
+  undefined,
+  async (_arg, _ctx) => {
+
+  }
+)
+
+const confirmLogin = sage.resource(
+  {} as SchemaContext,
+  undefined,
+  async (_arg, _ctx) => {
+
   }
 )
 
@@ -171,13 +119,13 @@ const logout = sage.resource(
   async (_arg, ctx) => {
     const authInfo = await getAuthInfo(ctx);
     if (!authInfo) return undefined;
-    await queryExpireToken(ctx.res, authInfo.tokenId, authInfo.userId);
+    await queryExpireSession(ctx.res, authInfo.tokenId, authInfo.userId);
     return {};
   }
 )
 
-async function queryGetToken(req: Request) {
-  const rawToken = token.get(req);
+async function queryGetSession(req: Request) {
+  const rawToken = token.get(req, "session");
   const parsedToken = rawToken ? token.parse(rawToken) : undefined;
   if (!parsedToken) return undefined;
 
@@ -188,8 +136,8 @@ async function queryGetToken(req: Request) {
   return result;
 }
 
-async function queryCreateToken(req: Request, res: Response, userId: number): Promise<boolean> {
-  const tkn = token.create();
+async function queryCreateSession(req: Request, res: Response, userId: number): Promise<boolean> {
+  const tkn = token.create(Date.now(), date.day(30));
 
   const row = {
     user_id: userId,
@@ -204,13 +152,13 @@ async function queryCreateToken(req: Request, res: Response, userId: number): Pr
   const result = await pg`INSERT INTO sessions ${pg(row)}`;
   if (!result.count) return false;
 
-  token.attach(res, { value: tkn.full, expiresAt: tkn.expiresAt });
+  token.attach(res, { value: tkn.full, expiresAt: tkn.expiresAt }, "session");
   return true;
 }
 
-async function queryExpireToken(res: Response, tokenId: number, userId: number) {
-  await pg`UPDATE sessions SET expires_at=${date.utc()} WHERE id=${tokenId} AND user_id=${userId}`;
-  token.detach(res);
+async function queryExpireSession(res: Response, tokenId: number, userId: number) {
+  await pg`UPDATE sessions SET expires_at=${Date.now()} WHERE id=${tokenId} AND user_id=${userId}`;
+  token.detach(res, "session");
 }
 
 async function getAuthInfo(ctx: SchemaContext) {
@@ -222,11 +170,17 @@ async function getAuthInfo(ctx: SchemaContext) {
 }
 
 export default {
-  middleware,
   auth,
-  initiateSignup,
+
+  signup,
+  verifySignup,
   confirmSignup,
+
   login,
+  verifyLogin,
+  confirmLogin,
+
   logout,
+
   getAuthInfo,
 }
