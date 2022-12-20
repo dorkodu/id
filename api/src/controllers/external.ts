@@ -2,44 +2,81 @@ import { checkAccessSchema, getAccessTokenSchema, getUserDataSchema } from "../s
 import sage from "@dorkodu/sage-server";
 import { SchemaContext } from "./_schema";
 import { z } from "zod";
+import { token } from "../lib/token";
+import access from "./access";
+import { date } from "../lib/date";
+import { util } from "../lib/util";
+import pg from "../pg";
+import { IUserRaw, iUserSchema } from "../types/user";
 
 /* These functions are used by external apps that use Dorkodu ID for authentication. */
 
 const getAccessToken = sage.resource(
   {} as SchemaContext,
   {} as z.infer<typeof getAccessTokenSchema>,
-  async (_arg, _ctx) => {
-    return undefined;
+  async (arg, _ctx) => {
+    const parsed = getAccessTokenSchema.safeParse(arg);
+    if (!parsed.success) return undefined;
+
+    const parsedToken = token.parse(parsed.data.code);
+    if (!parsedToken) return undefined;
+
+    const result0 = await access.queryGetAccessCode(parsed.data.code);
+    if (!result0) return undefined;
+    if (!token.compare(parsedToken.validator, result0.validator)) return undefined;
+    if (date.utc() >= util.intParse(result0.expiresAt, -1)) return undefined;
+
+    const { userId, userAgent, ip, service } = result0;
+
+    const accessToken = await access.queryCreateAccessToken(userId, userAgent, ip, service);
+    if (!accessToken) return undefined;
+
+    return { token: accessToken };
   }
 )
 
 const checkAccess = sage.resource(
   {} as SchemaContext,
   {} as z.infer<typeof checkAccessSchema>,
-  async (_arg, _ctx) => {
-    return undefined;
+  async (arg, _ctx) => {
+    const parsed = checkAccessSchema.safeParse(arg);
+    if (!parsed.success) return undefined;
+
+    return await validateAccessToken(parsed.data.token);
   }
 )
 
 const getUserData = sage.resource(
   {} as SchemaContext,
   {} as z.infer<typeof getUserDataSchema>,
-  async (_arg, _ctx) => {
-    return undefined;
+  async (arg, _ctx) => {
+    const parsed = getUserDataSchema.safeParse(arg);
+    if (!parsed.success) return undefined;
+
+    const result0 = await validateAccessToken(parsed.data.token);
+    if (!result0) return undefined;
+
+    const [result]: [IUserRaw?] = await pg`
+      SELECT id, username, email, joined_at FROM users WHERE id=${result0.userId}
+    `;
+    const userParsed = iUserSchema.safeParse(result);
+    if (!userParsed.success) return undefined;
+
+    return userParsed.data;
   }
 )
 
-//async function validateAccessToken(accessToken: string): Promise<{ userId: number } | undefined> {
-//  const parsedToken = token.parse(accessToken);
-//  if (!parsedToken) return undefined;
-//
-//  const result0 = await access.queryGetAccessToken(accessToken);
-//  if (!result0) return undefined;
-//  if (!token.compare(parsedToken.validator, result0.validator)) return undefined;
-//  if (date.utc() >= result0.expiresAt) return undefined;
-//
-//  return { userId: result0.userId };
-//}
+async function validateAccessToken(accessToken: string) {
+  const parsedToken = token.parse(accessToken);
+  if (!parsedToken) return undefined;
+
+  const result = await access.queryGetAccessToken(accessToken);
+  if (!result) return undefined;
+  if (!token.compare(parsedToken.validator, result.validator)) return undefined;
+  if (date.utc() >= util.intParse(result.expiresAt, -1)) return undefined;
+
+  return { userId: result.userId };
+}
 
 export default {
   getAccessToken,
