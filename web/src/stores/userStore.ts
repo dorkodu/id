@@ -13,20 +13,17 @@ interface State {
 
   currentSession: ISession | undefined;
   session: {
-    ids: string[],
+    sorted: ISession[],
     entities: { [key: string]: ISession }
   };
 
   access: {
-    ids: string[],
+    sorted: IAccess[],
     entities: { [key: string]: IAccess }
   }
 }
 
 interface Action {
-  getSessions: () => ISession[];
-  getAccesses: () => IAccess[];
-
   setUser: (data: IUser | undefined) => void;
   setCurrentSession: (data: ISession | undefined) => void;
   setSessions: (data: ISession[] | undefined, refresh?: boolean) => void;
@@ -64,39 +61,12 @@ const initialState: State = {
   authorized: false,
   user: undefined,
   currentSession: undefined,
-  session: { ids: [], entities: {} },
-  access: { ids: [], entities: {} },
+  session: { sorted: [], entities: {} },
+  access: { sorted: [], entities: {} },
 }
 
 export const useUserStore = create(immer<State & Action>((set, get) => ({
   ...initialState,
-
-  getSessions: () => {
-    const ids = get().session.ids;
-    const entities = get().session.entities;
-    const sessions: ISession[] = [];
-
-    ids.forEach(id => {
-      if (get().currentSession?.id == id) return;
-      const session = entities[id];
-      if (session) sessions.push(session);
-    })
-
-    return sessions;
-  },
-
-  getAccesses: () => {
-    const ids = get().access.ids;
-    const entities = get().access.entities;
-    const accesss: IAccess[] = [];
-
-    ids.forEach(id => {
-      const access = entities[id];
-      if (access) accesss.push(access);
-    })
-
-    return accesss;
-  },
 
   setUser: (data) => {
     set(state => { state.user = data })
@@ -109,8 +79,10 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
   setSessions: (data, refresh) => {
     if (!data) return;
     set(state => {
-      if (refresh) state.session = { ids: [], entities: {} };
-      state.session.ids = array.sort([...data.map(session => session.id), ...state.session.ids]);
+      if (refresh) state.session = { sorted: [], entities: {} };
+
+      state.session.ids = array.sort([...data, ...state.session.ids]);
+
       data.forEach(session => void (state.session.entities[session.id] = session))
     })
   },
@@ -118,8 +90,10 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
   setAccesses: (data, refresh) => {
     if (!data) return;
     set(state => {
-      if (refresh) state.access = { ids: [], entities: {} };
+      if (refresh) state.access = { sorted: [], entities: {} };
+
       state.access.ids = array.sort([...data.map(access => access.id), ...state.access.ids]);
+
       data.forEach(access => void (state.access.entities[access.id] = access))
     })
   },
@@ -286,7 +260,7 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
   },
 
   queryGetSessions: async (type, refresh) => {
-    const anchor = array.getAnchor(get().session.ids, type, refresh);
+    const anchor = array.getAnchor(get().session.sorted, "id", "-1", type, refresh);
 
     const res = await sage.get(
       { a: sage.query("getSessions", { anchor, type }) },
@@ -319,7 +293,7 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
   },
 
   queryGetAccesses: async (type, refresh) => {
-    const anchor = array.getAnchor(get().access.ids, type, refresh);
+    const anchor = array.getAnchor(get().access.sorted, "id", "-1", type, refresh);
 
     const res = await sage.get(
       { a: sage.query("getAccesses", { anchor, type }) },

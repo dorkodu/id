@@ -11,9 +11,6 @@ import { array } from "../lib/array";
 function Dashboard() {
   const navigate = useNavigate();
 
-  const sessionIds = useUserStore(state => state.session.ids);
-  const accessIds = useUserStore(state => state.access.ids);
-
   const setUser = useUserStore(state => state.setUser);
   const setCurrentSession = useUserStore(state => state.setCurrentSession);
   const setSessions = useUserStore(state => state.setSessions);
@@ -25,13 +22,13 @@ function Dashboard() {
 
   const user = useUserStore(state => state.user);
   const currentSession = useUserStore(state => state.currentSession);
-  const sessions = useUserStore(state => state.getSessions());
-  const accesses = useUserStore(state => state.getAccesses());
+  const sessions = useUserStore(state => state.session.sorted);
+  const accesses = useUserStore(state => state.access.sorted);
 
   useEffect(() => {
     (async () => {
-      const sessionAnchor = array.getAnchor(sessionIds, "newer", true);
-      const accessAnchor = array.getAnchor(accessIds, "newer", true);
+      const sessionAnchor = array.getAnchor(sessions, "id", "-1", "newer", true);
+      const accessAnchor = array.getAnchor(accesses, "id", "-1", "newer", true);
 
       const res = await sage.get({
         a: sage.query("getUser", undefined, { ctx: "ctx", }),

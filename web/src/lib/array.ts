@@ -1,11 +1,24 @@
-function getAnchor(arr: string[], type: "newer" | "older", refresh?: boolean): string {
-  if (!arr.length || refresh) return "-1";
-  const out = type === "newer" ? arr[0] : arr[arr.length - 1];
-  return out === undefined ? "-1" : out;
+function getAnchor<
+  T extends Array<Record<TKey, any>>,
+  TKey extends keyof T[number],
+  TDefault,
+>(arr: T,
+  key: TKey,
+  def: TDefault,
+  type: "newer" | "older",
+  refresh?: boolean
+): TDefault | T[number][TKey] {
+  if (!arr.length || refresh) return def;
+  const output = type === "newer" ? arr[0] : arr[arr.length - 1];
+  if (output === undefined) return def;
+  return output[key];
 }
 
-function sort(arr: number[]) {
-  return [... new Set(arr)].sort((a, b) => (b - a));
+function sort<
+  T extends Array<Record<TKey, any>>,
+  TKey extends keyof T[number],
+>(arr: T, by: TKey, func: (a: T[number][TKey], b: T[number][TKey]) => -1 | 0 | 1): T {
+  return arr.sort((a, b) => func(a[by], b[by]));
 }
 
 export const array = {
