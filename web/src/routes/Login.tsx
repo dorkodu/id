@@ -10,7 +10,7 @@ function Login() {
   const queryVerifyLogin = useUserStore(state => state.queryVerifyLogin);
 
   const initialStage = searchParams.get("token") ? "verify" : "login";
-  const [stage] = useState<"login" | "verify">(initialStage);
+  const [stage, setStage] = useState<"login" | "verify" | "confirm">(initialStage);
   const [status, setStatus] = useState<boolean | undefined>(undefined);
 
   const loginInfo = useRef<HTMLInputElement>(null);
@@ -22,7 +22,9 @@ function Login() {
     const info = loginInfo.current?.value;
     const password = loginPassword.current?.value;
     if (!info || !password) return;
-    if (!await queryLogin(info, password)) return;
+    const res = await queryLogin(info, password);
+    if (res === "err") return;
+    if (res === "confirm") { setStage("confirm"); return; }
 
     const redirect = searchParams.get("redirect");
     if (!redirect) navigate("/dashboard");
@@ -39,11 +41,11 @@ function Login() {
 
   return (
     <>
-      {stage === "login" &&
+      {stage !== "verify" &&
         <>
-          <input ref={loginInfo} type={"text"} placeholder={"username or email..."} />
+          <input ref={loginInfo} type={"text"} placeholder={"username or email..."} disabled={stage === "confirm"} />
           <br />
-          <input ref={loginPassword} type={"password"} placeholder={"password..."} />
+          <input ref={loginPassword} type={"password"} placeholder={"password..."} disabled={stage === "confirm"} />
           <br />
           <button onClick={login}>login</button>
         </>

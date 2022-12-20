@@ -38,7 +38,7 @@ interface Action {
   queryVerifySignup: (token: string) => Promise<boolean>;
   queryConfirmSignup: (username: string, email: string, password: string) => Promise<boolean>;
 
-  queryLogin: (info: string, password: string) => Promise<"ok" | "err" | "verify">;
+  queryLogin: (info: string, password: string) => Promise<"ok" | "err" | "confirm">;
   queryVerifyLogin: (token: string) => Promise<boolean>;
 
   queryLogout: () => Promise<boolean>;
@@ -173,9 +173,10 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
       (query) => request(query)
     )
 
-    if (!res || !res.a) return false;
+    if (res && res.a && res.a.err) return "confirm";
+    if (!res || !res.a) return "err";
     set(state => { state.authorized = true })
-    return true;
+    return "ok";
   },
 
   queryVerifyLogin: async (token) => {

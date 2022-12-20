@@ -221,7 +221,7 @@ const login = sage.resource(
         const result1 = await pg`INSERT INTO email_verify_login ${pg(row)}`;
         if (result1.count === 0) return undefined;
 
-        return { err: "" };
+        return { err: "confirm" };
       }
     }
 
