@@ -66,7 +66,7 @@ function Dashboard() {
       <div>
         <div>username: {user?.username}</div>
         <div>email: {user?.email}</div>
-        <div>joined at: {user && date.unix(user.joinedAt).format('lll')}</div>
+        <div>joined at: {user && date(user.joinedAt).format('lll')}</div>
       </div>
 
       <br />

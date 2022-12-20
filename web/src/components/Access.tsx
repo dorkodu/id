@@ -16,8 +16,8 @@ function Session({ access }: Props) {
 
   return (
     <div>
-      <div>created at: {date.unix(access.createdAt).format('lll')}</div>
-      <div>expires at: {date.unix(access.expiresAt).format('lll')}</div>
+      <div>created at: {date(access.createdAt).format('lll')}</div>
+      <div>expires at: {date(access.expiresAt).format('lll')}</div>
       <div>ip: {access.ip}</div>
       <div>user agent: {util.parseUserAgent(access.userAgent)}</div>
       <div>service: {access.service}</div>

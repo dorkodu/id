@@ -16,8 +16,8 @@ function Session({ session }: Props) {
 
   return (
     <div>
-      <div>created at: {date.unix(session.createdAt).format('lll')}</div>
-      <div>expires at: {date.unix(session.expiresAt).format('lll')}</div>
+      <div>created at: {date(session.createdAt).format('lll')}</div>
+      <div>expires at: {date(session.expiresAt).format('lll')}</div>
       <div>ip: {session.ip}</div>
       <div>user agent: {util.parseUserAgent(session.userAgent)}</div>
       <button onClick={terminate}>terminate</button>
