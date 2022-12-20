@@ -4,7 +4,7 @@ import { SchemaContext } from "./_schema";
 import { z } from "zod";
 import auth from "./auth";
 import pg from "../pg";
-import { ISessionRaw, iSessionSchema } from "../types/session";
+import { ISessionParsed, ISessionRaw, iSessionSchema } from "../types/session";
 import { date } from "../lib/date";
 
 const getCurrentSession = sage.resource(
@@ -27,8 +27,30 @@ const getCurrentSession = sage.resource(
 const getSessions = sage.resource(
   {} as SchemaContext,
   {} as z.infer<typeof getSessionsSchema>,
-  async (_arg, _ctx) => {
-    return undefined;
+  async (arg, ctx) => {
+    const parsed = getSessionsSchema.safeParse(arg);
+    if (!parsed.success) return undefined;
+
+    const info = await auth.getAuthInfo(ctx);
+    if (!info) return undefined;
+
+    const { anchor, type } = parsed.data;
+    const result = await pg<ISessionRaw[]>`
+      SELECT id, created_at, expires_at, user_agent, ip FROM sessions
+      WHERE user_id=${info.userId} AND expires_at>${date.utc()}
+      ${anchor === "-1" ? pg`` : type === "newer" ? pg`AND id>${anchor}` : pg`AND id<${anchor}`}
+      ORDER BY id ${anchor === "-1" ? pg`DESC` : type === "newer" ? pg`ASC` : pg`DESC`}
+      LIMIT 10
+    `;
+    if (!result.length) return undefined;
+
+    const res: ISessionParsed[] = [];
+    result.forEach(session => {
+      const parsed = iSessionSchema.safeParse(session);
+      if (parsed.success) res.push(parsed.data);
+    })
+
+    return res;
   }
 )
 

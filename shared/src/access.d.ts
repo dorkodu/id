@@ -1,8 +1,3 @@
-export interface IAccess {
-  id: string;
-  createdAt: string;
-  expiresAt: string;
-  userAgent: string;
-  ip: string;
-  service: string;
-}
+import type { IAccessParsed } from "../../api/src/types/access"
+
+export interface IAccess extends IAccessParsed { }

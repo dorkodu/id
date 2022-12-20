@@ -13,14 +13,37 @@ import {
   getAccessesSchema, grantAccessSchema,
   revokeAccessSchema
 } from "../schemas/access";
+import { IAccessParsed, IAccessRaw, iAccessSchema } from "../types/access";
 import auth from "./auth";
 import { SchemaContext } from "./_schema";
 
 const getAccesses = sage.resource(
   {} as SchemaContext,
   {} as z.infer<typeof getAccessesSchema>,
-  async (_arg, _ctx) => {
-    return undefined;
+  async (arg, ctx) => {
+    const parsed = getAccessesSchema.safeParse(arg);
+    if (!parsed.success) return undefined;
+
+    const info = await auth.getAuthInfo(ctx);
+    if (!info) return undefined;
+
+    const { anchor, type } = parsed.data;
+    const result = await pg<IAccessRaw[]>`
+      SELECT id, created_at, expires_at, user_agent, ip, service FROM access_tokens
+      WHERE user_id=${info.userId} AND expires_at>${date.utc()}
+      ${anchor === "-1" ? pg`` : type === "newer" ? pg`AND id>${anchor}` : pg`AND id<${anchor}`}
+      ORDER BY id ${anchor === "-1" ? pg`DESC` : type === "newer" ? pg`ASC` : pg`DESC`}
+      LIMIT 10
+    `;
+    if (!result.length) return undefined;
+
+    const res: IAccessParsed[] = [];
+    result.forEach(session => {
+      const parsed = iAccessSchema.safeParse(session);
+      if (parsed.success) res.push(parsed.data);
+    })
+
+    return res;
   }
 )
 
