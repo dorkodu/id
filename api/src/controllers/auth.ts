@@ -68,7 +68,7 @@ const signup = sage.resource(
     }
 
     // Try to send a signup verification mail
-    const sent = await mailer.sendVerifySignup(email, tkn.full, util.getIP(ctx.req), userAgent.get(ctx.req));
+    const sent = await mailer.sendVerifySignup(email, tkn.full);
     if (!sent) return undefined;
 
     // Set sent_at to now, expires_at to 10 minutes & insert to the database

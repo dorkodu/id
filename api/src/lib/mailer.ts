@@ -30,7 +30,7 @@ function sendVerifyLogin(email: string, token: string, ip: string, userAgent: st
   })
 }
 
-function sendVerifySignup(email: string, token: string, ip: string, userAgent: string) {
+function sendVerifySignup(email: string, token: string) {
   const link = `${url}/signup?token=${token}`;
 
   return new Promise((resolve) => {
@@ -38,8 +38,8 @@ function sendVerifySignup(email: string, token: string, ip: string, userAgent: s
       from: '"ID" <id@dorkodu.com>',
       to: email,
       subject: "Verify Signup",
-      text: `${ip} ${userAgent} ${link}`,
-      html: `<div>${ip}</div><div>${userAgent}</div><a href="${link}">${link}</a>`,
+      text: `${link}`,
+      html: `<a href="${link}">${link}</a>`,
     }, async (err, info) => {
       const sent = !err && (!info.rejected.length || info.rejected[0] !== email);
       resolve(sent);
