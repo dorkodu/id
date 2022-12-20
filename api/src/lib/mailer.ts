@@ -47,16 +47,55 @@ function sendVerifySignup(email: string, token: string, ip: string, userAgent: s
   })
 }
 
-function sendConfirmEmailChange(_email: string, _token: string): Promise<boolean> {
-  return Promise.resolve(true);
+function sendConfirmEmailChange(email: string, token: string): Promise<boolean> {
+  const link = `${url}/confirm_email_change?token=${token}`;
+
+  return new Promise((resolve) => {
+    transporter.sendMail({
+      from: '"ID" <id@dorkodu.com>',
+      to: email,
+      subject: "Confirm Email Change",
+      text: `${link}`,
+      html: `<a href="${link}">${link}</a>`,
+    }, async (err, info) => {
+      const sent = !err && (!info.rejected.length || info.rejected[0] !== email);
+      resolve(sent);
+    })
+  })
 }
 
-function sendRevertEmailChange(_email: string, _token: string): Promise<boolean> {
-  return Promise.resolve(true);
+function sendRevertEmailChange(email: string, token: string): Promise<boolean> {
+  const link = `${url}/revert_email_change?token=${token}`;
+
+  return new Promise((resolve) => {
+    transporter.sendMail({
+      from: '"ID" <id@dorkodu.com>',
+      to: email,
+      subject: "Revert Email Change",
+      text: `${link}`,
+      html: `<a href="${link}">${link}</a>`,
+    }, async (err, info) => {
+      const sent = !err && (!info.rejected.length || info.rejected[0] !== email);
+      resolve(sent);
+    })
+  })
 }
 
-function sendConfirmPasswordChange(_email: string, _token: string): Promise<boolean> {
-  return Promise.resolve(true);
+function sendConfirmPasswordChange(email: string, token: string): Promise<boolean> {
+  const link = `${url}/confirm_password_change?token=${token}`;
+
+  return new Promise((resolve) => {
+    transporter.sendMail({
+      from: '"ID" <id@dorkodu.com>',
+      to: email,
+      subject: "Confirm Password Change",
+      text: `${link}`,
+      html: `<a href="${link}">${link}</a>`,
+    }, async (err, info) => {
+      const sent = !err && (!info.rejected.length || info.rejected[0] !== email);
+      resolve(sent);
+    })
+  })
 }
 
 export const mailer = {
