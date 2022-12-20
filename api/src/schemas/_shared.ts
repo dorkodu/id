@@ -7,7 +7,7 @@ const password = z.string().min(8);
 const token = z.string();
 const code = z.string();
 
-const anchor = z.number();
+const anchor = z.string();
 const type = z.enum(["newer", "older"]);
 
 const service = z.string().max(128);

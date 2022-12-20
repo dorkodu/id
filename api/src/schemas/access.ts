@@ -11,5 +11,5 @@ export const grantAccessSchema = z.object({
 }).strict();
 
 export const revokeAccessSchema = z.object({
-  accessId: z.number(),
+  accessId: z.string(),
 }).strict();

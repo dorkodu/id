@@ -5,6 +5,7 @@ import { z } from "zod";
 import auth from "./auth";
 import pg from "../pg";
 import { ISessionRaw, iSessionSchema } from "../types/session";
+import { date } from "../lib/date";
 
 const getCurrentSession = sage.resource(
   {} as SchemaContext,
@@ -34,8 +35,22 @@ const getSessions = sage.resource(
 const terminateSession = sage.resource(
   {} as SchemaContext,
   {} as z.infer<typeof terminateSessionSchema>,
-  async (_arg, _ctx) => {
-    return undefined;
+  async (arg, ctx) => {
+    const parsed = terminateSessionSchema.safeParse(arg);
+    if (!parsed.success) return undefined;
+
+    const info = await auth.getAuthInfo(ctx);
+    if (!info) return undefined;
+
+    const { sessionId } = parsed.data;
+
+    const result = await pg`
+      UPDATE sessions SET expires_at=${date.utc()} 
+      WHERE id=${sessionId} AND user_id=${info.userId}
+    `;
+    if (result.count === 0) return undefined;
+
+    return {};
   }
 )
 

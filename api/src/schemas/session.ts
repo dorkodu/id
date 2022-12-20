@@ -7,5 +7,5 @@ export const getSessionsSchema = z.object({
 }).strict();
 
 export const terminateSessionSchema = z.object({
-  sessionId: z.number()
+  sessionId: z.string()
 }).strict();
