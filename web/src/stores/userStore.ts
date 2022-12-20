@@ -13,13 +13,13 @@ interface State {
 
   currentSession: ISession | undefined;
   session: {
-    ids: number[],
-    entities: { [key: number | string]: ISession }
+    ids: string[],
+    entities: { [key: string]: ISession }
   };
 
   access: {
-    ids: number[],
-    entities: { [key: number | string]: IAccess }
+    ids: string[],
+    entities: { [key: string]: IAccess }
   }
 }
 
@@ -53,11 +53,11 @@ interface Action {
 
   queryGetCurrentSession: () => Promise<void>;
   queryGetSessions: (type: "newer" | "older", refresh?: boolean) => Promise<void>;
-  queryTerminateSession: (sessionId: number) => Promise<void>;
+  queryTerminateSession: (sessionId: string) => Promise<void>;
 
   queryGetAccesses: (type: "newer" | "older", refresh?: boolean) => Promise<void>;
   queryGrantAccess: (service: string) => Promise<string | undefined>;
-  queryRevokeAccess: (accessId: number) => Promise<void>;
+  queryRevokeAccess: (accessId: string) => Promise<void>;
 }
 
 const initialState: State = {
@@ -106,7 +106,7 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
     set(state => { state.currentSession = data })
   },
 
-  setSessions: (data: ISession[] | undefined, refresh?: boolean) => {
+  setSessions: (data, refresh) => {
     if (!data) return;
     set(state => {
       if (refresh) state.session = { ids: [], entities: {} };
@@ -115,7 +115,7 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
     })
   },
 
-  setAccesses: (data: IAccess[] | undefined, refresh?: boolean) => {
+  setAccesses: (data, refresh) => {
     if (!data) return;
     set(state => {
       if (refresh) state.access = { ids: [], entities: {} };
@@ -167,7 +167,7 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
     return true;
   },
 
-  queryLogin: async (info: string, password: string) => {
+  queryLogin: async (info, password) => {
     const res = await sage.get(
       { a: sage.query("login", { info, password }) },
       (query) => request(query)
@@ -211,7 +211,7 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
     return true;
   },
 
-  queryChangeUsername: async (newUsername: string) => {
+  queryChangeUsername: async (newUsername) => {
     const res = await sage.get(
       { a: sage.query("changeUsername", { newUsername }) },
       (query) => request(query)
@@ -221,7 +221,7 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
     return true;
   },
 
-  queryInitiateEmailChange: async (newEmail: string) => {
+  queryInitiateEmailChange: async (newEmail) => {
     const res = await sage.get(
       { a: sage.query("initiateEmailChange", { newEmail }) },
       (query) => request(query)
@@ -231,7 +231,7 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
     return true;
   },
 
-  queryConfirmEmailChange: async (token: string) => {
+  queryConfirmEmailChange: async (token) => {
     const res = await sage.get(
       { a: sage.query("confirmEmailChange", { token }) },
       (query) => request(query)
@@ -241,7 +241,7 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
     return true;
   },
 
-  queryRevertEmailChange: async (token: string) => {
+  queryRevertEmailChange: async (token) => {
     const res = await sage.get(
       { a: sage.query("revertEmailChange", { token }) },
       (query) => request(query)
@@ -251,7 +251,7 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
     return true;
   },
 
-  queryInitiatePasswordChange: async (username: string, email: string) => {
+  queryInitiatePasswordChange: async (username, email) => {
     const res = await sage.get(
       { a: sage.query("initiatePasswordChange", { username, email }) },
       (query) => request(query)
@@ -261,7 +261,7 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
     return true;
   },
 
-  queryConfirmPasswordChange: async (newPassword: string, token: string) => {
+  queryConfirmPasswordChange: async (newPassword, token) => {
     const res = await sage.get(
       { a: sage.query("confirmPasswordChange", { newPassword, token }) },
       (query) => request(query)
@@ -285,7 +285,7 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
     })
   },
 
-  queryGetSessions: async (type: "newer" | "older", refresh?: boolean) => {
+  queryGetSessions: async (type, refresh) => {
     const anchor = array.getAnchor(get().session.ids, type, refresh);
 
     const res = await sage.get(
@@ -299,7 +299,7 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
     get().setSessions(data, refresh);
   },
 
-  queryTerminateSession: async (sessionId: number) => {
+  queryTerminateSession: async (sessionId) => {
     const res = await sage.get(
       { a: sage.query("terminateSession", { sessionId }) },
       (query) => request(query)
@@ -332,7 +332,7 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
     get().setAccesses(data, refresh);
   },
 
-  queryGrantAccess: async (service: string) => {
+  queryGrantAccess: async (service) => {
     const res = await sage.get(
       { a: sage.query("grantAccess", { service }) },
       (query) => request(query)

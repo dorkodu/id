@@ -1,7 +1,7 @@
-function getAnchor(arr: number[], type: "newer" | "older", refresh?: boolean): number {
-  if (!arr.length || refresh) return -1;
+function getAnchor(arr: string[], type: "newer" | "older", refresh?: boolean): string {
+  if (!arr.length || refresh) return "-1";
   const out = type === "newer" ? arr[0] : arr[arr.length - 1];
-  return out === undefined ? -1 : out;
+  return out === undefined ? "-1" : out;
 }
 
 function sort(arr: number[]) {
