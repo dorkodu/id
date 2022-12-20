@@ -1,7 +1,3 @@
-export interface ISession {
-  id: number;
-  createdAt: number;
-  expiresAt: number;
-  userAgent: string;
-  ip: string;
-}
+import type { ISessionParsed } from "../../api/src/types/session"
+
+export interface ISession extends ISessionParsed { }

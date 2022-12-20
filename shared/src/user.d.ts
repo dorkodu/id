@@ -1,6 +1,3 @@
-export interface IUser {
-  id: number;
-  username: string;
-  email: string;
-  joinedAt: number;
-}
+import type { IUserParsed } from "../../api/src/types/user"
+
+export interface IUser extends IUserParsed { }

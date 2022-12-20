@@ -1,7 +1,7 @@
 export interface IAccess {
-  id: number;
-  createdAt: number;
-  expiresAt: number;
+  id: string;
+  createdAt: string;
+  expiresAt: string;
   userAgent: string;
   ip: string;
   service: string;

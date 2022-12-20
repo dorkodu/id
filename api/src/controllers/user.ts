@@ -9,12 +9,24 @@ import {
 import sage from "@dorkodu/sage-server";
 import { SchemaContext } from "./_schema";
 import { z } from "zod";
+import auth from "./auth";
+import pg from "../pg";
+import { IUserRaw, iUserSchema } from "../types/user";
 
 const getUser = sage.resource(
   {} as SchemaContext,
   undefined,
-  async (_arg, _ctx) => {
-    return undefined;
+  async (_arg, ctx) => {
+    const info = await auth.getAuthInfo(ctx);
+    if (!info) return undefined;
+
+    const [result]: [IUserRaw?] = await pg`
+      SELECT id, username, email, joined_at FROM users WHERE id=${info.userId}
+    `;
+    const parsed = iUserSchema.safeParse(result);
+    if (!parsed.success) return undefined;
+
+    return parsed.data;
   }
 )
 
