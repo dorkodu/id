@@ -33,8 +33,18 @@ const getUser = sage.resource(
 const changeUsername = sage.resource(
   {} as SchemaContext,
   {} as z.infer<typeof changeUsernameSchema>,
-  async (_arg, _ctx) => {
-    return undefined;
+  async (arg, ctx) => {
+    const parsed = changeUsernameSchema.safeParse(arg);
+    if (!parsed.success) return undefined;
+
+    const info = await auth.getAuthInfo(ctx);
+    if (!info) return undefined;
+
+    const { newUsername } = parsed.data;
+    const result = await pg`UPDATE users SET username=${newUsername} WHERE id=${info.userId}`;
+    if (result.count === 0) return undefined;
+
+    return {};
   }
 )
 
