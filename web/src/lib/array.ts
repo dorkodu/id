@@ -17,7 +17,7 @@ function getAnchor<
 function sort<
   T extends Array<Record<TKey, any>>,
   TKey extends keyof T[number],
->(arr: T, by: TKey, func: (a: T[number][TKey], b: T[number][TKey]) => -1 | 0 | 1): T {
+>(arr: T, by: TKey, func: (a: T[number][TKey], b: T[number][TKey]) => number): T {
   return arr.sort((a, b) => func(a[by], b[by]));
 }
 

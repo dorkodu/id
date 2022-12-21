@@ -14,13 +14,13 @@ interface State {
   currentSession: ISession | undefined;
   session: {
     sorted: ISession[],
-    entities: { [key: string]: ISession }
+    entities: { [key: string]: ISession },
   };
 
   access: {
     sorted: IAccess[],
-    entities: { [key: string]: IAccess }
-  }
+    entities: { [key: string]: IAccess },
+  };
 }
 
 interface Action {
@@ -80,10 +80,13 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
     if (!data) return;
     set(state => {
       if (refresh) state.session = { sorted: [], entities: {} };
+      data.forEach(session => void (state.session.entities[session.id] = session));
 
-      state.session.ids = array.sort([...data, ...state.session.ids]);
-
-      data.forEach(session => void (state.session.entities[session.id] = session))
+      state.session.sorted = array.sort(
+        [...data, ...state.session.sorted],
+        "createdAt",
+        (a, b) => a - b
+      );
     })
   },
 
@@ -91,10 +94,13 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
     if (!data) return;
     set(state => {
       if (refresh) state.access = { sorted: [], entities: {} };
+      data.forEach(access => void (state.access.entities[access.id] = access));
 
-      state.access.ids = array.sort([...data.map(access => access.id), ...state.access.ids]);
-
-      data.forEach(access => void (state.access.entities[access.id] = access))
+      state.access.sorted = array.sort(
+        [...data, ...state.access.sorted],
+        "createdAt",
+        (a, b) => a - b
+      );
     })
   },
 
@@ -281,15 +287,14 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
 
     if (!res || !res.a) return;
     set(state => {
-      let ids = state.session.ids;
+      let sorted = state.session.sorted;
       let entities = state.session.entities;
 
-      ids = ids.filter(id => id !== sessionId);
+      sorted = sorted.filter(session => session.id !== sessionId);
       delete entities[sessionId];
     })
 
-    if (get().currentSession?.id === sessionId)
-      set(initialState);
+    if (get().currentSession?.id === sessionId) set(initialState);
   },
 
   queryGetAccesses: async (type, refresh) => {
@@ -324,10 +329,10 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
 
     if (!res || !res.a) return;
     set(state => {
-      let ids = state.access.ids;
+      let sorted = state.access.sorted;
       let entities = state.access.entities;
 
-      ids = ids.filter(id => id !== accessId);
+      sorted = sorted.filter(access => access.id !== accessId);
       delete entities[accessId];
     })
   },
