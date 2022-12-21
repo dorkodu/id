@@ -20,7 +20,7 @@ import { SchemaContext } from "./_schema";
 const getAccesses = sage.resource(
   {} as SchemaContext,
   {} as z.infer<typeof getAccessesSchema>,
-  async (arg, ctx) => {
+  async (arg, ctx): Promise<IAccessParsed[] | undefined> => {
     const parsed = getAccessesSchema.safeParse(arg);
     if (!parsed.success) return undefined;
 
@@ -35,7 +35,7 @@ const getAccesses = sage.resource(
       ORDER BY id ${anchor === "-1" ? pg`DESC` : type === "newer" ? pg`ASC` : pg`DESC`}
       LIMIT 10
     `;
-    if (!result.length) return undefined;
+    if (result.length === 0) return undefined;
 
     const res: IAccessParsed[] = [];
     result.forEach(session => {
@@ -50,7 +50,7 @@ const getAccesses = sage.resource(
 const grantAccess = sage.resource(
   {} as SchemaContext,
   {} as z.infer<typeof grantAccessSchema>,
-  async (arg, ctx) => {
+  async (arg, ctx): Promise<{ code: string } | undefined> => {
     const parsed = grantAccessSchema.safeParse(arg);
     if (!parsed.success) return undefined;
 
@@ -72,7 +72,7 @@ const grantAccess = sage.resource(
 const revokeAccess = sage.resource(
   {} as SchemaContext,
   {} as z.infer<typeof revokeAccessSchema>,
-  async (arg, ctx) => {
+  async (arg, ctx): Promise<{} | undefined> => {
     const parsed = revokeAccessSchema.safeParse(arg);
     if (!parsed.success) return undefined;
 
@@ -120,7 +120,7 @@ async function queryGetAccessToken(tkn: string) {
     validator: Buffer,
     expiresAt: string
   }?] = await pg`
-    SELECT id, user_id, validator, expires_at FROM access_codes 
+    SELECT id, user_id, validator, expires_at FROM access_tokens
     WHERE selector=${parsedToken.selector}
   `
 
