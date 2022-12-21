@@ -27,5 +27,4 @@ function parse(userAgent: string | undefined): string {
 
 export const userAgent = {
   get,
-  parse,
 }

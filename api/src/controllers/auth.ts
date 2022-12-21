@@ -21,8 +21,7 @@ async function middleware(ctx: SchemaContext) {
 
   const session = await queryGetSession(ctx.req);
   if (!session) return;
-  if (!token.compare(parsedToken.validator, session.validator)) return;
-  if (date.utc() >= util.intParse(session.expiresAt, -1)) return;
+  if (!token.check(session, parsedToken.validator)) return;
 
   ctx.userId = session.userId;
   ctx.sessionId = session.id;
@@ -31,7 +30,7 @@ async function middleware(ctx: SchemaContext) {
 const auth = sage.resource(
   {} as SchemaContext,
   undefined,
-  async (_arg, ctx) => {
+  async (_arg, ctx): Promise<{} | undefined> => {
     if (!await getAuthInfo(ctx)) return undefined;
     return {};
   }
@@ -40,7 +39,7 @@ const auth = sage.resource(
 const signup = sage.resource(
   {} as SchemaContext,
   {} as z.infer<typeof signupSchema>,
-  async (arg, ctx) => {
+  async (arg, ctx): Promise<{} | undefined> => {
     const parsed = signupSchema.safeParse(arg);
     if (!parsed.success) return undefined;
 
@@ -64,7 +63,7 @@ const signup = sage.resource(
       issued_at: date.utc(),
       sent_at: -1,
       expires_at: -1,
-      verified: false
+      verified: false,
     }
 
     // Try to send a signup verification mail
@@ -87,7 +86,7 @@ const signup = sage.resource(
 const verifySignup = sage.resource(
   {} as SchemaContext,
   {} as z.infer<typeof verifySignupSchema>,
-  async (arg, _ctx) => {
+  async (arg, _ctx): Promise<{} | undefined> => {
     const parsed = verifySignupSchema.safeParse(arg);
     if (!parsed.success) return undefined;
 
@@ -95,13 +94,13 @@ const verifySignup = sage.resource(
     const parsedToken = rawToken ? token.parse(rawToken) : undefined;
     if (!parsedToken) return undefined;
 
-    const [result0]: [{ id: string, validator: Buffer, expiresAt: string }?] = await pg`
-      SELECT id, validator, expires_at FROM email_verify_signup
-      WHERE selector=${parsedToken.selector} AND sent_at!='-1'
+    const [result0]: [{ id: string, validator: Buffer, sentAt: string, expiresAt: string }?] = await pg`
+      SELECT id, validator, sent_at, expires_at FROM email_verify_signup
+      WHERE selector=${parsedToken.selector}
     `
     if (!result0) return undefined;
-    if (!token.compare(parsedToken.validator, result0.validator)) return undefined;
-    if (date.utc() >= util.intParse(result0.expiresAt, -1)) return undefined;
+    if (!token.check(result0, parsedToken.validator)) return undefined;
+    if (util.intParse(result0.sentAt, -1) === -1) return undefined;
 
     const result1 = await pg`
       UPDATE email_verify_signup SET verified=TRUE
@@ -116,7 +115,7 @@ const verifySignup = sage.resource(
 const confirmSignup = sage.resource(
   {} as SchemaContext,
   {} as z.infer<typeof confirmSignupSchema>,
-  async (arg, ctx) => {
+  async (arg, ctx): Promise<{} | undefined> => {
     const parsed = confirmSignupSchema.safeParse(arg);
     if (!parsed.success) return undefined;
 
@@ -132,7 +131,7 @@ const confirmSignup = sage.resource(
       validator: Buffer,
       sentAt: string,
       expiresAt: string,
-      verified: boolean
+      verified: boolean,
     }?] = await pg`
       SELECT username, email, validator, sent_at, expires_at, verified FROM email_verify_signup
       WHERE selector=${parsedToken.selector}
@@ -142,8 +141,7 @@ const confirmSignup = sage.resource(
     if (result0.username !== username) return undefined;
     if (result0.email !== email) return undefined;
     if (util.intParse(result0.sentAt, -1) === -1) return undefined;
-    if (date.utc() >= util.intParse(result0.expiresAt, -1)) return undefined;
-    if (!token.compare(parsedToken.validator, result0.validator)) return undefined;
+    if (!token.check(result0, parsedToken.validator)) return undefined;
 
     const row = {
       id: snowflake.id("users"),
@@ -166,7 +164,7 @@ const confirmSignup = sage.resource(
 const login = sage.resource(
   {} as SchemaContext,
   {} as z.infer<typeof loginSchema>,
-  async (arg, ctx) => {
+  async (arg, ctx): Promise<{} | { err: string } | undefined> => {
     const parsed = loginSchema.safeParse(arg);
     if (!parsed.success) return undefined;
 
@@ -234,7 +232,7 @@ const login = sage.resource(
 const verifyLogin = sage.resource(
   {} as SchemaContext,
   {} as z.infer<typeof verifyLoginSchema>,
-  async (arg, _ctx) => {
+  async (arg, _ctx): Promise<{} | undefined> => {
     const parsed = verifyLoginSchema.safeParse(arg);
     if (!parsed.success) return undefined;
 
@@ -247,15 +245,13 @@ const verifyLogin = sage.resource(
       validator: Buffer,
       sentAt: string,
       expiresAt: string,
-      verified: boolean
     }?] = await pg`
       SELECT id, validator, sent_at, expires_at FROM email_verify_login
       WHERE selector=${parsedToken.selector}
     `
     if (!result0) return undefined;
     if (util.intParse(result0.sentAt, -1) === -1) return undefined;
-    if (date.utc() >= util.intParse(result0.expiresAt, -1)) return undefined;
-    if (!token.compare(parsedToken.validator, result0.validator)) return undefined;
+    if (!token.check(result0, parsedToken.validator)) return undefined;
 
     const result1 = await pg`
       UPDATE email_verify_login SET verified=TRUE
@@ -270,7 +266,7 @@ const verifyLogin = sage.resource(
 const logout = sage.resource(
   {} as SchemaContext,
   undefined,
-  async (_arg, ctx) => {
+  async (_arg, ctx): Promise<{} | undefined> => {
     const authInfo = await getAuthInfo(ctx);
     if (!authInfo) return undefined;
     await queryExpireSession(ctx.res, authInfo.sessionId, authInfo.userId);
@@ -292,7 +288,6 @@ async function queryGetSession(req: Request) {
 
 async function queryCreateSession(req: Request, res: Response, userId: string): Promise<boolean> {
   const tkn = token.create();
-
   const row = {
     id: snowflake.id("sessions"),
     user_id: userId,

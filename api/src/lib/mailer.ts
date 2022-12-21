@@ -30,7 +30,7 @@ function sendVerifyLogin(email: string, token: string, ip: string, userAgent: st
   })
 }
 
-function sendVerifySignup(email: string, token: string) {
+function sendVerifySignup(email: string, token: string): Promise<boolean> {
   const link = `${url}/signup?token=${token}`;
 
   return new Promise((resolve) => {

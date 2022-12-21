@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import { crypto } from "./crypto";
+import { date } from "./date";
 import { encoding } from "./encoding";
+import { util } from "./util";
 
 const cookies = {
   session: "session",
@@ -29,6 +31,14 @@ function compare(raw: Buffer, encrypted: Buffer) {
   return encoding.compareBinary(crypto.sha256(raw), encrypted);
 }
 
+function check<
+  T extends { validator: Buffer, expiresAt: string | number }
+>(tkn: T, rawValidator: Buffer): boolean {
+  if (!token.compare(rawValidator, tkn.validator)) return false;
+  if (typeof tkn.expiresAt === "number") return date.utc() >= tkn.expiresAt;
+  return date.utc() >= util.intParse(tkn.expiresAt, -1);
+}
+
 function attach(res: Response, token: { value: string, expiresAt: number }, cookie: keyof typeof cookies) {
   res.cookie(cookies[cookie], token.value, {
     secure: true,
@@ -49,7 +59,9 @@ function get(req: Request, cookie: keyof typeof cookies): string | undefined {
 export const token = {
   create,
   parse,
+
   compare,
+  check,
 
   attach,
   detach,
