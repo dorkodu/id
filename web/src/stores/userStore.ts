@@ -87,7 +87,7 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
       state.session.sorted = array.sort(
         Object.keys(state.session.entities).map(id => state.session.entities[id]) as ISession[],
         "createdAt",
-        (a, b) => a - b
+        (a, b) => b - a
       );
     })
   },
@@ -101,7 +101,7 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
       state.access.sorted = array.sort(
         Object.keys(state.access.entities).map(id => state.access.entities[id]) as IAccess[],
         "createdAt",
-        (a, b) => a - b
+        (a, b) => b - a
       );
     })
   },
