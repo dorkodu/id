@@ -13,11 +13,13 @@ interface State {
 
   currentSession: ISession | undefined;
   session: {
+    // TODO: Add more sorting options
     sorted: ISession[],
     entities: { [key: string]: ISession },
   };
 
   access: {
+    // TODO: Add more sorting options
     sorted: IAccess[],
     entities: { [key: string]: IAccess },
   };
@@ -83,7 +85,7 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
       data.forEach(session => void (state.session.entities[session.id] = session));
 
       state.session.sorted = array.sort(
-        [...data, ...state.session.sorted],
+        Object.keys(state.session.entities).map(id => state.session.entities[id]) as ISession[],
         "createdAt",
         (a, b) => a - b
       );
@@ -97,7 +99,7 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
       data.forEach(access => void (state.access.entities[access.id] = access));
 
       state.access.sorted = array.sort(
-        [...data, ...state.access.sorted],
+        Object.keys(state.access.entities).map(id => state.access.entities[id]) as IAccess[],
         "createdAt",
         (a, b) => a - b
       );
