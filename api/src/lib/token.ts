@@ -34,7 +34,7 @@ function compare(raw: Buffer, encrypted: Buffer) {
 function check<
   T extends { validator: Buffer, expiresAt: string | number }
 >(tkn: T, rawValidator: Buffer): boolean {
-  if (!token.compare(rawValidator, tkn.validator)) return false;
+  if (!compare(rawValidator, tkn.validator)) return false;
   if (typeof tkn.expiresAt === "number") return date.utc() >= tkn.expiresAt;
   return date.utc() >= util.intParse(tkn.expiresAt, -1);
 }
@@ -60,7 +60,6 @@ export const token = {
   create,
   parse,
 
-  compare,
   check,
 
   attach,

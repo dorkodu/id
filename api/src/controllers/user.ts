@@ -11,7 +11,7 @@ import { SchemaContext } from "./_schema";
 import { z } from "zod";
 import auth from "./auth";
 import pg from "../pg";
-import { IUserRaw, iUserSchema } from "../types/user";
+import { IUserParsed, IUserRaw, iUserSchema } from "../types/user";
 import { token } from "../lib/token";
 import { crypto } from "../lib/crypto";
 import { mailer } from "../lib/mailer";
@@ -22,7 +22,7 @@ import { util } from "../lib/util";
 const getUser = sage.resource(
   {} as SchemaContext,
   undefined,
-  async (_arg, ctx) => {
+  async (_arg, ctx): Promise<IUserParsed | undefined> => {
     const info = await auth.getAuthInfo(ctx);
     if (!info) return undefined;
 
@@ -39,7 +39,7 @@ const getUser = sage.resource(
 const changeUsername = sage.resource(
   {} as SchemaContext,
   {} as z.infer<typeof changeUsernameSchema>,
-  async (arg, ctx) => {
+  async (arg, ctx): Promise<{} | undefined> => {
     const parsed = changeUsernameSchema.safeParse(arg);
     if (!parsed.success) return undefined;
 
@@ -57,7 +57,7 @@ const changeUsername = sage.resource(
 const initiateEmailChange = sage.resource(
   {} as SchemaContext,
   {} as z.infer<typeof initiateEmailChangeSchema>,
-  async (arg, ctx) => {
+  async (arg, ctx): Promise<{} | undefined> => {
     const parsed = initiateEmailChangeSchema.safeParse(arg);
     if (!parsed.success) return undefined;
 
@@ -98,22 +98,22 @@ const initiateEmailChange = sage.resource(
 const confirmEmailChange = sage.resource(
   {} as SchemaContext,
   {} as z.infer<typeof confirmEmailChangeSchema>,
-  async (arg, _ctx) => {
+  async (arg, _ctx): Promise<{} | undefined> => {
     const parsed = confirmEmailChangeSchema.safeParse(arg);
     if (!parsed.success) return undefined;
 
     const tkn0 = token.parse(parsed.data.token);
     if (!tkn0) return undefined;
 
-    const [result0]: [{ id: string, userId: string, email: string, validator: Buffer, expiresAt: string }?] = await pg`
-      SELECT id, user_id, email, validator, issued_at, expires_at FROM email_confirm_email
+    const [result0]: [{ id: string, userId: string, email: string, validator: Buffer, sentAt: string, expiresAt: string }?] = await pg`
+      SELECT id, user_id, email, validator, sent_at, expires_at FROM email_confirm_email
       WHERE selector=${tkn0.selector}
     `;
     if (!result0) return undefined;
-    if (!token.compare(tkn0.validator, result0.validator)) return undefined;
-    if (date.utc() >= util.intParse(result0.expiresAt, -1)) return undefined;
+    if (!token.check(result0, tkn0.validator)) return undefined;
+    if (util.intParse(result0.sentAt, -1) === -1) return undefined;
 
-    const [result1]: [{ email: string }?] = await pg` SELECT email FROM users WHERE id=${result0.userId}`;
+    const [result1]: [{ email: string }?] = await pg`SELECT email FROM users WHERE id=${result0.userId}`;
     if (!result1) return undefined;
     if (result1.email === result0.email) return undefined;
 
@@ -122,7 +122,7 @@ const confirmEmailChange = sage.resource(
       WHERE id>${result0.id} AND user_id=${result0.userId}
     `;
     if (!result2) return undefined;
-    if (util.intParse(result2.count, 0) !== 0) return undefined;
+    if (util.intParse(result2.count, -1) !== 0) return undefined;
 
     const oldEmail = result1.email;
     const tkn1 = token.create();
@@ -158,20 +158,20 @@ const confirmEmailChange = sage.resource(
 const revertEmailChange = sage.resource(
   {} as SchemaContext,
   {} as z.infer<typeof revertEmailChangeSchema>,
-  async (arg, _ctx) => {
+  async (arg, _ctx): Promise<{} | undefined> => {
     const parsed = revertEmailChangeSchema.safeParse(arg);
     if (!parsed.success) return undefined;
 
     const tkn0 = token.parse(parsed.data.token);
     if (!tkn0) return undefined;
 
-    const [result0]: [{ id: string, userId: string, email: string, validator: Buffer, expiresAt: string }?] = await pg`
-      SELECT id, user_id, email, validator, expires_at FROM email_revert_email
+    const [result0]: [{ id: string, userId: string, email: string, validator: Buffer, sentAt: string, expiresAt: string }?] = await pg`
+      SELECT id, user_id, email, validator, sent_at, expires_at FROM email_revert_email
       WHERE selector=${tkn0.selector}
     `;
     if (!result0) return undefined;
-    if (!token.compare(tkn0.validator, result0.validator)) return undefined;
-    if (date.utc() >= util.intParse(result0.expiresAt, -1)) return undefined;
+    if (!token.check(result0, tkn0.validator)) return undefined;
+    if (util.intParse(result0.sentAt, -1) === -1) return undefined;
 
     const [result1]: [{ email: string }?] = await pg` SELECT email FROM users WHERE id=${result0.userId}`;
     if (!result1) return undefined;
@@ -193,7 +193,7 @@ const revertEmailChange = sage.resource(
 const initiatePasswordChange = sage.resource(
   {} as SchemaContext,
   {} as z.infer<typeof initiatePasswordChangeSchema>,
-  async (arg, _ctx) => {
+  async (arg, _ctx): Promise<{} | undefined> => {
     const parsed = initiatePasswordChangeSchema.safeParse(arg);
     if (!parsed.success) return undefined;
 
@@ -239,24 +239,20 @@ const confirmPasswordChange = sage.resource(
     const tkn = token.parse(parsed.data.token);
     if (!tkn) return undefined;
 
-    const [result0]: [{ id: string, userId: string, email: string, validator: Buffer, expiresAt: string }?] = await pg`
-      SELECT id, user_id, email, validator, expires_at FROM email_change_password
+    const [result0]: [{ id: string, userId: string, email: string, validator: Buffer, sentAt: string, expiresAt: string }?] = await pg`
+      SELECT id, user_id, email, validator, sent_at, expires_at FROM email_change_password
       WHERE selector=${tkn.selector}
     `;
     if (!result0) return undefined;
-    if (!token.compare(tkn.validator, result0.validator)) return undefined;
-    if (date.utc() >= util.intParse(result0.expiresAt, -1)) return undefined;
-
-    const [result1]: [{ email: string }?] = await pg` SELECT email FROM users WHERE id=${result0.userId}`;
-    if (!result1) return undefined;
-    if (result1.email !== result0.email) return undefined;
+    if (!token.check(result0, tkn.validator)) return undefined;
+    if (util.intParse(result0.sentAt, -1) === -1) return undefined;
 
     const [result2]: [{ count: string }?] = await pg`
       SELECT COUNT(*) FROM email_change_password
       WHERE id>${result0.id} AND user_id=${result0.userId}
     `;
     if (!result2) return undefined;
-    if (util.intParse(result2.count, 0) !== 0) return undefined;
+    if (util.intParse(result2.count, -1) !== 0) return undefined;
 
     const password = await crypto.encryptPassword(parsed.data.newPassword);
     const [result3, _result4, result5] = await pg.begin(pg => [
