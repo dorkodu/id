@@ -35,8 +35,8 @@ function check<
   T extends { validator: Buffer, expiresAt: string | number }
 >(tkn: T, rawValidator: Buffer): boolean {
   if (!compare(rawValidator, tkn.validator)) return false;
-  if (typeof tkn.expiresAt === "number") return date.utc() >= tkn.expiresAt;
-  return date.utc() >= util.intParse(tkn.expiresAt, -1);
+  if (typeof tkn.expiresAt === "number") return date.utc() < tkn.expiresAt;
+  return date.utc() < util.intParse(tkn.expiresAt, -1);
 }
 
 function attach(res: Response, token: { value: string, expiresAt: number }, cookie: keyof typeof cookies) {
