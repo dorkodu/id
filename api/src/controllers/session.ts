@@ -10,7 +10,7 @@ import { date } from "../lib/date";
 const getCurrentSession = sage.resource(
   {} as SchemaContext,
   undefined,
-  async (_arg, ctx) => {
+  async (_arg, ctx): Promise<ISessionParsed | undefined> => {
     const info = await auth.getAuthInfo(ctx);
     if (!info) return undefined;
 
@@ -27,7 +27,7 @@ const getCurrentSession = sage.resource(
 const getSessions = sage.resource(
   {} as SchemaContext,
   {} as z.infer<typeof getSessionsSchema>,
-  async (arg, ctx) => {
+  async (arg, ctx): Promise<ISessionParsed[] | undefined> => {
     const parsed = getSessionsSchema.safeParse(arg);
     if (!parsed.success) return undefined;
 
@@ -42,7 +42,7 @@ const getSessions = sage.resource(
       ORDER BY id ${anchor === "-1" ? pg`DESC` : type === "newer" ? pg`ASC` : pg`DESC`}
       LIMIT 10
     `;
-    if (!result.length) return undefined;
+    if (result.length === 0) return undefined;
 
     const res: ISessionParsed[] = [];
     result.forEach(session => {
@@ -57,7 +57,7 @@ const getSessions = sage.resource(
 const terminateSession = sage.resource(
   {} as SchemaContext,
   {} as z.infer<typeof terminateSessionSchema>,
-  async (arg, ctx) => {
+  async (arg, ctx): Promise<{} | undefined> => {
     const parsed = terminateSessionSchema.safeParse(arg);
     if (!parsed.success) return undefined;
 
