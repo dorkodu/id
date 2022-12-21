@@ -4,17 +4,15 @@ import { SchemaContext } from "./_schema";
 import { z } from "zod";
 import { token } from "../lib/token";
 import access from "./access";
-import { date } from "../lib/date";
-import { util } from "../lib/util";
 import pg from "../pg";
-import { IUserRaw, iUserSchema } from "../types/user";
+import { IUserParsed, IUserRaw, iUserSchema } from "../types/user";
 
 /* These functions are used by external apps that use Dorkodu ID for authentication. */
 
 const getAccessToken = sage.resource(
   {} as SchemaContext,
   {} as z.infer<typeof getAccessTokenSchema>,
-  async (arg, _ctx) => {
+  async (arg, _ctx): Promise<{ token: string } | undefined> => {
     const parsed = getAccessTokenSchema.safeParse(arg);
     if (!parsed.success) return undefined;
 
@@ -23,8 +21,7 @@ const getAccessToken = sage.resource(
 
     const result0 = await access.queryGetAccessCode(parsed.data.code);
     if (!result0) return undefined;
-    if (!token.compare(parsedToken.validator, result0.validator)) return undefined;
-    if (date.utc() >= util.intParse(result0.expiresAt, -1)) return undefined;
+    if (!token.check(result0, parsedToken.validator)) return undefined;
 
     const { userId, userAgent, ip, service } = result0;
 
@@ -38,7 +35,7 @@ const getAccessToken = sage.resource(
 const checkAccess = sage.resource(
   {} as SchemaContext,
   {} as z.infer<typeof checkAccessSchema>,
-  async (arg, _ctx) => {
+  async (arg, _ctx): Promise<{ userId: string } | undefined> => {
     const parsed = checkAccessSchema.safeParse(arg);
     if (!parsed.success) return undefined;
 
@@ -49,7 +46,7 @@ const checkAccess = sage.resource(
 const getUserData = sage.resource(
   {} as SchemaContext,
   {} as z.infer<typeof getUserDataSchema>,
-  async (arg, _ctx) => {
+  async (arg, _ctx): Promise<IUserParsed | undefined> => {
     const parsed = getUserDataSchema.safeParse(arg);
     if (!parsed.success) return undefined;
 
@@ -72,8 +69,7 @@ async function validateAccessToken(accessToken: string) {
 
   const result = await access.queryGetAccessToken(accessToken);
   if (!result) return undefined;
-  if (!token.compare(parsedToken.validator, result.validator)) return undefined;
-  if (date.utc() >= util.intParse(result.expiresAt, -1)) return undefined;
+  if (!token.check(result, parsedToken.validator)) return undefined;
 
   return { userId: result.userId };
 }
