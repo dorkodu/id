@@ -37,10 +37,10 @@ function Dashboard() {
         d: sage.query("getAccesses", { anchor: accessAnchor, type: "newer" }, { ctx: "ctx", wait: "a" }),
       }, (query) => request(query));
 
-      setUser(res?.a);
-      setCurrentSession(res?.b);
-      setSessions(res?.c, true);
-      setAccesses(res?.d, true);
+      setUser(res?.a.data);
+      setCurrentSession(res?.b.data);
+      setSessions(res?.c.data, true);
+      setAccesses(res?.d.data, true);
     })();
   }, []);
 

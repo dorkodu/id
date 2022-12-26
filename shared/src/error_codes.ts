@@ -1,3 +1,9 @@
-export const errorCodes = {
+export enum ErrorCode {
+  Default = 1,
 
+  UsernameUsed,
+  EmailUsed,
+  UsernameAndEmailUsed,
+
+  LoginNewLocation,
 }

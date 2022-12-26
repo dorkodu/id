@@ -1,5 +1,6 @@
 import sage from "@dorkodu/sage-server";
 import { z } from "zod";
+import { ErrorCode } from "../../../shared/src/error_codes";
 import { config } from "../config";
 import { crypto } from "../lib/crypto";
 import { date } from "../lib/date";
@@ -20,12 +21,12 @@ import { SchemaContext } from "./_schema";
 const getAccesses = sage.resource(
   {} as SchemaContext,
   {} as z.infer<typeof getAccessesSchema>,
-  async (arg, ctx): Promise<IAccessParsed[] | undefined> => {
+  async (arg, ctx): Promise<{ data?: IAccessParsed[], error?: ErrorCode }> => {
     const parsed = getAccessesSchema.safeParse(arg);
-    if (!parsed.success) return undefined;
+    if (!parsed.success) return { error: ErrorCode.Default };
 
     const info = await auth.getAuthInfo(ctx);
-    if (!info) return undefined;
+    if (!info) return { error: ErrorCode.Default };
 
     const { anchor, type } = parsed.data;
     const result = await pg<IAccessRaw[]>`
@@ -35,7 +36,7 @@ const getAccesses = sage.resource(
       ORDER BY id ${anchor === "-1" ? pg`DESC` : type === "newer" ? pg`ASC` : pg`DESC`}
       LIMIT 10
     `;
-    if (result.length === 0) return undefined;
+    if (result.length === 0) return { error: ErrorCode.Default };
 
     const res: IAccessParsed[] = [];
     result.forEach(session => {
@@ -43,45 +44,45 @@ const getAccesses = sage.resource(
       if (parsed.success) res.push(parsed.data);
     })
 
-    return res;
+    return { data: res };
   }
 )
 
 const grantAccess = sage.resource(
   {} as SchemaContext,
   {} as z.infer<typeof grantAccessSchema>,
-  async (arg, ctx): Promise<{ code: string } | undefined> => {
+  async (arg, ctx): Promise<{ data?: { code: string }, error?: ErrorCode }> => {
     const parsed = grantAccessSchema.safeParse(arg);
-    if (!parsed.success) return undefined;
+    if (!parsed.success) return { error: ErrorCode.Default };
 
     const info = await auth.getAuthInfo(ctx);
-    if (!info) return undefined;
+    if (!info) return { error: ErrorCode.Default };
 
     // Check for white-listed services
-    if (!config.serviceWhitelist.includes(parsed.data.service)) return undefined;
+    if (!config.serviceWhitelist.includes(parsed.data.service)) return { error: ErrorCode.Default };
 
     const ua = userAgent.get(ctx.req);
     const ip = util.getIP(ctx.req);
     const code = await queryCreateAccessCode(info.userId, ua, ip, parsed.data.service);
-    if (code === undefined) return undefined;
+    if (code === undefined) return { error: ErrorCode.Default };
 
-    return { code };
+    return { data: { code } };
   }
 )
 
 const revokeAccess = sage.resource(
   {} as SchemaContext,
   {} as z.infer<typeof revokeAccessSchema>,
-  async (arg, ctx): Promise<{} | undefined> => {
+  async (arg, ctx): Promise<{ data?: {}, error?: ErrorCode }> => {
     const parsed = revokeAccessSchema.safeParse(arg);
-    if (!parsed.success) return undefined;
+    if (!parsed.success) return { error: ErrorCode.Default };
 
     const info = await auth.getAuthInfo(ctx);
-    if (!info) return undefined;
+    if (!info) return { error: ErrorCode.Default };
 
     await queryExpireAccessToken(parsed.data.accessId, info.userId);
 
-    return {};
+    return { data: {} };
   }
 )
 

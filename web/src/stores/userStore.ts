@@ -6,6 +6,7 @@ import { array } from "../lib/array";
 import { useAppStore } from "./appStore";
 import { IAccess } from "@shared/access";
 import { request, sage } from "./api";
+import { ErrorCode } from "@shared/error_codes";
 
 interface State {
   authorized: boolean;
@@ -37,7 +38,7 @@ interface Action {
   queryVerifySignup: (token: string) => Promise<boolean>;
   queryConfirmSignup: (username: string, email: string, password: string) => Promise<boolean>;
 
-  queryLogin: (info: string, password: string) => Promise<"ok" | "err" | "confirm">;
+  queryLogin: (info: string, password: string) => Promise<"ok" | "error" | "confirm">;
   queryVerifyLogin: (token: string) => Promise<boolean>;
 
   queryLogout: () => Promise<boolean>;
@@ -112,7 +113,7 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
       (query) => request(query)
     )
 
-    const authorized = !(!res || !res.a);
+    const authorized = !(!res?.a.data || res.a.error);
     set(state => { state.authorized = authorized })
     useAppStore.getState().setAuthLoading(false);
     return authorized;
@@ -124,7 +125,7 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
       (query) => request(query)
     )
 
-    if (!res || !res.a) return false;
+    if (!res?.a.data || res.a.error) return false;
     return true;
   },
 
@@ -134,7 +135,7 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
       (query) => request(query)
     )
 
-    if (!res || !res.a) return false;
+    if (!res?.a.data || res.a.error) return false;
     return true;
   },
 
@@ -144,7 +145,7 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
       (query) => request(query)
     )
 
-    if (!res || !res.a) return false;
+    if (!res?.a.data || res.a.error) return false;
     set(state => { state.authorized = true })
     return true;
   },
@@ -155,10 +156,18 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
       (query) => request(query)
     )
 
-    if (res && res.a && res.a.err) return "confirm";
-    if (!res || !res.a) return "err";
-    set(state => { state.authorized = true })
-    return "ok";
+    if (!res?.a.data || !res.a.error) {
+      set(state => { state.authorized = true });
+      return "ok";
+    }
+
+    switch (res.a.error) {
+      case ErrorCode.LoginNewLocation:
+        return "confirm";
+      case ErrorCode.Default:
+      default:
+        return "error";
+    }
   },
 
   queryVerifyLogin: async (token) => {
@@ -167,7 +176,7 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
       (query) => request(query)
     )
 
-    if (!res || !res.a) return false;
+    if (!res?.a.data || res.a.error) return false;
     return true;
   },
 
@@ -177,7 +186,7 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
       (query) => request(query)
     )
 
-    if (!res || !res.a) return false;
+    if (!res?.a.data || res.a.error) return false;
     set(initialState);
     return true;
   },
@@ -187,9 +196,9 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
       { a: sage.query("getUser", undefined) },
       (query) => request(query)
     )
-
-    if (!res || !res.a) return false;
-    set(state => { state.user = res.a; })
+      
+    if (!res?.a.data || res.a.error) return false;
+    set(state => { state.user = res.a.data; })
     return true;
   },
 
@@ -199,7 +208,7 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
       (query) => request(query)
     )
 
-    if (!res || !res.a) return false;
+    if (!res?.a.data || res.a.error) return false;
     return true;
   },
 
@@ -209,7 +218,7 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
       (query) => request(query)
     )
 
-    if (!res || !res.a) return false;
+    if (!res?.a.data || res.a.error) return false;
     return true;
   },
 
@@ -219,7 +228,7 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
       (query) => request(query)
     )
 
-    if (!res || !res.a) return false;
+    if (!res?.a.data || res.a.error) return false;
     return true;
   },
 
@@ -229,7 +238,7 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
       (query) => request(query)
     )
 
-    if (!res || !res.a) return false;
+    if (!res?.a.data || res.a.error) return false;
     return true;
   },
 
@@ -239,7 +248,7 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
       (query) => request(query)
     )
 
-    if (!res || !res.a) return false;
+    if (!res?.a.data || res.a.error) return false;
     return true;
   },
 
@@ -249,7 +258,7 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
       (query) => request(query)
     )
 
-    if (!res || !res.a) return false;
+    if (!res?.a.data || res.a.error) return false;
     return true;
   },
 
@@ -259,12 +268,8 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
       (query) => request(query)
     )
 
-    if (!res || !res.a) return;
-    const data = res.a;
-
-    set(state => {
-      state.currentSession = data;
-    })
+    if (!res?.a.data || res.a.error) return;
+    set(state => { state.currentSession = res.a.data });
   },
 
   queryGetSessions: async (type, refresh) => {
@@ -275,10 +280,8 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
       (query) => request(query)
     )
 
-    if (!res || !res.a) return;
-    const data = res.a;
-
-    get().setSessions(data, refresh);
+    if (!res?.a.data || res.a.error) return;
+    get().setSessions(res.a.data, refresh);
   },
 
   queryTerminateSession: async (sessionId) => {
@@ -287,7 +290,7 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
       (query) => request(query)
     )
 
-    if (!res || !res.a) return;
+    if (!res?.a.data || res.a.error) return;
     set(state => {
       let sorted = state.session.sorted;
       let entities = state.session.entities;
@@ -307,10 +310,8 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
       (query) => request(query)
     )
 
-    if (!res || !res.a) return;
-    const data = res.a;
-
-    get().setAccesses(data, refresh);
+    if (!res?.a.data || res.a.error) return;
+    get().setAccesses(res.a.data, refresh);
   },
 
   queryGrantAccess: async (service) => {
@@ -319,8 +320,8 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
       (query) => request(query)
     )
 
-    if (!res || !res.a) return undefined;
-    return res.a.code;
+    if (!res?.a.data || res.a.error) return undefined;
+    return res.a.data.code;
   },
 
   queryRevokeAccess: async (accessId) => {
@@ -329,7 +330,7 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
       (query) => request(query)
     )
 
-    if (!res || !res.a) return;
+    if (!res?.a.data || res.a.error) return;
     set(state => {
       let sorted = state.access.sorted;
       let entities = state.access.entities;

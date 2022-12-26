@@ -23,7 +23,7 @@ function Login() {
     const password = loginPassword.current?.value;
     if (!info || !password) return;
     const res = await queryLogin(info, password);
-    if (res === "err") return;
+    if (res === "error") return;
     if (res === "confirm") { setStage("confirm"); return; }
 
     const redirect = searchParams.get("redirect");
