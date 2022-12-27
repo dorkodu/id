@@ -46,6 +46,8 @@ services:
 
   id_keydb:
     image: eqalpha/keydb:x86_64_v6.3.1
+    volumes:
+      - ./keydb/keydb.conf:/etc/keydb/keydb.conf
     restart: always
     networks:
       - app

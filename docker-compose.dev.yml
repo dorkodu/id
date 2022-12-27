@@ -20,7 +20,7 @@ services:
     volumes:
       - ./api:/id/api
       - ./shared:/id/shared
-      - /id/api/node_modules
+      - api_node_modules:/id/api/node_modules
     restart: always
     networks:
       - app
@@ -44,7 +44,7 @@ services:
     volumes:
       - ./web:/id/web
       - ./shared:/id/shared
-      - /id/web/node_modules
+      - web_node_modules:/id/web/node_modules
     restart: always
     networks:
       - app
@@ -85,6 +85,8 @@ services:
 
 volumes:
   pgdata:
+  api_node_modules:
+  web_node_modules:
 
 networks:
   nginx-proxy:
