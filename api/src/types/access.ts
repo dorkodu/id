@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+export type IAccess = IAccessParsed;
 export type IAccessRaw = z.input<typeof iAccessSchema>
 export type IAccessParsed = z.output<typeof iAccessSchema>
 export const iAccessSchema = z.object({

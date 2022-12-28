@@ -42,7 +42,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      "@shared": path.resolve(__dirname, '../shared/src'),
+      "@api": path.resolve(__dirname, '../api/src'),
     }
   },
   build: {

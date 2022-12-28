@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+export type ISession = ISessionParsed;
 export type ISessionRaw = z.input<typeof iSessionSchema>
 export type ISessionParsed = z.output<typeof iSessionSchema>
 export const iSessionSchema = z.object({

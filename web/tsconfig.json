@@ -20,7 +20,7 @@
     
     "alwaysStrict": true,
     "allowUnreachableCode": false,
-    "noImplicitAny": false,
+    "noImplicitAny": true,
     "strictNullChecks": true,
     "noImplicitReturns": true,
     "noUncheckedIndexedAccess": true,
@@ -28,7 +28,7 @@
     "noUnusedParameters": true,
 
     "paths": {
-      "@shared/*": ["../shared/src/*"]
+      "@api/*": ["../api/src/*"]
     }
   },
   "include": ["src"],

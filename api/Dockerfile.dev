@@ -2,14 +2,12 @@ FROM node:16.17.1-alpine
 WORKDIR /id
 
 RUN mkdir -p /id/api
-RUN mkdir -p /id/shared
 
 RUN npm install -g pnpm && pnpm config set store-dir /root/.local/share/pnpm/store/v3
 
 COPY ./api/pnpm-lock.yaml /id/api
 RUN cd api && pnpm fetch
 COPY ./api /id/api
-COPY ./shared /id/shared
 RUN cd api && pnpm install --offline
 
 WORKDIR /id/api

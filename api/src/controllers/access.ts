@@ -1,6 +1,5 @@
 import sage from "@dorkodu/sage-server";
 import { z } from "zod";
-import { ErrorCode } from "../../../shared/src/error_codes";
 import { config } from "../config";
 import { crypto } from "../lib/crypto";
 import { date } from "../lib/date";
@@ -15,6 +14,7 @@ import {
   revokeAccessSchema
 } from "../schemas/access";
 import { IAccessParsed, IAccessRaw, iAccessSchema } from "../types/access";
+import { ErrorCode } from "../types/error_codes";
 import auth from "./auth";
 import { SchemaContext } from "./_schema";
 

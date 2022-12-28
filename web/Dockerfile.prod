@@ -2,17 +2,18 @@ FROM node:16.17.1-alpine as base
 WORKDIR /id
 
 RUN mkdir -p /id/web
-RUN mkdir -p /id/shared
+RUN mkdir -p /id/api
 
 RUN npm install -g pnpm && pnpm config set store-dir /root/.local/share/pnpm/store/v3
 
 WORKDIR /id/web
 
 COPY ./web/pnpm-lock.yaml /id/web
-RUN pnpm fetch
+COPY ./api/pnpm-lock.yaml /id/api
+RUN cd /id/web && pnpm fetch && cd /id/api && pnpm fetch
 COPY ./web /id/web
-COPY ./shared /id/shared
-RUN pnpm install --offline
+COPY ./api /id/api
+RUN cd /id && pnpm install -r --offline
 
 #RUN pnpm test
 RUN pnpm build

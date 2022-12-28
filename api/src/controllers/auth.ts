@@ -13,7 +13,7 @@ import { mailer } from "../lib/mailer";
 import { util } from "../lib/util";
 import { userAgent } from "../lib/user_agent";
 import { sharedSchemas } from "../schemas/_shared";
-import { ErrorCode } from "../../../shared/src/error_codes";
+import { ErrorCode } from "../types/error_codes";
 
 async function middleware(ctx: SchemaContext) {
   const rawToken = token.get(ctx.req, "session");

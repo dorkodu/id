@@ -18,7 +18,7 @@ import { mailer } from "../lib/mailer";
 import { date } from "../lib/date";
 import { snowflake } from "../lib/snowflake";
 import { util } from "../lib/util";
-import { ErrorCode } from "../../../shared/src/error_codes";
+import { ErrorCode } from "../types/error_codes";
 
 const getUser = sage.resource(
   {} as SchemaContext,

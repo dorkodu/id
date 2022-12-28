@@ -1,4 +1,4 @@
-import { ISession } from "@shared/session"
+import { ISession } from "@api/types/session";
 import { date } from "../lib/date";
 import { util } from "../lib/util";
 import { useUserStore } from "../stores/userStore";

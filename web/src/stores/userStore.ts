@@ -1,12 +1,12 @@
 import create from "zustand"
 import { immer } from 'zustand/middleware/immer'
-import { ISession } from "@shared/session";
-import { IUser } from "@shared/user";
 import { array } from "../lib/array";
 import { useAppStore } from "./appStore";
-import { IAccess } from "@shared/access";
 import { request, sage } from "./api";
-import { ErrorCode } from "@shared/error_codes";
+import type { IUser } from "@api/types/user";
+import type { ISession } from "@api/types/session";
+import type { IAccess } from "@api/types/access";
+import { ErrorCode } from "@api/types/error_codes";
 
 interface State {
   authorized: boolean;
@@ -196,7 +196,7 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
       { a: sage.query("getUser", undefined) },
       (query) => request(query)
     )
-      
+
     if (!res?.a.data || res.a.error) return false;
     set(state => { state.user = res.a.data; })
     return true;

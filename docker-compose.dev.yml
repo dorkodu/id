@@ -19,7 +19,6 @@ services:
       - ${API_PORT:-8001}
     volumes:
       - ./api:/id/api
-      - ./shared:/id/shared
       - api_node_modules:/id/api/node_modules
     restart: always
     networks:
@@ -43,7 +42,7 @@ services:
       - ${WEB_PORT:-8000}
     volumes:
       - ./web:/id/web
-      - ./shared:/id/shared
+      - ./api:/id/api
       - web_node_modules:/id/web/node_modules
     restart: always
     networks:

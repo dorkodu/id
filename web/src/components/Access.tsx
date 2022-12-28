@@ -1,4 +1,4 @@
-import type { IAccess } from "@shared/access";
+import type { IAccess } from "@api/types/access";
 import { date } from "../lib/date";
 import { util } from "../lib/util";
 import { useUserStore } from "../stores/userStore";

@@ -3,7 +3,6 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
 import App from "../App";
 import RequireAuth from "../components/RequireAuth";
-import { webRoutes } from "@shared/web_routes";
 import Access from "./Access";
 
 const Welcome = React.lazy(() => import("./Welcome"));
@@ -32,9 +31,9 @@ function Router() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/access" element={<Access />} />
           <Route path="/change_password" element={<ChangePassword />} />
-          <Route path={`/${webRoutes.confirmEmailChange}`} element={<ConfirmChangeEmail />} />
-          <Route path={`/${webRoutes.revertEmailChange}`} element={<RevertChangeEmail />} />
-          <Route path={`/${webRoutes.confirmPasswordChange}`} element={<ConfirmChangePassword />} />
+          <Route path="/confirm_email_change" element={<ConfirmChangeEmail />} />
+          <Route path="/revert_email_change" element={<RevertChangeEmail />} />
+          <Route path="/confirm_password_change" element={<ConfirmChangePassword />} />
 
           {/* Routes that require authentication */}
           <Route element={<RequireAuth />}>

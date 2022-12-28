@@ -6,7 +6,7 @@ import { token } from "../lib/token";
 import access from "./access";
 import pg from "../pg";
 import { IUserParsed, IUserRaw, iUserSchema } from "../types/user";
-import { ErrorCode } from "../../../shared/src/error_codes";
+import { ErrorCode } from "../types/error_codes";
 
 /* These functions are used by external apps that use Dorkodu ID for authentication. */
 
