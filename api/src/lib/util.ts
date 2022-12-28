@@ -6,7 +6,7 @@ function getIP(req: Request) {
 
 function intParse(str: string, def: number) {
   const parsed = parseInt(str, 10);
-  return parsed === NaN ? def : parsed;
+  return Number.isNaN(parsed) ? def : parsed;
 }
 
 export const util = {
