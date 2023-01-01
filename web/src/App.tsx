@@ -1,21 +1,25 @@
+import { MantineProvider } from "@mantine/core";
 import { Suspense, useEffect } from "react";
-import { Outlet } from "react-router-dom"
+import { Outlet } from "react-router-dom";
 import Spinner from "./components/Spinner";
-import { useAppStore } from "./stores/appStore"
-import { useUserStore } from "./stores/userStore"
+import { useAppStore } from "./stores/appStore";
+import { useUserStore } from "./stores/userStore";
+import theme from "./styles/theme";
 
 function App() {
-  const loading = useAppStore(state => state.getLoading());
-  const queryAuth = useUserStore(state => state.queryAuth);
-  useEffect(() => { queryAuth() }, []);
+  const loading = useAppStore((state) => state.getLoading());
+  const queryAuth = useUserStore((state) => state.queryAuth);
+  useEffect(() => {
+    queryAuth();
+  }, []);
 
   return (
     <>
-      <Suspense >
-        {loading ? <Spinner /> : <Outlet />}
-      </Suspense>
+      <MantineProvider theme={theme}>
+        <Suspense>{loading ? <Spinner /> : <Outlet />}</Suspense>
+      </MantineProvider>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
