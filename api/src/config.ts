@@ -19,7 +19,9 @@ const epochTime = readNumber(process.env.EPOCH_TIME) || 1672531200069;
 const machineId = readNumber(process.env.MACHINE_ID) || 0;
 
 const port = readNumber(process.env.PORT) || 8001;
-const env = process.env.NODE_ENV || "development";
+const env: "development" | "production" = (
+  process.env.NODE_ENV === "development" || process.env.NODE_ENV === "production"
+) && process.env.NODE_ENV || "development";
 
 const serviceWhitelist = (process.env.SERVICE_WHITELIST && process.env.SERVICE_WHITELIST.split(",")) || [
   "wander.dorkodu.com",
