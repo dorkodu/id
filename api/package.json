@@ -17,7 +17,7 @@
     "migrate:prod:rollback": "NODE_ENV=production knex migrate:rollback --all --knexfile ./src/knexfile.ts",
     "migrate:prod:up": "NODE_ENV=production knex migrate:up --knexfile ./src/knexfile.ts",
     "migrate:prod:down": "NODE_ENV=production knex migrate:down --knexfile ./src/knexfile.ts",
-    "migrate:prod:reset": "pnpm migrate:dev:rollback && pnpm migrate:dev:latest"
+    "migrate:prod:reset": "pnpm migrate:prod:rollback && pnpm migrate:prod:latest"
   },
   "dependencies": {
     "@dorkodu/sage-server": "^0.1.3",
