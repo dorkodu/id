@@ -15,7 +15,7 @@ const smtpUser = process.env.SMTP_USER || "";;
 const smtpPassword = process.env.SMTP_PASSWORD || "";;
 
 const bcryptRounds = readNumber(process.env.BCRYPT_ROUNDS) || 10;
-const epochTime = readNumber(process.env.EPOCH_TIME) || 1671366107647;
+const epochTime = readNumber(process.env.EPOCH_TIME) || 1672531200069;
 const machineId = readNumber(process.env.MACHINE_ID) || 0;
 
 const port = readNumber(process.env.PORT) || 8001;
