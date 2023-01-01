@@ -1,8 +1,11 @@
 import { theme as PrismTheme } from "@dorkodu/prism";
+import { MantineThemeOverride } from "@mantine/core";
 
-const theme = {
+const theme: MantineThemeOverride = {
   ...PrismTheme,
-  components: {},
+  components: {
+    TextInput: {},
+  },
 };
 
 export default theme;
