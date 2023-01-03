@@ -25,7 +25,7 @@ RUN npm install -g pnpm && pnpm config set --global store-dir /root/.local/share
 COPY ./api/pnpm-lock.yaml /id/api
 RUN cd api && pnpm fetch --prod
 COPY --from=build /id/api/dist /id/api/dist
-COPY ./api /id/api
+COPY ./api/package.json /id/api
 RUN cd api && pnpm install --offline --prod
 
 CMD [ "node", "/id/api/dist/index.js" ]
