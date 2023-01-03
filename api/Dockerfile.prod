@@ -28,4 +28,4 @@ COPY --from=build /id/api/dist /id/api/dist
 COPY ./api /id/api
 RUN cd api && pnpm install --offline --prod
 
-CMD [ "node", "/id/dist/index.js" ]
+CMD [ "node", "/id/api/dist/index.js" ]
