@@ -3,7 +3,7 @@ WORKDIR /id
 
 RUN mkdir -p /id/api
 
-RUN npm install -g pnpm && pnpm config set store-dir /root/.local/share/pnpm/store/v3
+RUN npm install -g pnpm && pnpm config set --global store-dir /root/.local/share/pnpm/store/v3
 
 COPY ./api/pnpm-lock.yaml /id/api
 RUN cd api && pnpm fetch
