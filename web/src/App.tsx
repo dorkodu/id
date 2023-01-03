@@ -1,7 +1,6 @@
-import { MantineProvider } from "@mantine/core";
+import { Loader, MantineProvider } from "@mantine/core";
 import { Suspense, useEffect } from "react";
 import { Outlet } from "react-router-dom";
-import Spinner from "./components/Spinner";
 import { useAppStore } from "./stores/appStore";
 import { useUserStore } from "./stores/userStore";
 import theme from "./styles/theme";
@@ -16,7 +15,9 @@ function App() {
   return (
     <>
       <MantineProvider theme={theme}>
-        <Suspense>{loading ? <Spinner /> : <Outlet />}</Suspense>
+        <Suspense>
+          {loading ? <Loader variant="dots" color="green" /> : <Outlet />}
+        </Suspense>
       </MantineProvider>
     </>
   );
