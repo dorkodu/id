@@ -12,7 +12,6 @@
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
     "@mantine/core": "^5.9.6",
-    "@mui/material": "^5.11.0",
     "@tabler/icons": "^1.119.0",
     "dayjs": "^1.11.6",
     "emotion-modern-normalize": "^1.0.0",
