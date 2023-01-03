@@ -74,9 +74,7 @@ const signup = sage.resource(
       verified: false,
     }
 
-    // Try to send a signup verification mail
-    const sent = await mailer.sendVerifySignup(email, tkn.full);
-    if (!sent) return { error: ErrorCode.Default };
+    mailer.sendVerifySignup(email, tkn.full);
 
     // Set sent_at to now, expires_at to 10 minutes & insert to the database
     row.sent_at = date.utc();
@@ -219,8 +217,7 @@ const login = sage.resource(
           ip: ip,
         }
 
-        const sent = await mailer.sendVerifyLogin(result0.email, tkn.full, ip, ua);
-        if (!sent) return { error: ErrorCode.Default };
+        mailer.sendVerifyLogin(result0.email, tkn.full, ip, ua);
 
         row.sent_at = date.utc();
         row.expires_at = date.minute(10);

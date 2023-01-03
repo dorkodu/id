@@ -84,8 +84,7 @@ const initiateEmailChange = sage.resource(
       expires_at: -1,
     }
 
-    const sent = await mailer.sendConfirmEmailChange(newEmail, tkn.full);
-    if (!sent) return { error: ErrorCode.Default };
+    mailer.sendConfirmEmailChange(newEmail, tkn.full);
 
     row.sent_at = date.utc();
     row.expires_at = date.hour(1);
@@ -138,8 +137,7 @@ const confirmEmailChange = sage.resource(
       expires_at: -1,
     }
 
-    const sent = await mailer.sendRevertEmailChange(oldEmail, tkn1.full);
-    if (!sent) return { error: ErrorCode.Default };
+    mailer.sendRevertEmailChange(oldEmail, tkn1.full);
 
     row.sent_at = date.utc();
     row.expires_at = date.day(30);
@@ -218,8 +216,7 @@ const initiatePasswordChange = sage.resource(
         expires_at: -1,
       }
 
-      const sent = await mailer.sendConfirmPasswordChange(email, tkn.full);
-      if (!sent) return;
+      mailer.sendConfirmPasswordChange(email, tkn.full);
 
       row.sent_at = date.utc();
       row.expires_at = date.hour(1);
