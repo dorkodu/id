@@ -1,6 +1,5 @@
 FROM node:16.17.1-alpine as base
 WORKDIR /id
-
 RUN mkdir -p /id/api
 
 RUN npm install -g pnpm && pnpm config set --global store-dir /root/.local/share/pnpm/store/v3
@@ -19,13 +18,14 @@ RUN pnpm build
 
 FROM node:16.17.1-alpine
 WORKDIR /id
-RUN mkdir -p /id/dist
+RUN mkdir -p /id/api
 
-RUN npm install -g pnpm
-COPY ./api/pnpm-lock.yaml /id
-RUN pnpm fetch --prod
-COPY --from=build /id/api/dist /id/dist
-COPY ./api/package.json /id
-RUN pnpm install --offline --prod
+RUN npm install -g pnpm && pnpm config set --global store-dir /root/.local/share/pnpm/store/v3
+
+COPY ./api/pnpm-lock.yaml /id/api
+RUN cd api && pnpm fetch --prod
+COPY --from=build /id/api/dist /id/api/dist
+COPY ./api /id/api
+RUN cd api && pnpm install --offline --prod
 
 CMD [ "node", "/id/dist/index.js" ]

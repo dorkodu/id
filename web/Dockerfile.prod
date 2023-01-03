@@ -4,7 +4,7 @@ WORKDIR /id
 RUN mkdir -p /id/web
 RUN mkdir -p /id/api
 
-RUN npm install -g pnpm && pnpm config set store-dir /root/.local/share/pnpm/store/v3
+RUN npm install -g pnpm && pnpm config set --global store-dir /root/.local/share/pnpm/store/v3
 
 WORKDIR /id/web
 
