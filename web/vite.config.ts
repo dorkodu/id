@@ -21,6 +21,7 @@ export default defineConfig({
     viteCompression({ algorithm: "gzip" }),
     viteCompression({ algorithm: "brotliCompress" }),
     VitePWA({
+      devOptions: { enabled: true },
       minify: true,
       registerType: "autoUpdate",
       injectRegister: "inline",
@@ -28,7 +29,29 @@ export default defineConfig({
         globPatterns: ["**/*.{html,css,js,ico}"]
       },
       base: "/",
-      manifest: {}
+      manifest: {
+        name: "Dorkodu ID",
+        short_name: "Dorkodu ID",
+        description: "",
+        categories: [],
+        start_url: "/",
+        display: "standalone",
+        orientation: "portrait",
+        theme_color: "#000000",
+        background_color: "#000000",
+        icons: [
+          {
+            src: "/android-chrome-192x192.png",
+            sizes: "192x192",
+            type: "image/png"
+          },
+          {
+            src: "/android-chrome-512x512.png",
+            sizes: "512x512",
+            type: "image/png"
+          }
+        ]
+      }
     })
   ],
   server: {
