@@ -11,6 +11,7 @@ async function main() {
   await keydb.connect();
 
   app.set("trust proxy", true);
+  app.disable('x-powered-by');
   app.use(express.json());
   app.use(cookieParser());
 
