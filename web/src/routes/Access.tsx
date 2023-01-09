@@ -10,52 +10,51 @@ function Access() {
 
   const service = searchParams.get("service");
 
-  const queryGrantAccess = useUserStore(state => state.queryGrantAccess);
-  const authorized = useUserStore(state => state.authorized);
+  const queryGrantAccess = useUserStore((state) => state.queryGrantAccess);
+  const authorized = useUserStore((state) => state.authorized);
 
   const gotoLogin = () => {
-    navigate(`/login?redirect=${location.pathname}${location.search}`)
-  }
+    navigate(`/login?redirect=${location.pathname}${location.search}`);
+  };
 
   const gotoSignup = async () => {
-    navigate(`/signup?redirect=${location.pathname}${location.search}`)
-  }
+    navigate(`/signup?redirect=${location.pathname}${location.search}`);
+  };
 
   const gotoDashboard = () => {
     navigate("/dashboard");
-  }
+  };
 
   const accept = async () => {
     if (!service) return;
     const code = await queryGrantAccess(service);
     setStatus({ done: true, error: !code });
-    if (code) document.location.href = `http://${service}/dorkodu-id?code=${code}`;
-  }
+    if (code)
+      document.location.href = `http://${service}/dorkodu-id?code=${code}`;
+  };
 
   const reject = async () => {
     navigate("/dashboard");
-  }
+  };
 
-  if (!authorized) return (
-    (
+  if (!authorized)
+    return (
       <>
         please login or signup to continue
         <br />
         <button onClick={gotoLogin}>login</button>
         <button onClick={gotoSignup}>signup</button>
       </>
-    )
-  )
+    );
 
-  if (!service) return (
-    (
+  if (!service)
+    return (
       <>
         error: service is not specified
         <br />
         <button onClick={gotoDashboard}>goto dashboard</button>
       </>
-    )
-  )
+    );
 
   return (
     <>
@@ -70,7 +69,7 @@ function Access() {
       <br />
       {status.done && status.error && <>an error occured. please try again.</>}
     </>
-  )
+  );
 }
 
-export default Access
+export default Access;
