@@ -32,7 +32,7 @@ export default defineConfig({
       manifest: {
         name: "Dorkodu ID",
         short_name: "Dorkodu ID",
-        description: "",
+        description: "Dorkodu User Identity Service",
         categories: [],
         start_url: "/",
         display: "standalone",
