@@ -64,7 +64,7 @@ function ChangePassword() {
   };
 
   return (
-    <Container size={460} my={30}>
+    <Container size={460} my={25}>
       <Image
         src={DorkoduIDKeyIcon}
         width={100}
@@ -75,29 +75,33 @@ function ChangePassword() {
         }}
       />
 
-      <Title order={1} align="center" mb={5}>
+      <Title order={2} align="center" mb={5}>
         Forgot your password?
       </Title>
-      <Text color="dimmed" size="lg" align="center" weight={500}>
+      <Text color="dimmed" size="md" align="center" weight={500}>
         Enter your email to get a reset link.
       </Text>
 
-      <Paper withBorder shadow="md" p={30} radius="md" mt="xl">
+      <Paper withBorder shadow="md" p={30} radius="lg" mt="xl">
         <TextInput
-          label="Your username"
-          placeholder="username"
+          label="Your Username:"
+          placeholder="@username"
           ref={changePasswordUsername}
+          radius="md"
+          variant="filled"
           required
         />
         <br />
         <TextInput
-          label="Your email"
+          label="Your Email:"
           placeholder="you@mail.com"
           ref={changePasswordEmail}
+          radius="md"
+          variant="filled"
           required
         />
         <Group position="apart" mt="lg" className={styles.controls}>
-          <Anchor color="dimmed" size="md" className={styles.control}>
+          <Anchor color="blue" size={15} className={styles.control}>
             <Center inline>
               <IconArrowLeft size={16} stroke={2.5} />
               <Box ml={5}>Back to login page</Box>
@@ -106,8 +110,7 @@ function ChangePassword() {
           <Button
             className={styles.control}
             onClick={initiateChangePassword}
-            size="md"
-            radius="lg"
+            radius="md"
           >
             Change Password
           </Button>
