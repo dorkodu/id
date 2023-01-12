@@ -16,7 +16,20 @@ function App() {
     <>
       <MantineProvider theme={theme} withNormalizeCSS withGlobalStyles>
         <Suspense>
-          {loading ? <Loader variant="dots" color="green" /> : <Outlet />}
+          {loading ? (
+            <div
+              style={{
+                position: "absolute",
+                left: "50%",
+                top: "50%",
+                transform: "translate(-50%,-50%)",
+              }}
+            >
+              <Loader variant="dots" color="green" />
+            </div>
+          ) : (
+            <Outlet />
+          )}
         </Suspense>
       </MantineProvider>
     </>
