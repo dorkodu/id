@@ -7,11 +7,11 @@ interface Props {
   access: IAccess;
 }
 
-function Session({ access }: Props) {
-  const queryTerminateSession = useUserStore(state => state.queryTerminateSession);
+function Access({ access }: Props) {
+  const queryRevokeAccess = useUserStore(state => state.queryRevokeAccess);
 
   const terminate = () => {
-    queryTerminateSession(access.id);
+    queryRevokeAccess(access.id);
   }
 
   return (
@@ -26,4 +26,4 @@ function Session({ access }: Props) {
   )
 }
 
-export default Session
+export default Access

@@ -292,11 +292,8 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
 
     if (!res?.a.data || res.a.error) return;
     set(state => {
-      let sorted = state.session.sorted;
-      let entities = state.session.entities;
-
-      sorted = sorted.filter(session => session.id !== sessionId);
-      delete entities[sessionId];
+      state.session.sorted = state.session.sorted.filter(session => session.id !== sessionId);
+      delete state.session.entities[sessionId];
     })
 
     if (get().currentSession?.id === sessionId) set(initialState);
@@ -332,11 +329,8 @@ export const useUserStore = create(immer<State & Action>((set, get) => ({
 
     if (!res?.a.data || res.a.error) return;
     set(state => {
-      let sorted = state.access.sorted;
-      let entities = state.access.entities;
-
-      sorted = sorted.filter(access => access.id !== accessId);
-      delete entities[accessId];
+      state.access.sorted = state.access.sorted.filter(access => access.id !== accessId);
+      delete state.access.entities[accessId];
     })
   },
 })))
