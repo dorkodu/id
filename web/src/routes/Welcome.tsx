@@ -3,38 +3,27 @@ import { useNavigate } from "react-router-dom";
 import { useUserStore } from "../stores/userStore";
 
 import {
-  TextInput,
-  PasswordInput,
-  Checkbox,
-  Anchor,
   Paper,
   Title,
   Text,
   Container,
-  Group,
   Button,
-  Image,
+  Stack,
+  Box,
+  Space,
+  Group,
+  MantineTheme,
+  Anchor,
   Center,
-  createStyles,
 } from "@mantine/core";
 
-import DorkoduIDKeyIcon from "@assets/dorkodu-id_key.svg";
-import { IconArrowLeft } from "@tabler/icons";
+import { FooterSimple } from "../components/Footer";
 
-const useStyles = createStyles((theme) => ({
-  controls: {
-    [theme.fn.smallerThan("xs")]: {
-      flexDirection: "column-reverse",
-    },
-  },
+import { ReactComponent as DorkoduLogo } from "@assets/dorkodu_Logo.svg";
 
-  control: {
-    [theme.fn.smallerThan("xs")]: {
-      width: "100%",
-      textAlign: "center",
-    },
-  },
-}));
+import { ColorToggleSegmented } from "../components/ColorToggle";
+import { IconArrowLeft, IconHandTwoFingers } from "@tabler/icons";
+import { FormPage } from "../components/_shared";
 
 function Welcome() {
   const { t } = useTranslation();
@@ -47,41 +36,59 @@ function Welcome() {
       {authorized && navigate("/dashboard")}
       {!authorized && (
         <Container size={460} my={25}>
-          <Image
-            src={DorkoduIDKeyIcon}
-            width={100}
-            sx={{
-              marginBottom: "1.5rem",
-              marginLeft: "auto",
-              marginRight: "auto",
+          <Box
+            my={60}
+            style={{
+              display: "flex",
+              justifyContent: "center",
             }}
-          />
-
-          <Title order={2} align="center" mb={5}>
-            Forgot your password?
+          >
+            <DorkoduLogo width={200} height={50} />
+          </Box>
+          <Title order={1} align="center" mb={5}>
+            Welcome
           </Title>
           <Text color="dimmed" size="md" align="center" weight={500}>
-            Enter your email to get a reset link.
+            Choose how you will enter.
           </Text>
-
-          <Paper withBorder shadow="md" p={30} radius="lg" mt="xl">
-            <Group position="apart" mt="lg" className={styles.controls}>
-              <Anchor color="blue" size={15} className={styles.control}>
-                <Center inline>
-                  <IconArrowLeft size={16} stroke={2.5} />
-                  <Box ml={5}>Back to login page</Box>
-                </Center>
-              </Anchor>
+          <Paper p={30} radius="lg" mt="md">
+            <Stack>
               <Button
-                className={styles.control}
-                onClick={initiateChangePassword}
+                variant="filled"
+                onClick={() => {
+                  navigate("/signup");
+                }}
                 radius="md"
               >
-                Change Password
+                Create Account
               </Button>
-              {done && <p>Mail is sent. Please check your email.</p>}
-            </Group>
+              <Button
+                variant="default"
+                onClick={() => {
+                  navigate("/login");
+                }}
+                radius="md"
+              >
+                Log In
+              </Button>
+
+              <Anchor
+                color="blue"
+                size={15}
+                weight={450}
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate("/change_password");
+                }}
+                align="center"
+                mt={10}
+              >
+                <Box ml={5}>Forgot your password?</Box>
+              </Anchor>
+            </Stack>
           </Paper>
+
+          <FormPage.Footer />
         </Container>
       )}
     </>
@@ -89,28 +96,3 @@ function Welcome() {
 }
 
 export default Welcome;
-/*
-<button
-  onClick={() => {
-    navigate("/login");
-  }}
->
-  login
-</button>
-<br />
-<button
-  onClick={() => {
-    navigate("/signup");
-  }}
->
-  signup
-</button>
-<br />
-<button
-  onClick={() => {
-    navigate("/change_password");
-  }}
->
-  forgot password
-</button>
-*/
