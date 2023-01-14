@@ -1,5 +1,4 @@
-import { Loader, MantineProvider } from "@mantine/core";
-import { Suspense, useEffect } from "react";
+import { ColorSchemeProvider, Loader, MantineProvider } from "@mantine/core";
 import { Outlet } from "react-router-dom";
 import { useAppStore } from "./stores/appStore";
 import { useUserStore } from "./stores/userStore";
@@ -12,9 +11,22 @@ function App() {
     queryAuth();
   }, []);
 
+  const colorScheme = useAppStore((state) => state.colorScheme);
+  const toggleColorScheme = useAppStore((state) => state.toggleColorScheme);
+
   return (
-    <>
-      <MantineProvider theme={theme} withNormalizeCSS withGlobalStyles>
+    <ColorSchemeProvider
+      colorScheme={colorScheme}
+      toggleColorScheme={toggleColorScheme}
+    >
+      <MantineProvider
+        theme={{
+          ...theme,
+          colorScheme,
+        }}
+        withNormalizeCSS
+        withGlobalStyles
+      >
         <Suspense>
           {loading ? (
             <div
@@ -32,7 +44,7 @@ function App() {
           )}
         </Suspense>
       </MantineProvider>
-    </>
+    </ColorSchemeProvider>
   );
 }
 
