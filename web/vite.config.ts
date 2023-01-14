@@ -6,6 +6,7 @@ import react from "@vitejs/plugin-react";
 import viteCompression from "vite-plugin-compression";
 import { VitePWA } from "vite-plugin-pwa";
 import { createHtmlPlugin as html } from "vite-plugin-html";
+import svgr from "vite-plugin-svgr";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -21,7 +22,7 @@ export default defineConfig({
     viteCompression({ algorithm: "gzip" }),
     viteCompression({ algorithm: "brotliCompress" }),
     VitePWA({
-      devOptions: { enabled: true },
+      devOptions: { enabled: false },
       minify: true,
       registerType: "autoUpdate",
       injectRegister: "inline",
@@ -53,6 +54,7 @@ export default defineConfig({
         ],
       },
     }),
+    svgr(),
   ],
   server: {
     watch: { usePolling: true },
