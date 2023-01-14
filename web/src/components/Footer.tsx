@@ -52,8 +52,9 @@ export const FooterSimple: FunctionComponent<{
     <div className={classes.footer}>
       <Container className={classes.inner}>
         <Group>{items}</Group>
-        <Space h={20} />
-        <Box>{brand}</Box>
+        <Group position="center" mt={10}>
+          <Box>{brand}</Box>
+        </Group>
       </Container>
     </div>
   );
