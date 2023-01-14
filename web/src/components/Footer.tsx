@@ -7,6 +7,7 @@ import {
   Box,
 } from "@mantine/core";
 import { FunctionComponent } from "react";
+import { ColorToggleSegmented } from "./ColorToggle";
 
 const useStyles = createStyles((theme) => ({
   footer: {
