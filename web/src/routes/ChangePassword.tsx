@@ -13,12 +13,13 @@ import {
   Anchor,
   Center,
   Box,
-  Image,
+  Space,
+  Alert,
 } from "@mantine/core";
 
-import { IconArrowLeft } from "@tabler/icons";
+import { IconAlertCircle, IconArrowLeft, IconInfoSquare } from "@tabler/icons";
 
-import DorkoduIDKeyIcon from "@assets/dorkodu-id_key.svg";
+import { FormPage } from "../components/_shared";
 
 const useStyles = createStyles((theme) => ({
   controls: {
@@ -65,24 +66,16 @@ function ChangePassword() {
 
   return (
     <Container size={460} my={25}>
-      <Image
-        src={DorkoduIDKeyIcon}
-        width={100}
-        sx={{
-          marginBottom: "1.5rem",
-          marginLeft: "auto",
-          marginRight: "auto",
-        }}
-      />
+      <FormPage.Header />
 
       <Title order={2} align="center" mb={5}>
-        Forgot your password?
+        Change Password
       </Title>
       <Text color="dimmed" size="md" align="center" weight={500}>
-        Enter your email to get a reset link.
+        Forgot your password? No worries.
       </Text>
 
-      <Paper withBorder shadow="md" p={30} radius="lg" mt="xl">
+      <Paper withBorder shadow="sm" p={30} radius="lg" mt="xl">
         <TextInput
           label="Your Username:"
           placeholder="@username"
@@ -91,7 +84,7 @@ function ChangePassword() {
           variant="filled"
           required
         />
-        <br />
+        <Space h="md" />
         <TextInput
           label="Your Email:"
           placeholder="you@mail.com"
@@ -100,6 +93,7 @@ function ChangePassword() {
           variant="filled"
           required
         />
+
         <Group position="apart" mt="lg" className={styles.controls}>
           <Anchor color="blue" size={15} className={styles.control}>
             <Center inline>
@@ -114,9 +108,22 @@ function ChangePassword() {
           >
             Change Password
           </Button>
-          {done && <p>Mail is sent. Please check your email.</p>}
         </Group>
+        {done && (
+          <Alert
+            icon={<IconInfoSquare size={24} />}
+            title="Info"
+            color="blue"
+            variant="light"
+          >
+            Mail is sent. Please check your inbox.
+          </Alert>
+        )}
       </Paper>
+
+      <Space h={64} />
+
+      <FormPage.Footer />
     </Container>
   );
 }
