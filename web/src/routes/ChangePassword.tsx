@@ -17,9 +17,11 @@ import {
   Alert,
 } from "@mantine/core";
 
-import { IconAlertCircle, IconArrowLeft, IconInfoSquare } from "@tabler/icons";
+import { IconArrowLeft, IconInfoSquare } from "@tabler/icons";
 
 import { FormPage } from "../components/_shared";
+import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const useStyles = createStyles((theme) => ({
   controls: {
@@ -37,6 +39,9 @@ const useStyles = createStyles((theme) => ({
 }));
 
 function ChangePassword() {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+
   const { classes: styles } = useStyles();
 
   const [done, setDone] = useState(false);
@@ -95,12 +100,21 @@ function ChangePassword() {
         />
 
         <Group position="apart" mt="lg" className={styles.controls}>
-          <Anchor color="blue" size={15} className={styles.control}>
+          <Anchor
+            color="blue"
+            size={15}
+            onClick={(e) => {
+              e.preventDefault();
+              navigate("/welcome");
+            }}
+            className={styles.control}
+          >
             <Center inline>
               <IconArrowLeft size={16} stroke={2.5} />
-              <Box ml={5}>Back to login page</Box>
+              <Box ml={5}>Go Back</Box>
             </Center>
           </Anchor>
+
           <Button
             className={styles.control}
             onClick={initiateChangePassword}
