@@ -7,7 +7,7 @@ import { ColorToggleSegmented } from "./ColorToggle";
 
 export const FormPage = {
   Header: () => (
-    <Box mx="md">
+    <Box my="md">
       <Image
         src={DorkoduIDKeyIcon}
         width={100}
