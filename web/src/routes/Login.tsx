@@ -87,9 +87,9 @@ function Login() {
   };
 
   return (
-    <>
+    <Container size={460} my={25}>
       {stage !== "verify" && (
-        <Container size={460} my={25}>
+        <>
           <FormPage.Header />
 
           <Title order={2} align="center" mb={5}>
@@ -156,7 +156,7 @@ function Login() {
           <Space h={64} />
 
           <FormPage.Footer />
-        </Container>
+        </>
       )}
       {stage === "verify" && (
         <>
@@ -165,7 +165,7 @@ function Login() {
           {stage === "verify" && status === false && <>couldn't verify.</>}
         </>
       )}
-    </>
+    </Container>
   );
 }
 
