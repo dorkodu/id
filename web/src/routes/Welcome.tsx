@@ -26,7 +26,6 @@ import {
 
 const styles: { themeIcons: Partial<ThemeIconProps> } = {
   themeIcons: {
-    color: "green",
     variant: "light",
     size: 32,
     radius: "md",
@@ -101,31 +100,34 @@ function Welcome() {
             <List my="lg" spacing="md" mx="auto" center>
               <List.Item
                 icon={
-                  <ThemeIcon {...styles.themeIcons}>
+                  <ThemeIcon {...styles.themeIcons} color="cyan">
                     <IconUser />
                   </ThemeIcon>
                 }>
                 Get a personalized experience.
               </List.Item>
+
               <List.Item
                 icon={
-                  <ThemeIcon {...styles.themeIcons}>
-                    <IconLock />
-                  </ThemeIcon>
-                }>
-                Your life's information in one place.
-              </List.Item>
-              <List.Item
-                icon={
-                  <ThemeIcon {...styles.themeIcons}>
+                  <ThemeIcon {...styles.themeIcons} color="blue">
                     <IconDiscountCheck />
                   </ThemeIcon>
                 }>
                 Be verified everywhere.
               </List.Item>
+
               <List.Item
                 icon={
-                  <ThemeIcon {...styles.themeIcons}>
+                  <ThemeIcon {...styles.themeIcons} color="indigo">
+                    <IconLock />
+                  </ThemeIcon>
+                }>
+                Your life's information in one place.
+              </List.Item>
+
+              <List.Item
+                icon={
+                  <ThemeIcon {...styles.themeIcons} color="violet">
                     <IconUnlink />
                   </ThemeIcon>
                 }>
