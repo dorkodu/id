@@ -10,12 +10,15 @@ import {
   Paper,
   PasswordInput,
   Space,
+  Stack,
   Text,
   TextInput,
   Title,
 } from "@mantine/core";
 import {
   IconArrowLeft,
+  IconArrowRight,
+  IconCheck,
   IconEye,
   IconEyeOff,
   IconInfoSquare,
@@ -35,6 +38,10 @@ const useStyles = createStyles((theme) => ({
   control: {
     [theme.fn.smallerThan("xs")]: {
       width: "100%",
+      textAlign: "center",
+    },
+    [theme.fn.largerThan("xs")]: {
+      width: "30%",
       textAlign: "center",
     },
   },
@@ -96,36 +103,41 @@ function Login() {
             Log In
           </Title>
           <Text color="dimmed" size="md" align="center" weight={500}>
-            Forgot your password? No worries.
+            Welcome home. You were missed.
           </Text>
 
           <Paper withBorder shadow="sm" p={30} radius="lg" mt="xl">
             <TextInput
               label="Username or Email"
-              placeholder="@username"
-              radius="md"
-              variant="filled"
+              placeholder="Enter @username"
               ref={loginInfo}
               type={"text"}
               disabled={stage === "confirm"}
               required
+              withAsterisk={false}
+              radius="md"
+              variant="filled"
             />
+
             <Space h="md" />
 
             <PasswordInput
-              placeholder="Password"
               label="Password"
-              description="Password"
-              withAsterisk
-              defaultValue="secret"
+              placeholder="Enter Password"
               visibilityToggleIcon={({ reveal, size }) =>
-                reveal ? <IconEyeOff size={size} /> : <IconEye size={size} />
+                reveal ? (
+                  <IconEyeOff size={size} stroke={2.5} />
+                ) : (
+                  <IconEye size={size} stroke={2.5} />
+                )
               }
+              variant="filled"
+              required
+              withAsterisk={false}
             />
 
             <Group position="apart" mt="lg" className={styles.controls}>
               <Anchor
-                color="blue"
                 size={15}
                 onClick={(e) => {
                   e.preventDefault();
@@ -139,21 +151,40 @@ function Login() {
               </Anchor>
 
               <Button className={styles.control} onClick={login} radius="md">
-                Change Password
+                Login
               </Button>
             </Group>
-            {done && (
-              <Alert
-                icon={<IconInfoSquare size={24} />}
-                title="Info"
-                color="blue"
-                variant="light">
-                Mail is sent. Please check your inbox.
-              </Alert>
-            )}
           </Paper>
 
-          <Space h={64} />
+          <Stack my="md">
+            <Anchor
+              color="blue"
+              size={15}
+              weight={450}
+              onClick={(e) => {
+                e.preventDefault();
+                navigate("/change_password");
+              }}
+              align="center"
+              mt={10}>
+              <Box ml={5}>Forgot your password?</Box>
+            </Anchor>
+
+            <Text size={14} align="center">
+              Don't have an account?
+            </Text>
+            <Anchor
+              color="blue"
+              weight={450}
+              onClick={(e) => {
+                e.preventDefault();
+                navigate("/signup");
+              }}
+              align="center"
+              mt={10}>
+              Create an account.
+            </Anchor>
+          </Stack>
 
           <FormPage.Footer />
         </>
@@ -161,8 +192,24 @@ function Login() {
       {stage === "verify" && (
         <>
           {stage === "verify" && status === undefined && <>loading...</>}
-          {stage === "verify" && status === true && <>verified.</>}
-          {stage === "verify" && status === false && <>couldn't verify.</>}
+          {stage === "verify" && status === true && (
+            <Alert
+              icon={<IconCheck size={24} />}
+              title="Status"
+              color="green"
+              variant="light">
+              Verified.
+            </Alert>
+          )}
+          {stage === "verify" && status === false && (
+            <Alert
+              icon={<IconCheck size={24} />}
+              title="Status"
+              color="red"
+              variant="light">
+              Verification failed.
+            </Alert>
+          )}
         </>
       )}
     </Container>
