@@ -67,7 +67,7 @@ function Welcome() {
               <Button
                 variant="filled"
                 onClick={() => {
-                  navigate("/signup");
+                  navigate("/create-account");
                 }}
                 radius="md">
                 Create Account
@@ -87,7 +87,7 @@ function Welcome() {
                 weight={450}
                 onClick={(e) => {
                   e.preventDefault();
-                  navigate("/change_password");
+                  navigate("/change-password");
                 }}
                 align="center"
                 mt={10}>

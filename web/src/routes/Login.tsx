@@ -163,7 +163,7 @@ function Login() {
               weight={450}
               onClick={(e) => {
                 e.preventDefault();
-                navigate("/change_password");
+                navigate("/change-password");
               }}
               align="center"
               mt={10}>
@@ -178,7 +178,7 @@ function Login() {
               weight={450}
               onClick={(e) => {
                 e.preventDefault();
-                navigate("/signup");
+                navigate("/create-account");
               }}
               align="center"
               mt={10}>

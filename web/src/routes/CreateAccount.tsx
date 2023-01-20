@@ -15,13 +15,11 @@ import {
   Title,
 } from "@mantine/core";
 import {
-  IconArrowLeft,
   IconArrowRight,
   IconAsterisk,
   IconAt,
   IconEye,
   IconEyeOff,
-  IconSquareAsterisk,
   IconUser,
 } from "@tabler/icons";
 import { useEffect, useRef, useState } from "react";
