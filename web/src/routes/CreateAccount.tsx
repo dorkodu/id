@@ -47,15 +47,19 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-function Signup() {
+function CreateAccount() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
   const { classes: styles } = useStyles();
 
-  const querySignup = useUserStore((state) => state.querySignup);
-  const queryVerifySignup = useUserStore((state) => state.queryVerifySignup);
-  const queryConfirmSignup = useUserStore((state) => state.queryConfirmSignup);
+  const queryCreateAccount = useUserStore((state) => state.queryCreateAccount);
+  const queryVerifyCreateAccount = useUserStore(
+    (state) => state.queryVerifyCreateAccount
+  );
+  const queryConfirmCreateAccount = useUserStore(
+    (state) => state.queryConfirmCreateAccount
+  );
 
   const initialStage = searchParams.get("token") ? "verify" : "signup";
   const [stage, setStage] = useState<"signup" | "verify" | "confirm">(
@@ -68,31 +72,31 @@ function Signup() {
   const signupPassword = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (stage === "verify") verifySignup();
+    if (stage === "verify") verifyCreateAccount();
   }, []);
 
   const signup = async () => {
     const username = signupUsername.current?.value;
     const email = signupEmail.current?.value;
     if (!username || !email) return;
-    if (!(await querySignup(username, email))) return;
+    if (!(await queryCreateAccount(username, email))) return;
     setStage("confirm");
   };
 
-  const verifySignup = async () => {
+  const verifyCreateAccount = async () => {
     const token = searchParams.get("token");
     if (!token) return;
 
-    const verified = await queryVerifySignup(token);
+    const verified = await queryVerifyCreateAccount(token);
     setStatus(verified);
   };
 
-  const confirmSignup = async () => {
+  const confirmCreateAccount = async () => {
     const username = signupUsername.current?.value;
     const email = signupEmail.current?.value;
     const password = signupPassword.current?.value;
     if (!username || !email || !password) return;
-    if (!(await queryConfirmSignup(username, email, password))) return;
+    if (!(await queryConfirmCreateAccount(username, email, password))) return;
 
     const redirect = searchParams.get("redirect");
     if (!redirect) navigate("/dashboard");
@@ -117,7 +121,7 @@ function Signup() {
               <TextInput
                 label="Your Username"
                 placeholder="@username"
-                description="You can use letters (a-z), digits (0-9), dot (.) and underscore (_) 16 characters maximum."
+                description="You can use letters (a-z), digits (0-9), dot (.) and underscore (_) with 16 characters maximum."
                 disabled={stage === "confirm"}
                 required
                 radius="md"
@@ -128,7 +132,7 @@ function Signup() {
 
               <TextInput
                 label="Your Email"
-                placeholder="example@mail.com"
+                placeholder="you@mail.com"
                 description="Enter a valid email address."
                 icon={<IconAt size={16} />}
                 ref={signupEmail}
@@ -161,7 +165,7 @@ function Signup() {
               <Button
                 className={styles.control}
                 onClick={() =>
-                  stage === "signup" ? signup() : confirmSignup()
+                  stage === "signup" ? signup() : confirmCreateAccount()
                 }
                 radius="md">
                 Create Account
@@ -183,7 +187,7 @@ function Signup() {
                 weight={450}
                 onClick={(e) => {
                   e.preventDefault();
-                  navigate("/change_password");
+                  navigate("/change-password");
                 }}
                 align="center">
                 <Box
@@ -211,4 +215,4 @@ function Signup() {
   );
 }
 
-export default Signup;
+export default CreateAccount;
