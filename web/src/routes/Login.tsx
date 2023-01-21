@@ -124,6 +124,7 @@ function Login() {
             <PasswordInput
               label="Password"
               placeholder="Enter Password"
+              ref={loginPassword}
               visibilityToggleIcon={({ reveal, size }) =>
                 reveal ? (
                   <IconEyeOff size={size} stroke={2.5} />

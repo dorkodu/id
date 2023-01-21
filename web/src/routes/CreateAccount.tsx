@@ -51,12 +51,12 @@ function CreateAccount() {
 
   const { classes: styles } = useStyles();
 
-  const queryCreateAccount = useUserStore((state) => state.queryCreateAccount);
+  const queryCreateAccount = useUserStore((state) => state.querySignup);
   const queryVerifyCreateAccount = useUserStore(
-    (state) => state.queryVerifyCreateAccount
+    (state) => state.queryVerifySignup
   );
   const queryConfirmCreateAccount = useUserStore(
-    (state) => state.queryConfirmCreateAccount
+    (state) => state.queryConfirmSignup
   );
 
   const initialStage = searchParams.get("token") ? "verify" : "signup";
