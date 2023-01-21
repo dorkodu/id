@@ -7,7 +7,8 @@ import { date } from "../lib/date";
 import { useUserStore } from "../stores/userStore";
 import { request, sage } from "../stores/api";
 import { array } from "../lib/array";
-import { Loader } from "@mantine/core";
+import { AppShell, Container, Header, Loader } from "@mantine/core";
+import { SideBar } from "../components/SideBar";
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -80,107 +81,123 @@ function Dashboard() {
   };
 
   return (
-    <>
-      <div>
-        <div>username: {user?.username}</div>
-        <div>email: {user?.email}</div>
-        <div>joined at: {user && date(user.joinedAt).format("lll")}</div>
-      </div>
+    <AppShell
+      padding="md"
+      header={
+        <Header height={60} p="xs">
+          {/* Header content */}
+        </Header>
+      }
+      styles={(theme) => ({
+        main: {
+          backgroundColor:
+            theme.colorScheme === "dark"
+              ? theme.colors.dark[8]
+              : theme.colors.gray[0],
+        },
+      })}>
+      <Container size={1000} my={25}>
+        <div>
+          <div>username: {user?.username}</div>
+          <div>email: {user?.email}</div>
+          <div>joined at: {user && date(user.joinedAt).format("lll")}</div>
+        </div>
 
-      <br />
-
-      <div>
-        <button
-          onClick={() => {
-            navigate("/change-username");
-          }}>
-          change username
-        </button>
         <br />
-        <button
-          onClick={() => {
-            navigate("/change-email");
-          }}>
-          change email
-        </button>
+
+        <div>
+          <button
+            onClick={() => {
+              navigate("/change-username");
+            }}>
+            change username
+          </button>
+          <br />
+          <button
+            onClick={() => {
+              navigate("/change-email");
+            }}>
+            change email
+          </button>
+          <br />
+          <button
+            onClick={() => {
+              navigate("/change-password");
+            }}>
+            change password
+          </button>
+        </div>
+
         <br />
-        <button
-          onClick={() => {
-            navigate("/change-password");
-          }}>
-          change password
-        </button>
-      </div>
 
-      <br />
+        <div>
+          <div>current session:</div>
+          {currentSession ? (
+            <Session session={currentSession} />
+          ) : (
+            <Loader variant="dots" color="green" />
+          )}
+        </div>
 
-      <div>
-        <div>current session:</div>
-        {currentSession ? (
-          <Session session={currentSession} />
-        ) : (
-          <Loader variant="dots" color="green" />
-        )}
-      </div>
+        <br />
 
-      <br />
+        <div>
+          <div>all sessions:</div>
+          <button
+            onClick={() => {
+              getSessions("older");
+            }}>
+            load older
+          </button>
+          <button
+            onClick={() => {
+              getSessions("newer");
+            }}>
+            load newer
+          </button>
+          <button
+            onClick={() => {
+              getSessions("newer", true);
+            }}>
+            refresh
+          </button>
+          {sessions.map((session) => (
+            <Session session={session} key={session.id} />
+          ))}
+        </div>
 
-      <div>
-        <div>all sessions:</div>
-        <button
-          onClick={() => {
-            getSessions("older");
-          }}>
-          load older
-        </button>
-        <button
-          onClick={() => {
-            getSessions("newer");
-          }}>
-          load newer
-        </button>
-        <button
-          onClick={() => {
-            getSessions("newer", true);
-          }}>
-          refresh
-        </button>
-        {sessions.map((session) => (
-          <Session session={session} key={session.id} />
-        ))}
-      </div>
+        <br />
 
-      <br />
+        <div>
+          <div>all accesses:</div>
+          <button
+            onClick={() => {
+              getAccesses("older");
+            }}>
+            load older
+          </button>
+          <button
+            onClick={() => {
+              getAccesses("newer");
+            }}>
+            load newer
+          </button>
+          <button
+            onClick={() => {
+              getAccesses("newer", true);
+            }}>
+            refresh
+          </button>
+          {accesses.map((access) => (
+            <Access access={access} key={access.id} />
+          ))}
+        </div>
 
-      <div>
-        <div>all accesses:</div>
-        <button
-          onClick={() => {
-            getAccesses("older");
-          }}>
-          load older
-        </button>
-        <button
-          onClick={() => {
-            getAccesses("newer");
-          }}>
-          load newer
-        </button>
-        <button
-          onClick={() => {
-            getAccesses("newer", true);
-          }}>
-          refresh
-        </button>
-        {accesses.map((access) => (
-          <Access access={access} key={access.id} />
-        ))}
-      </div>
+        <br />
 
-      <br />
-
-      <button onClick={logout}>logout</button>
-    </>
+        <button onClick={logout}>logout</button>
+      </Container>
+    </AppShell>
   );
 }
 
