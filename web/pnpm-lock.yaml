@@ -6,6 +6,7 @@ specifiers:
   '@emotion/babel-plugin': ^11.10.5
   '@emotion/react': ^11.10.5
   '@mantine/core': ^5.10.0
+  '@mantine/form': ^5.10.1
   '@tabler/icons': ^1.119.0
   '@types/react': ^18.0.22
   '@types/react-dom': ^18.0.7
@@ -33,6 +34,7 @@ dependencies:
   '@dorkodu/sage-client': 0.1.4
   '@emotion/react': 11.10.5_vrcbnxw553q3jy5amff3xi7pwq
   '@mantine/core': 5.10.0_65dpizmw55g2haz7gbt6rfdsuq
+  '@mantine/form': 5.10.1_react@18.2.0
   '@tabler/icons': 1.119.0_biqbaboplfbrettd7655fr4n2y
   dayjs: 1.11.6
   emotion-modern-normalize: 1.0.0_wm6ohc3abj5yburmg6pjdgzp24
@@ -1616,6 +1618,16 @@ packages:
       - '@types/react'
     dev: false
 
+  /@mantine/form/5.10.1_react@18.2.0:
+    resolution: {integrity: sha512-KGKAcVURVAHVr+KbNyqvt0L8ROdpyFxCR8fh2TCIkGeFgQXWLcXF4JOeNSx2KCXf0wbEEXgp49BXV+tmeLHoiA==}
+    peerDependencies:
+      react: '>=16.8.0'
+    dependencies:
+      fast-deep-equal: 3.1.3
+      klona: 2.0.6
+      react: 18.2.0
+    dev: false
+
   /@mantine/hooks/5.10.0_react@18.2.0:
     resolution: {integrity: sha512-dAefxpvqjFtXNeKse+awkIa4U1XGnMMOqWg1+07Y2Ino2G6EiT8AEnYqQyTXgcPoNaWwG9533Q/DDadmyweqaQ==}
     peerDependencies:
@@ -2762,7 +2774,6 @@ packages:
 
   /fast-deep-equal/3.1.3:
     resolution: {integrity: sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==}
-    dev: true
 
   /fast-glob/3.2.12:
     resolution: {integrity: sha512-DVj4CQIYYow0BlaelwK1pHl5n5cRSJfM60UA0zK891sVInoPri2Ekj7+e1CT3/3qxXenpI+nBBmQAcJPJgaj4w==}
@@ -3211,6 +3222,11 @@ packages:
     resolution: {integrity: sha512-p/nXbhSEcu3pZRdkW1OfJhpsVtW1gd4Wa1fnQc9YLiTfAjn0312eMKimbdIQzuZl9aa9xUGaRlP9T/CJE/ditQ==}
     engines: {node: '>=0.10.0'}
     dev: true
+
+  /klona/2.0.6:
+    resolution: {integrity: sha512-dhG34DXATL5hSxJbIexCft8FChFXtmskoZYnoPWjXQuebWYCNkVeV3KkGegCK9CP1oswI/vQibS2GY7Em/sJJA==}
+    engines: {node: '>= 8'}
+    dev: false
 
   /leven/3.1.0:
     resolution: {integrity: sha512-qsda+H8jTaUaN/x5vzW2rzc+8Rw4TAQ/4KjB46IwK5VH+IlVeeeje/EoZRpiXvIqjFgK84QffqPztGI3VBLG1A==}
