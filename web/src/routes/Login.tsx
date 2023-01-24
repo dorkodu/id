@@ -7,6 +7,7 @@ import {
   Container,
   createStyles,
   Group,
+  Loader,
   Paper,
   PasswordInput,
   Space,
@@ -72,8 +73,10 @@ function Login() {
   const login = async () => {
     const info = loginInfo.current?.value;
     const password = loginPassword.current?.value;
+
     if (!info || !password) return;
     const res = await queryLogin(info, password);
+
     if (res === "error") return;
     if (res === "confirm") {
       setStage("confirm");
@@ -192,7 +195,9 @@ function Login() {
       )}
       {stage === "verify" && (
         <>
-          {stage === "verify" && status === undefined && <>loading...</>}
+          {stage === "verify" && status === undefined && (
+            <Loader variant="dots" color="green" />
+          )}
           {stage === "verify" && status === true && (
             <Alert
               icon={<IconCheck size={24} />}
