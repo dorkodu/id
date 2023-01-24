@@ -1,30 +1,57 @@
 import { ISession } from "@api/types/session";
+import { Badge, Button, Card, Group, Image, Table, Text } from "@mantine/core";
 import { date } from "../lib/date";
 import { util } from "../lib/util";
 import { useUserStore } from "../stores/userStore";
+import Gilmour from "@assets/gilmour.webp";
 
-interface Props {
-  session: ISession;
+export function SessionTable({ sessions }: { sessions: ISession[] }) {
+  return (
+    <Table
+      horizontalSpacing="sm"
+      verticalSpacing="xs"
+      striped
+      withBorder
+      withColumnBorders>
+      <thead>
+        <tr>
+          <th>Created At</th>
+          <th>Expires At</th>
+          <th>IP</th>
+          <th>Device</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {sessions.map((session) => (
+          <SessionTableRow session={session} />
+        ))}
+      </tbody>
+    </Table>
+  );
 }
 
-function Session({ session }: Props) {
+export function SessionTableRow({ session }: { session: ISession }) {
   const queryTerminateSession = useUserStore(
     (state) => state.queryTerminateSession
   );
 
-  const terminate = () => {
-    queryTerminateSession(session.id);
-  };
-
   return (
-    <div>
-      <div>created at: {date(session.createdAt).format("lll")}</div>
-      <div>expires at: {date(session.expiresAt).format("lll")}</div>
-      <div>ip: {session.ip}</div>
-      <div>user agent: {util.parseUserAgent(session.userAgent)}</div>
-      <button onClick={terminate}>terminate</button>
-    </div>
+    <tr key={session.id}>
+      <td>{date(session.createdAt).format("lll")}</td>
+      <td>{date(session.expiresAt).format("lll")}</td>
+      <td>{session.ip}</td>
+      <td>{util.parseUserAgent(session.userAgent)}</td>
+      <td>
+        <Button
+          color="red"
+          onClick={() => {
+            queryTerminateSession(session.id);
+          }}>
+          Terminate
+        </Button>
+      </td>
+    </tr>
   );
 }
 
-export default Session;
