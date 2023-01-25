@@ -1,4 +1,4 @@
-import { Loader, MantineProvider } from "@mantine/core";
+import { ColorSchemeProvider, Loader, MantineProvider } from "@mantine/core";
 import { Suspense, useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import { useAppStore } from "./stores/appStore";
@@ -12,14 +12,40 @@ function App() {
     queryAuth();
   }, []);
 
+  const colorScheme = useAppStore((state) => state.colorScheme);
+  const toggleColorScheme = useAppStore((state) => state.toggleColorScheme);
+
   return (
-    <>
-      <MantineProvider theme={theme}>
+    <ColorSchemeProvider
+      colorScheme={colorScheme}
+      toggleColorScheme={toggleColorScheme}
+    >
+      <MantineProvider
+        theme={{
+          ...theme,
+          colorScheme,
+        }}
+        withNormalizeCSS
+        withGlobalStyles
+      >
         <Suspense>
-          {loading ? <Loader variant="dots" color="green" /> : <Outlet />}
+          {loading ? (
+            <div
+              style={{
+                position: "absolute",
+                left: "50%",
+                top: "50%",
+                transform: "translate(-50%,-50%)",
+              }}
+            >
+              <Loader variant="dots" color="green" />
+            </div>
+          ) : (
+            <Outlet />
+          )}
         </Suspense>
       </MantineProvider>
-    </>
+    </ColorSchemeProvider>
   );
 }
 

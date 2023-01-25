@@ -13,12 +13,14 @@ import {
   Anchor,
   Center,
   Box,
-  Image,
+  Space,
+  Alert,
 } from "@mantine/core";
 
-import { IconArrowLeft } from "@tabler/icons";
+import { IconArrowLeft, IconInfoSquare } from "@tabler/icons";
 
-import DorkoduIDKeyIcon from "@assets/dorkodu-id_key.svg";
+import { FormPage } from "../components/_shared";
+import { useNavigate } from "react-router-dom";
 
 const useStyles = createStyles((theme) => ({
   controls: {
@@ -36,6 +38,8 @@ const useStyles = createStyles((theme) => ({
 }));
 
 function ChangePassword() {
+  const navigate = useNavigate();
+
   const { classes: styles } = useStyles();
 
   const [done, setDone] = useState(false);
@@ -64,56 +68,70 @@ function ChangePassword() {
   };
 
   return (
-    <Container size={460} my={30}>
-      <Image
-        src={DorkoduIDKeyIcon}
-        width={100}
-        sx={{
-          marginBottom: "1.5rem",
-          marginLeft: "auto",
-          marginRight: "auto",
-        }}
-      />
+    <Container size={460} my={25}>
+      <FormPage.Header />
 
-      <Title order={1} align="center" mb={5}>
-        Forgot your password?
+      <Title order={2} align="center" mb={5}>
+        Change Password
       </Title>
-      <Text color="dimmed" size="lg" align="center" weight={500}>
-        Enter your email to get a reset link.
+      <Text color="dimmed" size="md" align="center" weight={500}>
+        Forgot your password? No worries.
       </Text>
 
-      <Paper withBorder shadow="md" p={30} radius="md" mt="xl">
+      <Paper withBorder shadow="sm" p={30} radius="lg" mt="xl">
         <TextInput
-          label="Your username"
-          placeholder="username"
+          label="Your Username:"
+          placeholder="@username"
           ref={changePasswordUsername}
+          radius="md"
+          variant="filled"
           required
         />
-        <br />
+        <Space h="md" />
         <TextInput
-          label="Your email"
+          label="Your Email:"
           placeholder="you@mail.com"
           ref={changePasswordEmail}
+          radius="md"
+          variant="filled"
           required
         />
+
         <Group position="apart" mt="lg" className={styles.controls}>
-          <Anchor color="dimmed" size="md" className={styles.control}>
+          <Anchor
+            size={15}
+            onClick={(e) => {
+              e.preventDefault();
+              navigate("/welcome");
+            }}
+            className={styles.control}>
             <Center inline>
               <IconArrowLeft size={16} stroke={2.5} />
-              <Box ml={5}>Back to login page</Box>
+              <Box ml={5}>Go Back</Box>
             </Center>
           </Anchor>
+
           <Button
             className={styles.control}
             onClick={initiateChangePassword}
-            size="md"
-            radius="lg"
-          >
+            radius="md">
             Change Password
           </Button>
-          {done && <p>Mail is sent. Please check your email.</p>}
         </Group>
+        {done && (
+          <Alert
+            icon={<IconInfoSquare size={24} />}
+            title="Info"
+            color="blue"
+            variant="light">
+            Mail is sent. Please check your inbox.
+          </Alert>
+        )}
       </Paper>
+
+      <Space h={64} />
+
+      <FormPage.Footer />
     </Container>
   );
 }

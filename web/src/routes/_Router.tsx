@@ -6,8 +6,8 @@ import RequireAuth from "../components/RequireAuth";
 import Access from "./Access";
 
 const Welcome = React.lazy(() => import("./Welcome"));
+const CreateAccount = React.lazy(() => import("./CreateAccount"));
 const Login = React.lazy(() => import("./Login"));
-const Signup = React.lazy(() => import("./Signup"));
 const ChangeUsername = React.lazy(() => import("./ChangeUsername"));
 const ChangeEmail = React.lazy(() => import("./ChangeEmail"));
 const ConfirmChangeEmail = React.lazy(() => import("./ConfirmChangeEmail"));
@@ -31,24 +31,24 @@ function Router() {
           {/* Routes that don't require authentication */}
           <Route path="/welcome" element={<Welcome />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
+          <Route path="/create-account" element={<CreateAccount />} />
           <Route path="/access" element={<Access />} />
-          <Route path="/change_password" element={<ChangePassword />} />
+          <Route path="/change-password" element={<ChangePassword />} />
           <Route
-            path="/confirm_email_change"
+            path="/confirm-email-change"
             element={<ConfirmChangeEmail />}
           />
-          <Route path="/revert_email_change" element={<RevertChangeEmail />} />
+          <Route path="/revert-email-change" element={<RevertChangeEmail />} />
           <Route
-            path="/confirm_password_change"
+            path="/confirm-password-change"
             element={<ConfirmChangePassword />}
           />
 
           {/* Routes that require authentication */}
           <Route element={<RequireAuth />}>
             <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/change_username" element={<ChangeUsername />} />
-            <Route path="/change_email" element={<ChangeEmail />} />
+            <Route path="/change-username" element={<ChangeUsername />} />
+            <Route path="/change-email" element={<ChangeEmail />} />
           </Route>
 
           {/* Error routes & catch all */}
