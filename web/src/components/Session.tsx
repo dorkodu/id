@@ -28,6 +28,52 @@ export function SessionTable({ sessions }: { sessions: ISession[] }) {
         ))}
       </tbody>
     </Table>
+        <Table
+          horizontalSpacing="sm"
+          verticalSpacing="xs"
+          striped
+          withBorder
+          withColumnBorders
+          miw={500}>
+          <thead>
+            <tr>
+              <th>
+                <Group align="center">
+                  <IconClock color={tokens.color.gray(60)} />
+                  <Text>Create Time</Text>
+                </Group>
+              </th>
+              <th>
+                <Group align="center">
+                  <IconCalendarTime color={tokens.color.gray(60)} />
+                  <Text>Expire</Text>
+                </Group>
+              </th>
+              <th>
+                <Group align="center">
+                  <IconNetwork color={tokens.color.gray(60)} />
+                  <Text>IP</Text>
+                </Group>
+              </th>
+              <th>
+                <Group align="center">
+                  <IconDeviceDesktop color={tokens.color.gray(60)} />
+                  <Text>Device</Text>
+                </Group>
+              </th>
+              <th>
+                <Center>
+                  <IconHandFinger color={tokens.color.gray(60)} />
+                </Center>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {sessions.map((session) => (
+              <SessionTableRow session={session} key={session.id} />
+            ))}
+          </tbody>
+        </Table>
   );
 }
 
