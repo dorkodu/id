@@ -1,33 +1,37 @@
 import { ISession } from "@api/types/session";
-import { Badge, Button, Card, Group, Image, Table, Text } from "@mantine/core";
+import {
+  Badge,
+  Button,
+  Card,
+  Center,
+  Group,
+  Image,
+  Paper,
+  ScrollArea,
+  Stack,
+  Table,
+  Text,
+  ThemeIcon,
+} from "@mantine/core";
+
 import { date } from "../lib/date";
 import { util } from "../lib/util";
 import { useUserStore } from "../stores/userStore";
 import Gilmour from "@assets/gilmour.webp";
 
+import {
+  IconCalendarTime,
+  IconClock,
+  IconDeviceDesktop,
+  IconHandFinger,
+  IconNetwork,
+} from "@tabler/icons";
+import { tokens } from "@dorkodu/prism";
+
 export function SessionTable({ sessions }: { sessions: ISession[] }) {
   return (
-    <Table
-      horizontalSpacing="sm"
-      verticalSpacing="xs"
-      striped
-      withBorder
-      withColumnBorders>
-      <thead>
-        <tr>
-          <th>Created At</th>
-          <th>Expires At</th>
-          <th>IP</th>
-          <th>Device</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        {sessions.map((session) => (
-          <SessionTableRow session={session} />
-        ))}
-      </tbody>
-    </Table>
+    <Paper>
+      <ScrollArea>
         <Table
           horizontalSpacing="sm"
           verticalSpacing="xs"
@@ -74,6 +78,8 @@ export function SessionTable({ sessions }: { sessions: ISession[] }) {
             ))}
           </tbody>
         </Table>
+      </ScrollArea>
+    </Paper>
   );
 }
 
