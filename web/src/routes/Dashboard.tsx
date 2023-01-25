@@ -1,16 +1,41 @@
-import { useEffect } from "react";
+import { FunctionComponent, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Session from "../components/Session";
-import Access from "../components/Access";
+import { SessionCard, SessionTable } from "../components/Session";
+import { AccessTable } from "../components/Access";
 
-import { date } from "../lib/date";
 import { useUserStore } from "../stores/userStore";
 import { request, sage } from "../stores/api";
 import { array } from "../lib/array";
-import { AppShell, Container, Header, Loader } from "@mantine/core";
-import { SideBar } from "../components/SideBar";
 
-function Dashboard() {
+import {
+  ActionIcon,
+  AppShell,
+  Badge,
+  Button,
+  Container,
+  Group,
+  Image,
+  Loader,
+  Paper,
+  Space,
+  Title,
+} from "@mantine/core";
+
+import { FooterPlain } from "../components/_shared";
+import { UserDashboardProfile } from "../components/User";
+import { ColorToggleSegmented } from "../components/ColorToggle";
+
+import DummyAvatar from "@assets/gilmour.webp";
+import DorkoduIDKeyIcon from "@assets/dorkodu-id_key.svg";
+
+import {
+  IconArrowDown,
+  IconArrowUp,
+  IconMenu2,
+  IconRefresh,
+} from "@tabler/icons";
+
+const DashboardPage: FunctionComponent = () => {
   const navigate = useNavigate();
 
   const setUser = useUserStore((state) => state.setUser);
@@ -80,14 +105,191 @@ function Dashboard() {
     await queryGetAccesses(type, refresh);
   };
 
+  //? Page Sections
+  const DashboardProfile = () => {
+    return (
+      <Group my={20}>
+        <UserDashboardProfile
+          data={{
+            name: "David Gilmour",
+            username: "davidgilmour",
+            avatar: DummyAvatar,
+            bio: "The man who makes the guitar weep.",
+            email: "dave@pinkfloyd.com",
+            joinedAt: user?.joinedAt,
+          }}
+        />
+        <Space h={10} />
+        <Paper shadow="xs" p="md" withBorder>
+          <Title size="h5" order={3} mb={10}>
+            Edit Profile
+          </Title>
+          <Group spacing="xs">
+            <Button
+              size="xs"
+              variant="default"
+              onClick={() => {
+                navigate("/change-username");
+              }}>
+              Change Username
+            </Button>
+            <Button
+              size="xs"
+              variant="default"
+              onClick={() => {
+                navigate("/change-email");
+              }}>
+              Change Email
+            </Button>
+            <Button
+              size="xs"
+              variant="default"
+              onClick={() => {
+                navigate("/change-password");
+              }}>
+              Change Password
+            </Button>
+          </Group>
+        </Paper>
+      </Group>
+    );
+  };
+
+  const Sessions = () => {
+    return (
+      <>
+        <Paper p="md" shadow="xs" maw={600} withBorder>
+          <Title order={3}>
+            <Group align="center" spacing={8}>
+              <span>Current Session</span>
+              <Badge color="green" variant="light" radius={8}>
+                Active
+              </Badge>
+            </Group>
+          </Title>
+          {currentSession ? (
+            <SessionCard session={currentSession} />
+          ) : (
+            <Loader variant="dots" color="green" />
+          )}
+        </Paper>
+
+        <Space h={20} />
+
+        <Paper p="md" shadow="xs" my={24} withBorder>
+          <Title order={3}>All Sessions</Title>
+          <Space h={10} />
+
+          <Group spacing="xs">
+            <Button
+              variant="default"
+              leftIcon={<IconArrowDown size={20} />}
+              size="xs"
+              onClick={() => {
+                getSessions("older");
+              }}>
+              Load Older
+            </Button>
+            <Button
+              variant="default"
+              leftIcon={<IconArrowUp size={20} />}
+              size="xs"
+              onClick={() => {
+                getSessions("newer");
+              }}>
+              Load Newer
+            </Button>
+            <Button
+              variant="default"
+              leftIcon={<IconRefresh size={20} />}
+              size="xs"
+              onClick={() => {
+                getSessions("newer", true);
+              }}>
+              Refresh
+            </Button>
+          </Group>
+
+          <Space h={20} />
+
+          <SessionTable sessions={sessions} />
+        </Paper>
+      </>
+    );
+  };
+
+  const Accesses = () => {
+    return (
+      <Paper p="md" shadow="xs" my={24} withBorder>
+        <Title order={3}>Connected Services</Title>
+        <Space h={10} />
+
+        <Group spacing="xs">
+          <Button
+            variant="default"
+            leftIcon={<IconRefresh size={20} />}
+            size="xs"
+            onClick={() => {
+              getAccesses("newer", true);
+            }}>
+            Refresh
+          </Button>
+
+          {accesses.length >= 1 && (
+            <>
+              <Button
+                variant="default"
+                leftIcon={<IconArrowDown size={20} />}
+                size="xs"
+                onClick={() => {
+                  getAccesses("older");
+                }}>
+                Load Older
+              </Button>
+              <Button
+                variant="default"
+                leftIcon={<IconArrowUp size={20} />}
+                size="xs"
+                onClick={() => {
+                  getAccesses("newer");
+                }}>
+                Load Newer
+              </Button>
+            </>
+          )}
+        </Group>
+
+        <Space h={20} />
+
+        <AccessTable accesses={accesses} />
+      </Paper>
+    );
+  };
+
+  const Header = () => {
+    return (
+      <Paper shadow="xs" p={10} radius="md" withBorder>
+        <Group position="apart">
+          <Group>
+            <Image src={DorkoduIDKeyIcon} height={36} width="auto" ml={4} />
+            <Title size={24} order={1} weight={800}>
+              Dashboard
+            </Title>
+          </Group>
+          <Group>
+            <ColorToggleSegmented />
+            <ActionIcon variant="light" size={36}>
+              <IconMenu2 />
+            </ActionIcon>
+          </Group>
+        </Group>
+      </Paper>
+    );
+  };
+
   return (
     <AppShell
       padding="md"
-      header={
-        <Header height={60} p="xs">
-          {/* Header content */}
-        </Header>
-      }
       styles={(theme) => ({
         main: {
           backgroundColor:
@@ -97,108 +299,15 @@ function Dashboard() {
         },
       })}>
       <Container size={1000} my={25}>
-        <div>
-          <div>username: {user?.username}</div>
-          <div>email: {user?.email}</div>
-          <div>joined at: {user && date(user.joinedAt).format("lll")}</div>
-        </div>
-
-        <br />
-
-        <div>
-          <button
-            onClick={() => {
-              navigate("/change-username");
-            }}>
-            change username
-          </button>
-          <br />
-          <button
-            onClick={() => {
-              navigate("/change-email");
-            }}>
-            change email
-          </button>
-          <br />
-          <button
-            onClick={() => {
-              navigate("/change-password");
-            }}>
-            change password
-          </button>
-        </div>
-
-        <br />
-
-        <div>
-          <div>current session:</div>
-          {currentSession ? (
-            <Session session={currentSession} />
-          ) : (
-            <Loader variant="dots" color="green" />
-          )}
-        </div>
-
-        <br />
-
-        <div>
-          <div>all sessions:</div>
-          <button
-            onClick={() => {
-              getSessions("older");
-            }}>
-            load older
-          </button>
-          <button
-            onClick={() => {
-              getSessions("newer");
-            }}>
-            load newer
-          </button>
-          <button
-            onClick={() => {
-              getSessions("newer", true);
-            }}>
-            refresh
-          </button>
-          {sessions.map((session) => (
-            <Session session={session} key={session.id} />
-          ))}
-        </div>
-
-        <br />
-
-        <div>
-          <div>all accesses:</div>
-          <button
-            onClick={() => {
-              getAccesses("older");
-            }}>
-            load older
-          </button>
-          <button
-            onClick={() => {
-              getAccesses("newer");
-            }}>
-            load newer
-          </button>
-          <button
-            onClick={() => {
-              getAccesses("newer", true);
-            }}>
-            refresh
-          </button>
-          {accesses.map((access) => (
-            <Access access={access} key={access.id} />
-          ))}
-        </div>
-
-        <br />
-
-        <button onClick={logout}>logout</button>
+        <Header />
+        <Space h={24} />
+        <DashboardProfile />
+        <Sessions />
+        <Accesses />
+        <FooterPlain />
       </Container>
     </AppShell>
   );
-}
+};
 
-export default Dashboard;
+export default DashboardPage;
