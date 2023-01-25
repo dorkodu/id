@@ -24,14 +24,6 @@ export const FormPage = {
         <ColorToggleSegmented />
       </Group>
 
-      <FooterSimple
-        links={[
-          {
-            link: "https://dorkodu.com",
-            label: "About",
-          },
-          {
-            link: "https://dorkodu.com/privacy",
             label: "Privacy",
           },
           {
@@ -39,16 +31,32 @@ export const FormPage = {
             label: "Garden",
           },
           {
-            link: "https://dorkodu.com/work",
-            label: "Work",
-          },
-        ]}
-        brand={
-          <Text color="dimmed" weight={450}>
-            <b>Dorkodu</b> &copy; {new Date().getFullYear()}
-          </Text>
-        }
-      />
+      <FooterPlain />
     </>
   ),
 };
+
+export const FooterPlain = () => (
+  <FooterSimple
+    links={[
+      {
+        link: "https://dorkodu.com",
+        label: "About",
+      },
+      {
+        link: "https://dorkodu.com/privacy",
+        label: "Privacy",
+      },
+      },
+      {
+        link: "https://dorkodu.com/work",
+        label: "Work",
+      },
+    ]}
+    brand={
+      <Text color="dimmed" weight={450}>
+        <b>Dorkodu</b> &copy; {new Date().getFullYear()}
+      </Text>
+    }
+  />
+);
