@@ -1,3 +1,4 @@
+import { tokens } from "@dorkodu/prism";
 import {
   createStyles,
   Avatar,
@@ -46,11 +47,14 @@ export const UserDashboardProfile: FunctionComponent<{
     );
 
   return (
-    <Paper shadow="xs" p="md" maw={600}>
+    <Paper shadow="xs" p="md" maw={600} withBorder>
       <Group>
         <Avatar src={data.avatar} size={94} radius="md" />
         <Stack spacing={2}>
           <Text size="xl" weight={600}>
+            <span style={{ color: tokens.color.gray(50), fontWeight: 750 }}>
+              @
+            </span>
             {data.username}
           </Text>
 
