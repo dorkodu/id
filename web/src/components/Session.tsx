@@ -55,3 +55,60 @@ export function SessionTableRow({ session }: { session: ISession }) {
   );
 }
 
+export function SessionCard({ session }: { session: ISession }) {
+  return (
+    <Table
+      horizontalSpacing={4}
+      verticalSpacing={4}
+      mt={12}
+      mb={4}
+      align="center">
+      <tbody>
+        <tr>
+          <td>
+            <IconClock color={tokens.color.gray(60)} />
+          </td>
+          <td>
+            <Text weight={600}>Create Time</Text>
+          </td>
+          <td>
+            <Text>{date(session.createdAt).format("lll")}</Text>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <IconCalendarTime color={tokens.color.gray(60)} />
+          </td>
+          <td>
+            <Text weight={600}>Expire</Text>
+          </td>
+          <td>
+            <Text>{date(session.expiresAt).format("lll")}</Text>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <IconNetwork color={tokens.color.gray(60)} />
+          </td>
+          <td>
+            <Text weight={600}>IP</Text>
+          </td>
+          <td>
+            <Text>{session.ip}</Text>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <IconDeviceDesktop color={tokens.color.gray(60)} />
+          </td>
+          <td>
+            <Text weight={600}>Device</Text>
+          </td>
+          <td>
+            <Text>{util.parseUserAgent(session.userAgent)}</Text>
+          </td>
+        </tr>
+      </tbody>
+    </Table>
+  );
+}
