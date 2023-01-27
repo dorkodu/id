@@ -12,9 +12,7 @@ const ChangeUsername = React.lazy(() => import("./ChangeUsername"));
 const ChangeEmail = React.lazy(() => import("./ChangeEmail"));
 const ConfirmChangeEmail = React.lazy(() => import("./ConfirmChangeEmail"));
 const RevertChangeEmail = React.lazy(() => import("./RevertChangeEmail"));
-const ConfirmChangePassword = React.lazy(
-  () => import("./ConfirmChangePassword")
-);
+const ConfirmChangePassword = React.lazy(() => import("./ConfirmChangePassword"));
 const ChangePassword = React.lazy(() => import("./ChangePassword"));
 const Dashboard = React.lazy(() => import("./Dashboard"));
 const NotFound = React.lazy(() => import("./NotFound"));
@@ -27,22 +25,15 @@ function Router() {
           {/* Navigate to "/dashboard" on path "/" */}
           <Route index element={<Navigate to="/dashboard" />} />
 
-          {/* TODO: rename route paths to use dash */}
           {/* Routes that don't require authentication */}
           <Route path="/welcome" element={<Welcome />} />
           <Route path="/login" element={<Login />} />
           <Route path="/create-account" element={<CreateAccount />} />
           <Route path="/access" element={<Access />} />
           <Route path="/change-password" element={<ChangePassword />} />
-          <Route
-            path="/confirm-email-change"
-            element={<ConfirmChangeEmail />}
-          />
+          <Route path="/confirm-email-change" element={<ConfirmChangeEmail />} />
           <Route path="/revert-email-change" element={<RevertChangeEmail />} />
-          <Route
-            path="/confirm-password-change"
-            element={<ConfirmChangePassword />}
-          />
+          <Route path="/confirm-password-change" element={<ConfirmChangePassword />} />
 
           {/* Routes that require authentication */}
           <Route element={<RequireAuth />}>

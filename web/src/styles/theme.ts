@@ -98,7 +98,7 @@ const theme: MantineThemeOverride = {
 
   loader: "dots",
 
-  globalStyles: (theme: MantineTheme) => ({}),
+  globalStyles: (_theme: MantineTheme) => ({}),
 
   focusRingStyles: {
     styles: (theme: MantineTheme) => ({

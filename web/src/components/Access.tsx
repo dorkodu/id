@@ -4,7 +4,7 @@ import { date } from "../lib/date";
 import { util } from "../lib/util";
 import { useUserStore } from "../stores/userStore";
 
-import { Button, Center, Group, Paper, Table, Text } from "@mantine/core";
+import { Button, Center, Group, Table, Text } from "@mantine/core";
 
 import {
   IconCalendarTime,

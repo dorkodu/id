@@ -12,28 +12,34 @@ import {
   AppShell,
   Badge,
   Button,
-  Container,
+  Card,
+  Flex,
   Group,
-  Image,
+  Header,
   Loader,
-  Paper,
   Space,
   Title,
 } from "@mantine/core";
 
 import { FooterPlain } from "../components/_shared";
 import { UserDashboardProfile } from "../components/User";
-import { ColorToggleSegmented } from "../components/ColorToggle";
 
 import DummyAvatar from "@assets/gilmour.webp";
 import DorkoduIDKeyIcon from "@assets/dorkodu-id_key.svg";
 
 import {
   IconArrowDown,
+  IconArrowLeft,
   IconArrowUp,
   IconMenu2,
   IconRefresh,
 } from "@tabler/icons";
+import { css } from "@emotion/react";
+
+const width = css`
+  max-width: 768px;
+  margin: 0 auto;
+`;
 
 const DashboardPage: FunctionComponent = () => {
   const navigate = useNavigate();
@@ -54,22 +60,16 @@ const DashboardPage: FunctionComponent = () => {
 
   useEffect(() => {
     (async () => {
-      const sessionAnchor = array.getAnchor(
-        sessions,
-        "id",
-        "-1",
-        "newer",
-        true
-      );
+      const sessionAnchor = array.getAnchor(sessions, "id", "-1", "newer", true);
       const accessAnchor = array.getAnchor(accesses, "id", "-1", "newer", true);
 
       const res = await sage.get(
         {
           a: sage.query("getUser", undefined, { ctx: "ctx" }),
-          b: sage.query("getCurrentSession", undefined, {
-            ctx: "ctx",
-            wait: "a",
-          }),
+          b: sage.query("getCurrentSession",
+            undefined,
+            { ctx: "ctx", wait: "a", }
+          ),
           c: sage.query(
             "getSessions",
             { anchor: sessionAnchor, type: "newer" },
@@ -91,9 +91,7 @@ const DashboardPage: FunctionComponent = () => {
     })();
   }, []);
 
-  const logout = async () => {
-    (await queryLogout()) && navigate("/welcome");
-  };
+  const logout = async () => (await queryLogout()) && navigate("/welcome");
 
   const getSessions = async (type: "older" | "newer", refresh?: boolean) => {
     if (!user) return;
@@ -105,60 +103,29 @@ const DashboardPage: FunctionComponent = () => {
     await queryGetAccesses(type, refresh);
   };
 
+  const routeMenu = () => navigate("/menu");
+  const goBack = () => navigate(-1);
+
   //? Page Sections
   const DashboardProfile = () => {
     return (
-      <Group my={20}>
-        <UserDashboardProfile
-          data={{
-            name: "David Gilmour",
-            username: "davidgilmour",
-            avatar: DummyAvatar,
-            bio: "The man who makes the guitar weep.",
-            email: "dave@pinkfloyd.com",
-            joinedAt: user?.joinedAt,
-          }}
-        />
-        <Space h={10} />
-        <Paper shadow="xs" p="md" withBorder>
-          <Title size="h5" order={3} mb={10}>
-            Edit Profile
-          </Title>
-          <Group spacing="xs">
-            <Button
-              size="xs"
-              variant="default"
-              onClick={() => {
-                navigate("/change-username");
-              }}>
-              Change Username
-            </Button>
-            <Button
-              size="xs"
-              variant="default"
-              onClick={() => {
-                navigate("/change-email");
-              }}>
-              Change Email
-            </Button>
-            <Button
-              size="xs"
-              variant="default"
-              onClick={() => {
-                navigate("/change-password");
-              }}>
-              Change Password
-            </Button>
-          </Group>
-        </Paper>
-      </Group>
+      <UserDashboardProfile
+        data={{
+          name: "David Gilmour",
+          username: "davidgilmour",
+          avatar: DummyAvatar,
+          bio: "The man who makes the guitar weep.",
+          email: "dave@pinkfloyd.com",
+          joinedAt: user?.joinedAt,
+        }}
+      />
     );
   };
 
   const Sessions = () => {
     return (
       <>
-        <Paper p="md" shadow="xs" maw={600} withBorder>
+        <Card shadow="sm" p="lg" m="md" radius="md" withBorder>
           <Title order={3}>
             <Group align="center" spacing={8}>
               <span>Current Session</span>
@@ -172,11 +139,9 @@ const DashboardPage: FunctionComponent = () => {
           ) : (
             <Loader variant="dots" color="green" />
           )}
-        </Paper>
+        </Card>
 
-        <Space h={20} />
-
-        <Paper p="md" shadow="xs" my={24} withBorder>
+        <Card shadow="sm" p="lg" m="md" radius="md" withBorder>
           <Title order={3}>All Sessions</Title>
           <Space h={10} />
 
@@ -213,14 +178,14 @@ const DashboardPage: FunctionComponent = () => {
           <Space h={20} />
 
           <SessionTable sessions={sessions} />
-        </Paper>
+        </Card>
       </>
     );
   };
 
   const Accesses = () => {
     return (
-      <Paper p="md" shadow="xs" my={24} withBorder>
+      <Card shadow="sm" p="lg" m="md" radius="md" withBorder>
         <Title order={3}>Connected Services</Title>
         <Space h={10} />
 
@@ -262,50 +227,38 @@ const DashboardPage: FunctionComponent = () => {
         <Space h={20} />
 
         <AccessTable accesses={accesses} />
-      </Paper>
+      </Card>
     );
   };
 
-  const Header = () => {
+  const DashboardHeader = () => {
     return (
-      <Paper shadow="xs" p={10} radius="md" withBorder>
-        <Group position="apart">
-          <Group>
-            <Image src={DorkoduIDKeyIcon} height={36} width="auto" ml={4} />
-            <Title size={24} order={1} weight={800}>
-              Dashboard
-            </Title>
-          </Group>
-          <Group>
-            <ColorToggleSegmented />
-            <ActionIcon variant="light" size={36}>
-              <IconMenu2 />
+      <Header css={width} px="md" pt="md" height={64} withBorder={false}>
+        <Card css={css`height:100%;`} shadow="sm" p="lg" radius="md" withBorder>
+          <Flex css={css`height:100%;`} align="center" justify="space-between">
+            <ActionIcon
+              color="dark"
+              onClick={goBack}
+              css={location.pathname !== "/dashboard" ? css`` : css`visibility: hidden;`}>
+              <IconArrowLeft />
             </ActionIcon>
-          </Group>
-        </Group>
-      </Paper>
+
+            <img src={DorkoduIDKeyIcon} width={28} height={28} />
+
+            <ActionIcon onClick={routeMenu}><IconMenu2 /></ActionIcon>
+          </Flex>
+        </Card>
+      </Header>
     );
   };
 
   return (
-    <AppShell
-      padding="md"
-      styles={(theme) => ({
-        main: {
-          backgroundColor:
-            theme.colorScheme === "dark"
-              ? theme.colors.dark[8]
-              : theme.colors.gray[0],
-        },
-      })}>
-      <Container size={1000} my={25}>
-        <Header />
-        <Space h={24} />
-        <DashboardProfile />
-        <Sessions />
-        <Accesses />
-        <FooterPlain />
-      </Container>
+    <AppShell padding={0} header={<DashboardHeader />}>
+      {/*<DashboardProfile />
+      <Sessions />
+      <Accesses />
+      <FooterPlain />*/}
+      <DashboardProfile />
     </AppShell>
   );
 };

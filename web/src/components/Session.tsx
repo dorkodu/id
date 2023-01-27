@@ -1,23 +1,17 @@
 import { ISession } from "@api/types/session";
 import {
-  Badge,
   Button,
-  Card,
   Center,
   Group,
-  Image,
   Paper,
   ScrollArea,
-  Stack,
   Table,
   Text,
-  ThemeIcon,
 } from "@mantine/core";
 
 import { date } from "../lib/date";
 import { util } from "../lib/util";
 import { useUserStore } from "../stores/userStore";
-import Gilmour from "@assets/gilmour.webp";
 
 import {
   IconCalendarTime,

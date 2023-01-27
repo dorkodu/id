@@ -18,11 +18,9 @@ import {
 } from "@mantine/core";
 import {
   IconArrowLeft,
-  IconArrowRight,
   IconCheck,
   IconEye,
   IconEyeOff,
-  IconInfoSquare,
 } from "@tabler/icons";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
