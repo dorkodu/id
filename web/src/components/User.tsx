@@ -1,12 +1,9 @@
 import { tokens } from "@dorkodu/prism";
-import { css } from "@emotion/react";
 import {
   createStyles,
   Avatar,
   Text,
-  Group,
   Alert,
-  Stack,
   Card,
   Flex,
   Menu,
@@ -18,6 +15,8 @@ import {
   IconMailOpened,
   IconCalendar,
   IconDots,
+  IconAsterisk,
+  IconUser,
 } from "@tabler/icons";
 import { FunctionComponent } from "react";
 import { date } from "../lib/date";
@@ -68,6 +67,12 @@ export const UserDashboardProfile: FunctionComponent<{
                 </Menu.Target>
 
                 <Menu.Dropdown>
+                  <Menu.Item icon={<IconUser size={14} />}>
+                    edit profile
+                  </Menu.Item>
+                  <Menu.Item icon={<IconAsterisk size={14} />}>
+                    change password
+                  </Menu.Item>
                 </Menu.Dropdown>
               </Menu>
             </Flex>
