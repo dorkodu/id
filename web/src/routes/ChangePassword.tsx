@@ -122,7 +122,7 @@ function ChangePassword() {
 
       <FormPage.Footer />
     </Flex>
-  );
+  )
 }
 
 export default ChangePassword;

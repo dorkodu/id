@@ -139,7 +139,7 @@ function CreateAccount() {
               />
 
               <PasswordInput
-                label="New Password"
+                label="Your Password"
                 placeholder="Password"
                 description="Minimum 8 characters required."
                 visibilityToggleIcon={({ reveal, size }) =>
