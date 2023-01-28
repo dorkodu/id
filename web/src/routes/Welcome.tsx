@@ -2,27 +2,19 @@ import { useNavigate } from "react-router-dom";
 import { useUserStore } from "../stores/userStore";
 
 import {
-  Paper,
   Title,
   Text,
-  Container,
   Button,
-  Stack,
-  Box,
   Anchor,
-  List,
   ThemeIcon,
   ThemeIconProps,
-  Center,
+  Flex,
+  Space,
 } from "@mantine/core";
 
 import { FormPage } from "../components/_shared";
-import {
-  IconDiscountCheck,
-  IconLock,
-  IconUnlink,
-  IconUser,
-} from "@tabler/icons";
+import { IconDiscountCheck, IconLock, IconUnlink, IconUser } from "@tabler/icons";
+import { MouseEvent } from "react";
 
 const styles: { themeIcons: Partial<ThemeIconProps> } = {
   themeIcons: {
@@ -37,22 +29,19 @@ function Welcome() {
 
   const authorized = useUserStore((state) => state.authorized);
 
+  const gotoCreateAccount = () => navigate("/create-account");
+  const gotoLogin = () => navigate("/login");
+  const gotoChangePassword = (ev: MouseEvent) => {
+    ev.preventDefault();
+    navigate("/change-password");
+  }
+
   const AuthOptions = () => (
-    <Stack>
-      <Button
-        variant="filled"
-        onClick={() => {
-          navigate("/create-account");
-        }}
-        radius="md">
+    <Flex direction="column" gap="md">
+      <Button variant="filled" onClick={gotoCreateAccount} radius="md">
         Create Account
       </Button>
-      <Button
-        variant="default"
-        onClick={() => {
-          navigate("/login");
-        }}
-        radius="md">
+      <Button variant="default" onClick={gotoLogin} radius="md">
         Log In
       </Button>
 
@@ -60,96 +49,76 @@ function Welcome() {
         color="blue"
         size={15}
         weight={450}
-        onClick={(e) => {
-          e.preventDefault();
-          navigate("/change-password");
-        }}
+        onClick={gotoChangePassword}
         align="center"
-        mt={10}>
-        <Box ml={5}>Forgot your password?</Box>
+      >
+        Forgot your password?
       </Anchor>
-    </Stack>
+    </Flex>
   );
 
   return (
-    <Container size={460} my={25}>
+    <Flex direction="column" align="center" gap="md">
       <FormPage.Header />
 
-      <Title order={1} size={32} align="center" mb={5}>
+      <Title order={1} size={32} align="center">
         Your Digital Life,
         <br />
         One Account.
       </Title>
 
-      <Text
-        color="dimmed"
-        size="lg"
-        align="center"
-        weight={600}
-        mt="sm"
-        maw={320}
-        mx="auto">
+      <Text color="dimmed" size="lg" align="center" weight={600} maw={320}>
         Connect with ID, and get the most out of all the Dorkodu apps you use.
       </Text>
 
-      <Paper p={30} radius="lg" my="md" maw={300} mx="auto">
-        {authorized && (
-          <Stack>
-            <Button
-              variant="filled"
-              onClick={() => {
-                navigate("/dashboard");
-              }}
-              radius="md">
-              Continue to Dashboard
-            </Button>
-          </Stack>
-        )}
-        {!authorized && <AuthOptions />}
-      </Paper>
+      <Space h="md" />
 
-      <Center>
-        <List my="lg" spacing="md" mx="auto" center>
-          <List.Item
-            icon={
-              <ThemeIcon {...styles.themeIcons} color="cyan">
-                <IconUser />
-              </ThemeIcon>
-            }>
-            Get a personalized experience.
-          </List.Item>
+      {authorized &&
+        <Button
+          variant="filled"
+          onClick={() => {
+            navigate("/dashboard");
+          }}
+          radius="md">
+          Continue to Dashboard
+        </Button>
+      }
+      {!authorized && <AuthOptions />}
 
-          <List.Item
-            icon={
-              <ThemeIcon {...styles.themeIcons} color="blue">
-                <IconDiscountCheck />
-              </ThemeIcon>
-            }>
-            Be verified everywhere.
-          </List.Item>
+      <Space h="md" />
 
-          <List.Item
-            icon={
-              <ThemeIcon {...styles.themeIcons} color="indigo">
-                <IconLock />
-              </ThemeIcon>
-            }>
-            Your life's information in one place.
-          </List.Item>
+      <Flex direction="column" gap="md">
+        <Flex align="center" gap="md">
+          <ThemeIcon {...styles.themeIcons} color="cyan">
+            <IconUser />
+          </ThemeIcon>
+          Get a personalized experience.
+        </Flex>
 
-          <List.Item
-            icon={
-              <ThemeIcon {...styles.themeIcons} color="violet">
-                <IconUnlink />
-              </ThemeIcon>
-            }>
-            All apps are always connected.
-          </List.Item>
-        </List>
-      </Center>
+        <Flex align="center" gap="md">
+          <ThemeIcon {...styles.themeIcons} color="blue">
+            <IconDiscountCheck />
+          </ThemeIcon>
+          Be verified everywhere.
+        </Flex>
+
+        <Flex align="center" gap="md">
+          <ThemeIcon {...styles.themeIcons} color="indigo">
+            <IconLock />
+          </ThemeIcon>
+          Your life's information in one place.
+        </Flex>
+
+        <Flex align="center" gap="md">
+          <ThemeIcon {...styles.themeIcons} color="violet">
+            <IconUnlink />
+          </ThemeIcon>
+          All apps are always connected.
+        </Flex>
+      </Flex>
 
       <FormPage.Footer />
-    </Container>
+    </Flex>
   );
 }
 
