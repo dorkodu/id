@@ -1,4 +1,5 @@
 import { tokens } from "@dorkodu/prism";
+import { css } from "@emotion/react";
 import {
   createStyles,
   Avatar,
@@ -17,6 +18,7 @@ import {
   IconDots,
   IconAsterisk,
   IconUser,
+  IconLogout,
 } from "@tabler/icons";
 import { FunctionComponent } from "react";
 import { date } from "../lib/date";
@@ -50,7 +52,7 @@ export const UserDashboardProfile: FunctionComponent<{
     );
 
   return (
-    <Card shadow="sm" p="lg" m="md" radius="md" withBorder>
+    <Card shadow="sm" p="lg" m="md" radius="md" withBorder css={css`overflow: visible;`}>
       <Grid gutter="md">
         <Grid.Col span="content">
           <Avatar src={data.avatar} size={100} radius="md" />
@@ -70,8 +72,15 @@ export const UserDashboardProfile: FunctionComponent<{
                   <Menu.Item icon={<IconUser size={14} />}>
                     edit profile
                   </Menu.Item>
+
                   <Menu.Item icon={<IconAsterisk size={14} />}>
                     change password
+                  </Menu.Item>
+
+                  <Menu.Divider />
+
+                  <Menu.Item icon={<IconLogout size={14} />}>
+                    log out
                   </Menu.Item>
                 </Menu.Dropdown>
               </Menu>

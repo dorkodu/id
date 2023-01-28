@@ -1,160 +1,71 @@
 import { ISession } from "@api/types/session";
-import {
-  Button,
-  Center,
-  Group,
-  Paper,
-  ScrollArea,
-  Table,
-  Text,
-} from "@mantine/core";
+import { ActionIcon, Card, Divider, Flex, Menu, Text, } from "@mantine/core";
 
 import { date } from "../lib/date";
 import { util } from "../lib/util";
-import { useUserStore } from "../stores/userStore";
 
 import {
   IconCalendarTime,
   IconClock,
   IconDeviceDesktop,
-  IconHandFinger,
+  IconDots,
   IconNetwork,
+  IconTrash,
 } from "@tabler/icons";
 import { tokens } from "@dorkodu/prism";
+import { css } from "@emotion/react";
 
-export function SessionTable({ sessions }: { sessions: ISession[] }) {
-  return (
-    <Paper>
-      <ScrollArea>
-        <Table
-          horizontalSpacing="sm"
-          verticalSpacing="xs"
-          striped
-          withBorder
-          withColumnBorders
-          miw={500}>
-          <thead>
-            <tr>
-              <th>
-                <Group align="center">
-                  <IconClock color={tokens.color.gray(60)} />
-                  <Text>Create Time</Text>
-                </Group>
-              </th>
-              <th>
-                <Group align="center">
-                  <IconCalendarTime color={tokens.color.gray(60)} />
-                  <Text>Expire</Text>
-                </Group>
-              </th>
-              <th>
-                <Group align="center">
-                  <IconNetwork color={tokens.color.gray(60)} />
-                  <Text>IP</Text>
-                </Group>
-              </th>
-              <th>
-                <Group align="center">
-                  <IconDeviceDesktop color={tokens.color.gray(60)} />
-                  <Text>Device</Text>
-                </Group>
-              </th>
-              <th>
-                <Center>
-                  <IconHandFinger color={tokens.color.gray(60)} />
-                </Center>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {sessions.map((session) => (
-              <SessionTableRow session={session} key={session.id} />
-            ))}
-          </tbody>
-        </Table>
-      </ScrollArea>
-    </Paper>
-  );
+interface Props {
+  session: ISession;
 }
 
-export function SessionTableRow({ session }: { session: ISession }) {
-  const queryTerminateSession = useUserStore(
-    (state) => state.queryTerminateSession
-  );
+const flexNoShrink = css`flex-shrink: 0;`;
+const fullWidth = css`width: 100%;`;
 
+export function Session({ session }: Props) {
   return (
-    <tr key={session.id}>
-      <td>{date(session.createdAt).format("lll")}</td>
-      <td>{date(session.expiresAt).format("lll")}</td>
-      <td>{session.ip}</td>
-      <td>{util.parseUserAgent(session.userAgent)}</td>
-      <td>
-        <Button
-          color="red"
-          onClick={() => {
-            queryTerminateSession(session.id);
-          }}>
-          Terminate
-        </Button>
-      </td>
-    </tr>
-  );
-}
-
-export function SessionCard({ session }: { session: ISession }) {
-  return (
-    <Table
-      horizontalSpacing={4}
-      verticalSpacing={4}
-      mt={12}
-      mb={4}
-      align="center">
-      <tbody>
-        <tr>
-          <td>
-            <IconClock color={tokens.color.gray(60)} />
-          </td>
-          <td>
-            <Text weight={600}>Create Time</Text>
-          </td>
-          <td>
+    <Card shadow="sm" p="lg" m="md" radius="md" withBorder>
+      <Flex direction="column" gap="xs">
+        <Flex gap="xs" align="center">
+          <Flex gap="xs" align="center" justify="space-betweens" css={fullWidth}>
+            <IconClock color={tokens.color.gray(60)} css={flexNoShrink} />
             <Text>{date(session.createdAt).format("lll")}</Text>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <IconCalendarTime color={tokens.color.gray(60)} />
-          </td>
-          <td>
-            <Text weight={600}>Expire</Text>
-          </td>
-          <td>
-            <Text>{date(session.expiresAt).format("lll")}</Text>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <IconNetwork color={tokens.color.gray(60)} />
-          </td>
-          <td>
-            <Text weight={600}>IP</Text>
-          </td>
-          <td>
-            <Text>{session.ip}</Text>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <IconDeviceDesktop color={tokens.color.gray(60)} />
-          </td>
-          <td>
-            <Text weight={600}>Device</Text>
-          </td>
-          <td>
-            <Text>{util.parseUserAgent(session.userAgent)}</Text>
-          </td>
-        </tr>
-      </tbody>
-    </Table>
-  );
+          </Flex>
+
+          <Menu shadow="md" radius="md">
+            <Menu.Target>
+              <ActionIcon color="dark"><IconDots /></ActionIcon>
+            </Menu.Target>
+
+            <Menu.Dropdown>
+              <Menu.Item color="red" icon={<IconTrash size={14} />}>
+                terminate session
+              </Menu.Item>
+            </Menu.Dropdown>
+          </Menu>
+        </Flex>
+
+        <Divider />
+
+        <Flex gap="xs" align="center">
+          <IconCalendarTime color={tokens.color.gray(60)} css={flexNoShrink} />
+          <Text>{date(session.expiresAt).format("lll")}</Text>
+        </Flex>
+
+        <Divider />
+
+        <Flex gap="xs" align="center">
+          <IconNetwork color={tokens.color.gray(60)} css={flexNoShrink} />
+          <Text>{session.ip}</Text>
+        </Flex>
+
+        <Divider />
+
+        <Flex gap="xs" align="center">
+          <IconDeviceDesktop color={tokens.color.gray(60)} css={flexNoShrink} />
+          <Text>{util.parseUserAgent(session.userAgent)}</Text>
+        </Flex>
+      </Flex>
+    </Card>
+  )
 }

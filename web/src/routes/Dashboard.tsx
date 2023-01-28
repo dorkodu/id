@@ -1,7 +1,5 @@
-import { FunctionComponent, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { SessionCard, SessionTable } from "../components/Session";
-import { AccessTable } from "../components/Access";
 
 import { useUserStore } from "../stores/userStore";
 import { request, sage } from "../stores/api";
@@ -10,38 +8,39 @@ import { array } from "../lib/array";
 import {
   ActionIcon,
   AppShell,
-  Badge,
   Button,
   Card,
   Flex,
-  Group,
   Header,
   Loader,
-  Space,
-  Title,
+  SegmentedControl,
 } from "@mantine/core";
 
-import { FooterPlain } from "../components/_shared";
 import { UserDashboardProfile } from "../components/User";
 
 import DummyAvatar from "@assets/gilmour.webp";
 import DorkoduIDKeyIcon from "@assets/dorkodu-id_key.svg";
 
 import {
-  IconArrowDown,
   IconArrowLeft,
-  IconArrowUp,
   IconMenu2,
-  IconRefresh,
 } from "@tabler/icons";
 import { css } from "@emotion/react";
+import { Session } from "../components/Session";
+import Access from "../components/Access";
 
 const width = css`
   max-width: 768px;
   margin: 0 auto;
 `;
 
-const DashboardPage: FunctionComponent = () => {
+interface State {
+  show: "sessions" | "accesses";
+}
+
+function Dashboard() {
+  const [state, setState] = useState<State>({ show: "sessions" });
+
   const navigate = useNavigate();
 
   const setUser = useUserStore((state) => state.setUser);
@@ -51,7 +50,6 @@ const DashboardPage: FunctionComponent = () => {
 
   const queryGetSessions = useUserStore((state) => state.queryGetSessions);
   const queryGetAccesses = useUserStore((state) => state.queryGetAccesses);
-  const queryLogout = useUserStore((state) => state.queryLogout);
 
   const user = useUserStore((state) => state.user);
   const currentSession = useUserStore((state) => state.currentSession);
@@ -91,8 +89,6 @@ const DashboardPage: FunctionComponent = () => {
     })();
   }, []);
 
-  const logout = async () => (await queryLogout()) && navigate("/welcome");
-
   const getSessions = async (type: "older" | "newer", refresh?: boolean) => {
     if (!user) return;
     await queryGetSessions(type, refresh);
@@ -102,6 +98,27 @@ const DashboardPage: FunctionComponent = () => {
     if (!user) return;
     await queryGetAccesses(type, refresh);
   };
+
+  const refresh = () => {
+    switch (state.show) {
+      case "sessions": getSessions("newer", true); break;
+      case "accesses": getAccesses("newer", true); break;
+    }
+  }
+
+  const loadNewer = () => {
+    switch (state.show) {
+      case "sessions": getSessions("newer"); break;
+      case "accesses": getAccesses("newer"); break;
+    }
+  }
+
+  const loadOlder = () => {
+    switch (state.show) {
+      case "sessions": getSessions("older"); break;
+      case "accesses": getAccesses("older"); break;
+    }
+  }
 
   const routeMenu = () => navigate("/menu");
   const goBack = () => navigate(-1);
@@ -125,109 +142,33 @@ const DashboardPage: FunctionComponent = () => {
   const Sessions = () => {
     return (
       <>
-        <Card shadow="sm" p="lg" m="md" radius="md" withBorder>
-          <Title order={3}>
-            <Group align="center" spacing={8}>
-              <span>Current Session</span>
-              <Badge color="green" variant="light" radius={8}>
-                Active
-              </Badge>
-            </Group>
-          </Title>
-          {currentSession ? (
-            <SessionCard session={currentSession} />
-          ) : (
-            <Loader variant="dots" color="green" />
-          )}
-        </Card>
+        {currentSession ?
+          <Session session={currentSession} /> :
+          <Loader variant="dots" color="green" />
+        }
 
         <Card shadow="sm" p="lg" m="md" radius="md" withBorder>
-          <Title order={3}>All Sessions</Title>
-          <Space h={10} />
+          <Flex direction="column" gap="md">
+            <SegmentedControl radius="md" fullWidth
+              value={state.show}
+              onChange={(show: typeof state.show) => setState({ ...state, show })}
+              data={[
+                { label: "sessions", value: "sessions" },
+                { label: "accesses", value: "accesses" },
+              ]}
+            />
 
-          <Group spacing="xs">
-            <Button
-              variant="default"
-              leftIcon={<IconArrowDown size={20} />}
-              size="xs"
-              onClick={() => {
-                getSessions("older");
-              }}>
-              Load Older
-            </Button>
-            <Button
-              variant="default"
-              leftIcon={<IconArrowUp size={20} />}
-              size="xs"
-              onClick={() => {
-                getSessions("newer");
-              }}>
-              Load Newer
-            </Button>
-            <Button
-              variant="default"
-              leftIcon={<IconRefresh size={20} />}
-              size="xs"
-              onClick={() => {
-                getSessions("newer", true);
-              }}>
-              Refresh
-            </Button>
-          </Group>
-
-          <Space h={20} />
-
-          <SessionTable sessions={sessions} />
+            <Button.Group>
+              <Button radius="md" fullWidth variant="default" onClick={refresh}>refresh</Button>
+              <Button radius="md" fullWidth variant="default" onClick={loadNewer}>load newer</Button>
+              <Button radius="md" fullWidth variant="default" onClick={loadOlder}>load older</Button>
+            </Button.Group>
+          </Flex>
         </Card>
+
+        {state.show === "sessions" && sessions.map((s) => <Session key={s.id} session={s} />)}
+        {state.show === "accesses" && accesses.map((a) => <Access key={a.id} access={a} />)}
       </>
-    );
-  };
-
-  const Accesses = () => {
-    return (
-      <Card shadow="sm" p="lg" m="md" radius="md" withBorder>
-        <Title order={3}>Connected Services</Title>
-        <Space h={10} />
-
-        <Group spacing="xs">
-          <Button
-            variant="default"
-            leftIcon={<IconRefresh size={20} />}
-            size="xs"
-            onClick={() => {
-              getAccesses("newer", true);
-            }}>
-            Refresh
-          </Button>
-
-          {accesses.length >= 1 && (
-            <>
-              <Button
-                variant="default"
-                leftIcon={<IconArrowDown size={20} />}
-                size="xs"
-                onClick={() => {
-                  getAccesses("older");
-                }}>
-                Load Older
-              </Button>
-              <Button
-                variant="default"
-                leftIcon={<IconArrowUp size={20} />}
-                size="xs"
-                onClick={() => {
-                  getAccesses("newer");
-                }}>
-                Load Newer
-              </Button>
-            </>
-          )}
-        </Group>
-
-        <Space h={20} />
-
-        <AccessTable accesses={accesses} />
-      </Card>
     );
   };
 
@@ -254,13 +195,10 @@ const DashboardPage: FunctionComponent = () => {
 
   return (
     <AppShell padding={0} header={<DashboardHeader />}>
-      {/*<DashboardProfile />
-      <Sessions />
-      <Accesses />
-      <FooterPlain />*/}
       <DashboardProfile />
+      <Sessions />
     </AppShell>
   );
 };
 
-export default DashboardPage;
+export default Dashboard;
