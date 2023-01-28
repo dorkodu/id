@@ -29,6 +29,7 @@ import { date } from "../lib/date";
 import DummyAvatar from "@assets/gilmour.webp";
 import { useUserStore } from "../stores/userStore";
 import { useReducer } from "react";
+import { useNavigate } from "react-router-dom";
 
 const useStyles = createStyles((theme) => ({
   icon: {
@@ -59,7 +60,11 @@ function User({ user }: Props) {
     return newState
   }, { name: "", username: "", bio: "", editing: false });
 
+  const navigate = useNavigate();
   const queryLogout = useUserStore((state) => state.queryLogout);
+
+  const changeEmail = () => navigate("/change-email");
+  const changePassword = () => navigate("/change-password");
 
   const startEdit = () => {
     setState({
@@ -102,11 +107,17 @@ function User({ user }: Props) {
 
                   <Menu.Divider />
 
-                  <Menu.Item icon={<IconAt size={14} />}>
+                  <Menu.Item
+                    icon={<IconAt size={14} />}
+                    onClick={changeEmail}
+                  >
                     change email
                   </Menu.Item>
 
-                  <Menu.Item icon={<IconAsterisk size={14} />}>
+                  <Menu.Item
+                    icon={<IconAsterisk size={14} />}
+                    onClick={changePassword}
+                  >
                     change password
                   </Menu.Item>
 

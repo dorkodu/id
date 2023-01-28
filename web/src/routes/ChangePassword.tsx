@@ -1,74 +1,55 @@
-import { useLayoutEffect, useRef, useState } from "react";
+import { useReducer } from "react";
 import { useUserStore } from "../stores/userStore";
 
-import {
-  createStyles,
-  Paper,
-  Title,
-  Text,
-  TextInput,
-  Button,
-  Container,
-  Group,
-  Anchor,
-  Center,
-  Box,
-  Space,
-  Alert,
-} from "@mantine/core";
-
-import { IconArrowLeft, IconInfoSquare } from "@tabler/icons";
+import { Title, Text, TextInput, Button, Anchor, Alert, Card, Flex, LoadingOverlay } from "@mantine/core";
+import { IconAlertCircle, IconArrowLeft, IconInfoCircle } from "@tabler/icons";
 
 import { FormPage } from "../components/_shared";
 import { useNavigate } from "react-router-dom";
 
-const useStyles = createStyles((theme) => ({
-  controls: {
-    [theme.fn.smallerThan("xs")]: {
-      flexDirection: "column-reverse",
-    },
-  },
+interface State {
+  loading: boolean;
+  status: boolean | undefined;
 
-  control: {
-    [theme.fn.smallerThan("xs")]: {
-      width: "100%",
-      textAlign: "center",
-    },
-  },
-}));
+  username: string;
+  email: string;
+}
 
 function ChangePassword() {
-  const navigate = useNavigate();
-
-  const { classes: styles } = useStyles();
-
-  const [done, setDone] = useState(false);
   const user = useUserStore((state) => state.user);
-  const queryInitiatePasswordChange = useUserStore(
-    (state) => state.queryInitiatePasswordChange
-  );
 
-  const changePasswordUsername = useRef<HTMLInputElement>(null);
-  const changePasswordEmail = useRef<HTMLInputElement>(null);
+  const navigate = useNavigate();
+  const queryInitiatePasswordChange = useUserStore((state) => state.queryInitiatePasswordChange);
 
-  useLayoutEffect(() => {
-    if (!user) return;
-    changePasswordUsername.current &&
-      (changePasswordUsername.current.value = user.username);
-    changePasswordEmail.current &&
-      (changePasswordEmail.current.value = user.email);
-  }, []);
+  const [state, setState] = useReducer((prev: State, next: State) => {
+    const newState = { ...prev, ...next };
+
+    if (newState.username.length > 16)
+      newState.username = newState.username.substring(0, 16);
+
+    if (newState.email.length > 320)
+      newState.email = newState.email.substring(0, 320);
+
+    return newState;
+  }, {
+    loading: false,
+    status: undefined,
+    username: user?.username ?? "",
+    email: user?.email ?? ""
+  });
+
+  const goBack = () => navigate(-1);
 
   const initiateChangePassword = async () => {
-    const username = changePasswordUsername.current?.value;
-    const email = changePasswordEmail.current?.value;
-    if (!username || !email) return;
-    if (!(await queryInitiatePasswordChange(username, email))) return;
-    setDone(true);
+    if (state.loading) return;
+
+    setState({ ...state, loading: true, status: undefined });
+    const status = await queryInitiatePasswordChange(state.username, state.email);
+    setState({ ...state, loading: false, status: status });
   };
 
   return (
-    <Container size={460} my={25}>
+    <Flex direction="column">
       <FormPage.Header />
 
       <Title order={2} align="center" mb={5}>
@@ -78,61 +59,69 @@ function ChangePassword() {
         Forgot your password? No worries.
       </Text>
 
-      <Paper withBorder shadow="sm" p={30} radius="lg" mt="xl">
-        <TextInput
-          label="Your Username:"
-          placeholder="@username"
-          ref={changePasswordUsername}
-          radius="md"
-          variant="filled"
-          required
-        />
-        <Space h="md" />
-        <TextInput
-          label="Your Email:"
-          placeholder="you@mail.com"
-          ref={changePasswordEmail}
-          radius="md"
-          variant="filled"
-          required
-        />
+      <Card shadow="sm" p="lg" m="md" radius="md" withBorder>
+        <LoadingOverlay visible={state.loading} overlayBlur={2} />
 
-        <Group position="apart" mt="lg" className={styles.controls}>
-          <Anchor
-            size={15}
-            onClick={(e) => {
-              e.preventDefault();
-              navigate("/welcome");
-            }}
-            className={styles.control}>
-            <Center inline>
-              <IconArrowLeft size={16} stroke={2.5} />
-              <Box ml={5}>Go Back</Box>
-            </Center>
-          </Anchor>
+        <Flex direction="column" gap="md">
+          <TextInput
+            label="Your Username:"
+            placeholder="@username"
+            defaultValue={state.username}
+            onChange={(ev) => { setState({ ...state, username: ev.target.value }) }}
+            radius="md"
+            variant="filled"
+            required
+          />
 
-          <Button
-            className={styles.control}
-            onClick={initiateChangePassword}
-            radius="md">
-            Change Password
-          </Button>
-        </Group>
-        {done && (
-          <Alert
-            icon={<IconInfoSquare size={24} />}
-            title="Info"
-            color="blue"
-            variant="light">
-            Mail is sent. Please check your inbox.
-          </Alert>
-        )}
-      </Paper>
+          <TextInput
+            label="Your Email:"
+            placeholder="you@mail.com"
+            defaultValue={state.email}
+            onChange={(ev) => { setState({ ...state, email: ev.target.value }) }}
+            radius="md"
+            variant="filled"
+            required
+          />
 
-      <Space h={64} />
+          <Flex align="center" justify="space-between">
+            <Anchor size={15} onClick={goBack}>
+              <Flex align="center" gap="xs">
+                <IconArrowLeft size={16} stroke={2.5} />
+                <Text>Go Back</Text>
+              </Flex>
+            </Anchor>
+
+            <Button onClick={initiateChangePassword} radius="md">
+              Change Password
+            </Button>
+          </Flex>
+
+          {state.status === true &&
+            <Alert
+              icon={<IconInfoCircle size={24} />}
+              title="Info"
+              color="blue"
+              variant="light"
+            >
+              Mail is sent. Please check your inbox.
+            </Alert>
+          }
+
+          {state.status === false &&
+            <Alert
+              icon={<IconAlertCircle size={24} />}
+              title="Info"
+              color="red"
+              variant="light"
+            >
+              An error occured.
+            </Alert>
+          }
+        </Flex>
+      </Card>
 
       <FormPage.Footer />
-    </Container>
+    </Flex>
   );
 }
 
