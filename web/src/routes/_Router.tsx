@@ -8,7 +8,6 @@ import Access from "./Access";
 const Welcome = React.lazy(() => import("./Welcome"));
 const CreateAccount = React.lazy(() => import("./CreateAccount"));
 const Login = React.lazy(() => import("./Login"));
-const ChangeUsername = React.lazy(() => import("./ChangeUsername"));
 const ChangeEmail = React.lazy(() => import("./ChangeEmail"));
 const ConfirmChangeEmail = React.lazy(() => import("./ConfirmChangeEmail"));
 const RevertChangeEmail = React.lazy(() => import("./RevertChangeEmail"));
@@ -38,7 +37,6 @@ function Router() {
           {/* Routes that require authentication */}
           <Route element={<RequireAuth />}>
             <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/change-username" element={<ChangeUsername />} />
             <Route path="/change-email" element={<ChangeEmail />} />
           </Route>
 
