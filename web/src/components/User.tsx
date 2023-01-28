@@ -1,10 +1,10 @@
+import { IUser } from "@api/types/user";
 import { tokens } from "@dorkodu/prism";
 import { css } from "@emotion/react";
 import {
   createStyles,
   Avatar,
   Text,
-  Alert,
   Card,
   Flex,
   Menu,
@@ -12,16 +12,17 @@ import {
   Grid,
 } from "@mantine/core";
 import {
-  IconExclamationMark,
   IconMailOpened,
   IconCalendar,
   IconDots,
   IconAsterisk,
   IconUser,
   IconLogout,
+  IconAt,
 } from "@tabler/icons";
-import { FunctionComponent } from "react";
 import { date } from "../lib/date";
+import DummyAvatar from "@assets/gilmour.webp";
+import { useUserStore } from "../stores/userStore";
 
 const useStyles = createStyles((theme) => ({
   icon: {
@@ -32,36 +33,26 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-export const UserDashboardProfile: FunctionComponent<{
-  data?: {
-    name?: string;
-    username?: string;
-    email?: string;
-    avatar?: string;
-    bio?: string;
-    joinedAt?: number;
-  };
-}> = ({ data }) => {
+interface Props {
+  user: IUser;
+}
+
+function User({ user }: Props) {
   const { classes: styles } = useStyles();
 
-  if (!data)
-    return (
-      <Alert icon={<IconExclamationMark size={32} />} title="Oops!" color="red">
-        Failed to load user.
-      </Alert>
-    );
+  const queryLogout = useUserStore((state) => state.queryLogout);
 
   return (
     <Card shadow="sm" p="lg" m="md" radius="md" withBorder css={css`overflow: visible;`}>
       <Grid gutter="md">
         <Grid.Col span="content">
-          <Avatar src={data.avatar} size={100} radius="md" />
+          <Avatar src={DummyAvatar} size={100} radius="md" />
         </Grid.Col>
 
         <Grid.Col span="auto">
           <Flex direction="column">
             <Flex align="center" justify="space-between">
-              <Text size="xl" weight={600}>{data.name}</Text>
+              <Text size="xl" weight={600}>Berk Cambaz</Text>
 
               <Menu shadow="md" radius="md">
                 <Menu.Target>
@@ -73,13 +64,20 @@ export const UserDashboardProfile: FunctionComponent<{
                     edit profile
                   </Menu.Item>
 
+                  <Menu.Item icon={<IconAt size={14} />}>
+                    change email
+                  </Menu.Item>
+
                   <Menu.Item icon={<IconAsterisk size={14} />}>
                     change password
                   </Menu.Item>
 
                   <Menu.Divider />
 
-                  <Menu.Item icon={<IconLogout size={14} />}>
+                  <Menu.Item
+                    icon={<IconLogout size={14} />}
+                    onClick={queryLogout}
+                  >
                     log out
                   </Menu.Item>
                 </Menu.Dropdown>
@@ -89,23 +87,25 @@ export const UserDashboardProfile: FunctionComponent<{
 
             <Flex>
               <Text style={{ color: tokens.color.gray(50), fontWeight: 750 }}>@</Text>
-              <Text size="md" weight={500}>{data.username} </Text>
+              <Text size="md" weight={500}>{user.username} </Text>
             </Flex>
 
             <Flex align="center" gap="md">
               <IconMailOpened className={styles.icon} />
               <Text size="sm" color="dimmed">
-                {data.email}
+                {user.email}
               </Text>
             </Flex>
 
             <Flex align="center" gap="md">
               <IconCalendar className={styles.icon} />
-              <Text size="sm" color="dimmed">{date(data.joinedAt).format("ll")}</Text>
+              <Text size="sm" color="dimmed">{date(user.joinedAt).format("ll")}</Text>
             </Flex>
           </Flex>
         </Grid.Col>
       </Grid>
     </Card>
-  );
-};
+  )
+}
+
+export default User

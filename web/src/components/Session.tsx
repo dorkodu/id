@@ -14,6 +14,7 @@ import {
 } from "@tabler/icons";
 import { tokens } from "@dorkodu/prism";
 import { css } from "@emotion/react";
+import { useUserStore } from "../stores/userStore";
 
 interface Props {
   session: ISession;
@@ -23,6 +24,9 @@ const flexNoShrink = css`flex-shrink: 0;`;
 const fullWidth = css`width: 100%;`;
 
 export function Session({ session }: Props) {
+  const queryTerminateSession = useUserStore((state) => state.queryTerminateSession);
+  const terminateSession = () => queryTerminateSession(session.id);
+
   return (
     <Card shadow="sm" p="lg" m="md" radius="md" withBorder>
       <Flex direction="column" gap="xs">
@@ -38,7 +42,11 @@ export function Session({ session }: Props) {
             </Menu.Target>
 
             <Menu.Dropdown>
-              <Menu.Item color="red" icon={<IconTrash size={14} />}>
+              <Menu.Item
+                color="red"
+                icon={<IconTrash size={14} />}
+                onClick={terminateSession}
+              >
                 terminate session
               </Menu.Item>
             </Menu.Dropdown>

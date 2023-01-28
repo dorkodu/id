@@ -15,6 +15,7 @@ import {
 import { tokens } from "@dorkodu/prism";
 import { css } from "@emotion/react";
 import { IAccess } from "@api/types/access";
+import { useUserStore } from "../stores/userStore";
 
 interface Props {
   access: IAccess;
@@ -24,6 +25,9 @@ const flexNoShrink = css`flex-shrink: 0;`;
 const fullWidth = css`width: 100%;`;
 
 function Access({ access }: Props) {
+  const queryRevokeAccess = useUserStore((state) => state.queryRevokeAccess);
+  const revokeAccess = () => queryRevokeAccess(access.id);
+
   return (
     <Card shadow="sm" p="lg" m="md" radius="md" withBorder>
       <Flex direction="column" gap="xs">
@@ -39,8 +43,12 @@ function Access({ access }: Props) {
             </Menu.Target>
 
             <Menu.Dropdown>
-              <Menu.Item color="red" icon={<IconTrash size={14} />}>
-                terminate access
+              <Menu.Item
+                color="red"
+                icon={<IconTrash size={14} />}
+                onClick={revokeAccess}
+              >
+                revoke access
               </Menu.Item>
             </Menu.Dropdown>
           </Menu>

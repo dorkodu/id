@@ -12,13 +12,11 @@ import {
   Card,
   Flex,
   Header,
-  Loader,
   SegmentedControl,
 } from "@mantine/core";
 
-import { UserDashboardProfile } from "../components/User";
+import User from "../components/User";
 
-import DummyAvatar from "@assets/gilmour.webp";
 import DorkoduIDKeyIcon from "@assets/dorkodu-id_key.svg";
 
 import {
@@ -123,55 +121,6 @@ function Dashboard() {
   const routeMenu = () => navigate("/menu");
   const goBack = () => navigate(-1);
 
-  //? Page Sections
-  const DashboardProfile = () => {
-    return (
-      <UserDashboardProfile
-        data={{
-          name: "David Gilmour",
-          username: "davidgilmour",
-          avatar: DummyAvatar,
-          bio: "The man who makes the guitar weep.",
-          email: "dave@pinkfloyd.com",
-          joinedAt: user?.joinedAt,
-        }}
-      />
-    );
-  };
-
-  const Sessions = () => {
-    return (
-      <>
-        {currentSession ?
-          <Session session={currentSession} /> :
-          <Loader variant="dots" color="green" />
-        }
-
-        <Card shadow="sm" p="lg" m="md" radius="md" withBorder>
-          <Flex direction="column" gap="md">
-            <SegmentedControl radius="md" fullWidth
-              value={state.show}
-              onChange={(show: typeof state.show) => setState({ ...state, show })}
-              data={[
-                { label: "sessions", value: "sessions" },
-                { label: "accesses", value: "accesses" },
-              ]}
-            />
-
-            <Button.Group>
-              <Button radius="md" fullWidth variant="default" onClick={refresh}>refresh</Button>
-              <Button radius="md" fullWidth variant="default" onClick={loadNewer}>load newer</Button>
-              <Button radius="md" fullWidth variant="default" onClick={loadOlder}>load older</Button>
-            </Button.Group>
-          </Flex>
-        </Card>
-
-        {state.show === "sessions" && sessions.map((s) => <Session key={s.id} session={s} />)}
-        {state.show === "accesses" && accesses.map((a) => <Access key={a.id} access={a} />)}
-      </>
-    );
-  };
-
   const DashboardHeader = () => {
     return (
       <Header css={width} px="md" pt="md" height={64} withBorder={false}>
@@ -191,14 +140,41 @@ function Dashboard() {
         </Card>
       </Header>
     );
-  };
+  }
+
+  if (!user || !currentSession) {
+    return (<></>)
+  }
 
   return (
     <AppShell padding={0} header={<DashboardHeader />}>
-      <DashboardProfile />
-      <Sessions />
+      <User user={user} />
+
+      <Session session={currentSession} />
+
+      <Card shadow="sm" p="lg" m="md" radius="md" withBorder>
+        <Flex direction="column" gap="md">
+          <SegmentedControl radius="md" fullWidth
+            value={state.show}
+            onChange={(show: typeof state.show) => setState({ ...state, show })}
+            data={[
+              { label: "sessions", value: "sessions" },
+              { label: "accesses", value: "accesses" },
+            ]}
+          />
+
+          <Button.Group>
+            <Button radius="md" fullWidth variant="default" onClick={refresh}>refresh</Button>
+            <Button radius="md" fullWidth variant="default" onClick={loadNewer}>load newer</Button>
+            <Button radius="md" fullWidth variant="default" onClick={loadOlder}>load older</Button>
+          </Button.Group>
+        </Flex>
+      </Card>
+
+      {state.show === "sessions" && sessions.map((s) => <Session key={s.id} session={s} />)}
+      {state.show === "accesses" && accesses.map((a) => <Access key={a.id} access={a} />)}
     </AppShell>
   );
 };
 
-export default Dashboard;
+export default Dashboard
