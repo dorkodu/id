@@ -10,6 +10,10 @@ import {
   Menu,
   ActionIcon,
   Grid,
+  Modal,
+  TextInput,
+  Textarea,
+  Button,
 } from "@mantine/core";
 import {
   IconMailOpened,
@@ -19,10 +23,12 @@ import {
   IconUser,
   IconLogout,
   IconAt,
+  IconUserCircle,
 } from "@tabler/icons";
 import { date } from "../lib/date";
 import DummyAvatar from "@assets/gilmour.webp";
 import { useUserStore } from "../stores/userStore";
+import { useReducer } from "react";
 
 const useStyles = createStyles((theme) => ({
   icon: {
@@ -33,6 +39,14 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
+interface State {
+  name: string;
+  username: string;
+  bio: string;
+
+  editing: boolean;
+}
+
 interface Props {
   user: IUser;
 }
@@ -40,7 +54,26 @@ interface Props {
 function User({ user }: Props) {
   const { classes: styles } = useStyles();
 
+  const [state, setState] = useReducer((prev: State, next: State) => {
+    const newState = { ...prev, ...next };
+    return newState
+  }, { name: "", username: "", bio: "", editing: false });
+
   const queryLogout = useUserStore((state) => state.queryLogout);
+
+  const startEdit = () => {
+    setState({
+      ...state,
+      name: "Berk Cambaz",
+      username: user.username,
+      bio: "hello, world",
+      editing: true,
+    })
+  }
+
+  const stopEdit = (_saveChanges: boolean) => {
+    setState({ ...state, editing: false });
+  }
 
   return (
     <Card shadow="sm" p="lg" m="md" radius="md" withBorder css={css`overflow: visible;`}>
@@ -60,9 +93,14 @@ function User({ user }: Props) {
                 </Menu.Target>
 
                 <Menu.Dropdown>
-                  <Menu.Item icon={<IconUser size={14} />}>
+                  <Menu.Item
+                    icon={<IconUser size={14} />}
+                    onClick={startEdit}
+                  >
                     edit profile
                   </Menu.Item>
+
+                  <Menu.Divider />
 
                   <Menu.Item icon={<IconAt size={14} />}>
                     change email
@@ -104,6 +142,50 @@ function User({ user }: Props) {
           </Flex>
         </Grid.Col>
       </Grid>
+
+      <Modal
+        opened={state.editing}
+        onClose={() => stopEdit(false)}
+        title="edit profile"
+      >
+        <Flex direction="column" gap="md">
+          <TextInput
+            radius="md"
+            placeholder="name..."
+            label="name"
+            description="your name"
+            icon={<IconUserCircle size={16} />}
+            defaultValue={state.name}
+            onChange={(ev) => { setState({ ...state, name: ev.target.value }) }}
+          />
+
+          <TextInput
+            radius="md"
+            placeholder="username..."
+            label="username"
+            description="your username"
+            icon={<IconUser size={16} />}
+            defaultValue={state.username}
+            onChange={(ev) => { setState({ ...state, username: ev.target.value }) }}
+          />
+
+          <Textarea
+            radius="md"
+            placeholder="bio..."
+            label="bio"
+            description="your biography"
+            defaultValue={state.bio}
+            onChange={(ev) => { setState({ ...state, bio: ev.target.value }) }}
+            autosize
+          />
+
+          <Flex justify="flex-end">
+            <Button onClick={() => stopEdit(true)} radius="md">
+              confirm
+            </Button>
+          </Flex>
+        </Flex>
+      </Modal>
     </Card>
   )
 }

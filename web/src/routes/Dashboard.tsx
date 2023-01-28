@@ -19,10 +19,7 @@ import User from "../components/User";
 
 import DorkoduIDKeyIcon from "@assets/dorkodu-id_key.svg";
 
-import {
-  IconArrowLeft,
-  IconMenu2,
-} from "@tabler/icons";
+import { IconArrowLeft, IconMenu2 } from "@tabler/icons";
 import { css } from "@emotion/react";
 import { Session } from "../components/Session";
 import Access from "../components/Access";
