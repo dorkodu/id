@@ -17,6 +17,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { useUserStore } from "../stores/userStore";
+import { widthLimit } from "../styles/css";
 
 interface State {
   loading: boolean;
@@ -52,6 +53,7 @@ function Login() {
   const queryLogin = useUserStore((state) => state.queryLogin);
   const queryVerifyLogin = useUserStore((state) => state.queryVerifyLogin);
 
+  const gotoChangePassword = () => navigate("/change-password");
   const gotoSignup = () => navigate("/create-account");
   const goBack = () => navigate(-1);
 
@@ -86,6 +88,8 @@ function Login() {
           type="text"
           label="Username or Email"
           placeholder="Enter @username"
+          defaultValue={state.info}
+          onChange={(ev) => { setState({ ...state, info: ev.target.value }) }}
           withAsterisk={false}
           required
         />
@@ -99,6 +103,8 @@ function Login() {
               <IconEyeOff size={size} stroke={2.5} /> :
               <IconEye size={size} stroke={2.5} />
           }
+          defaultValue={state.password}
+          onChange={(ev) => { setState({ ...state, password: ev.target.value }) }}
           withAsterisk={false}
           required
         />
@@ -165,29 +171,31 @@ function Login() {
   useEffect(() => { state.stage === "verify" && verifyLogin() }, []);
 
   return (
-    <Flex direction="column">
+    <Flex direction="column" gap="md">
       <Header />
 
-      <Title order={2} align="center" mb={5}>
+      <Title order={2} align="center">
         Log In
       </Title>
       <Text color="dimmed" size="md" align="center" weight={500}>
         Welcome home. You were missed.
       </Text>
 
-      <Card shadow="sm" p="lg" m="md" radius="md" withBorder>
-        <LoadingOverlay visible={state.loading} overlayBlur={2} />
+      <Flex justify="center">
+        <Card shadow="sm" p="lg" m="md" radius="md" withBorder css={widthLimit}>
+          <LoadingOverlay visible={state.loading} overlayBlur={2} />
 
-        <Flex direction="column" gap="md">
-          {/*Use Component() instead of <Component /> to avoid state-loss*/}
-          {state.stage === "login" && loginStage()}
-          {state.stage === "verify" && verifyLoginStage()}
-        </Flex>
-      </Card>
+          <Flex direction="column" gap="md">
+            {/*Use Component() instead of <Component /> to avoid state-loss*/}
+            {state.stage === "login" && loginStage()}
+            {state.stage === "verify" && verifyLoginStage()}
+          </Flex>
+        </Card>
+      </Flex>
 
       {state.stage !== "verify" &&
         <Flex direction="column" align="center" gap="md">
-          <Anchor color="blue" size={15} onClick={gotoSignup}>
+          <Anchor color="blue" size={15} onClick={gotoChangePassword}>
             Forgot your password?
           </Anchor>
 

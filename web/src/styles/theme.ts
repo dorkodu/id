@@ -81,7 +81,7 @@ const theme: MantineThemeOverride = {
   },
 
   breakpoints: {
-    xs: 500,
+    xs: 480,
     sm: 768,
     md: 900,
     lg: 1200,

@@ -28,6 +28,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { useUserStore } from "../stores/userStore";
+import { widthLimit } from "../styles/css";
 
 interface State {
   loading: boolean;
@@ -267,45 +268,45 @@ function CreateAccount() {
   }
 
   return (
-    <Flex direction="column">
+    <Flex direction="column" gap="md">
       <Header />
 
-      <Title order={1} size="h2" align="center" mb={5}>
+      <Title order={1} size="h2" align="center">
         Create Your Account
       </Title>
-      <Text color="dimmed" size="md" align="center" weight={500}>
+      <Text color="dimmed" size="md" weight={500} align="center">
         In a minute, say hello to your new digital life.
       </Text>
 
-      <Card shadow="sm" p="lg" m="md" radius="md" withBorder>
-        <LoadingOverlay visible={state.loading} overlayBlur={2} />
+      <Flex justify="center">
+        <Card shadow="sm" p="lg" m="md" radius="md" withBorder css={widthLimit}>
+          <LoadingOverlay visible={state.loading} overlayBlur={2} />
 
-        <Flex direction="column" gap="md">
-          {/*Use Component() instead of <Component /> to avoid state-loss*/}
-          {state.stage === "signup" && signupStage()}
-          {state.stage === "verify" && verifySignupStage()}
-          {state.stage === "confirm" && confirmSignupStage()}
-        </Flex>
-      </Card>
+          <Flex direction="column" gap="md">
+            {/*Use Component() instead of <Component /> to avoid state-loss*/}
+            {state.stage === "signup" && signupStage()}
+            {state.stage === "verify" && verifySignupStage()}
+            {state.stage === "confirm" && confirmSignupStage()}
+          </Flex>
+        </Card>
+      </Flex>
 
       {state.stage !== "verify" &&
-        <>
-          <Flex direction="column" align="center" gap="md">
-            <Text color="dimmed" size="sm" align="center" maw={320}>
-              By creating an account, you will agree to
-              Dorkodu's <b>Terms of Service</b> and <b>Privacy Policy</b>.
-            </Text>
+        <Flex direction="column" align="center" gap="md">
+          <Text color="dimmed" size="sm" align="center" maw={320}>
+            By creating an account, you will agree to
+            Dorkodu's <b>Terms of Service</b> and <b>Privacy Policy</b>.
+          </Text>
 
-            <Text>Already have an account? </Text>
+          <Text>Already have an account? </Text>
 
-            <Anchor color="blue" size={15} onClick={gotoLogin}>
-              <Flex align="center" gap="xs">
-                <Text>Log In</Text>
-                <IconArrowRight size={16} stroke={2.5} />
-              </Flex>
-            </Anchor>
-          </Flex>
-        </>
+          <Anchor color="blue" size={15} onClick={gotoLogin}>
+            <Flex align="center" gap="xs">
+              <Text>Log In</Text>
+              <IconArrowRight size={16} stroke={2.5} />
+            </Flex>
+          </Anchor>
+        </Flex>
       }
 
       <Footer />

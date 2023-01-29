@@ -7,6 +7,7 @@ import { IconAlertCircle, IconArrowLeft, IconInfoCircle } from "@tabler/icons";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { useNavigate } from "react-router-dom";
+import { widthLimit } from "../styles/css";
 
 interface State {
   loading: boolean;
@@ -50,76 +51,78 @@ function ChangePassword() {
   };
 
   return (
-    <Flex direction="column">
+    <Flex direction="column" gap="md">
       <Header />
 
-      <Title order={2} align="center" mb={5}>
+      <Title order={2} align="center">
         Change Password
       </Title>
-      <Text color="dimmed" size="md" align="center" weight={500}>
+      <Text color="dimmed" size="md" weight={500} align="center">
         Forgot your password? No worries.
       </Text>
 
-      <Card shadow="sm" p="lg" m="md" radius="md" withBorder>
-        <LoadingOverlay visible={state.loading} overlayBlur={2} />
+      <Flex justify="center">
+        <Card shadow="sm" p="lg" m="md" radius="md" withBorder css={widthLimit}>
+          <LoadingOverlay visible={state.loading} overlayBlur={2} />
 
-        <Flex direction="column" gap="md">
-          <TextInput
-            label="Your Username:"
-            placeholder="@username"
-            defaultValue={state.username}
-            onChange={(ev) => { setState({ ...state, username: ev.target.value }) }}
-            radius="md"
-            variant="filled"
-            required
-          />
+          <Flex direction="column" gap="md">
+            <TextInput
+              label="Your Username:"
+              placeholder="@username"
+              defaultValue={state.username}
+              onChange={(ev) => { setState({ ...state, username: ev.target.value }) }}
+              radius="md"
+              variant="filled"
+              required
+            />
 
-          <TextInput
-            label="Your Email:"
-            placeholder="you@mail.com"
-            defaultValue={state.email}
-            onChange={(ev) => { setState({ ...state, email: ev.target.value }) }}
-            radius="md"
-            variant="filled"
-            required
-          />
+            <TextInput
+              label="Your Email:"
+              placeholder="you@mail.com"
+              defaultValue={state.email}
+              onChange={(ev) => { setState({ ...state, email: ev.target.value }) }}
+              radius="md"
+              variant="filled"
+              required
+            />
 
-          <Flex align="center" justify="space-between">
-            <Anchor size={15} onClick={goBack}>
-              <Flex align="center" gap="xs">
-                <IconArrowLeft size={16} stroke={2.5} />
-                <Text>Go Back</Text>
-              </Flex>
-            </Anchor>
+            <Flex align="center" justify="space-between">
+              <Anchor size={15} onClick={goBack}>
+                <Flex align="center" gap="xs">
+                  <IconArrowLeft size={16} stroke={2.5} />
+                  <Text>Go Back</Text>
+                </Flex>
+              </Anchor>
 
-            <Button onClick={initiateChangePassword} radius="md">
-              Change Password
-            </Button>
+              <Button onClick={initiateChangePassword} radius="md">
+                Change Password
+              </Button>
+            </Flex>
+
+            {state.status === true &&
+              <Alert
+                icon={<IconInfoCircle size={24} />}
+                title="Info"
+                color="blue"
+                variant="light"
+              >
+                Mail is sent. Please check your inbox.
+              </Alert>
+            }
+
+            {state.status === false &&
+              <Alert
+                icon={<IconAlertCircle size={24} />}
+                title="Info"
+                color="red"
+                variant="light"
+              >
+                An error occured.
+              </Alert>
+            }
           </Flex>
-
-          {state.status === true &&
-            <Alert
-              icon={<IconInfoCircle size={24} />}
-              title="Info"
-              color="blue"
-              variant="light"
-            >
-              Mail is sent. Please check your inbox.
-            </Alert>
-          }
-
-          {state.status === false &&
-            <Alert
-              icon={<IconAlertCircle size={24} />}
-              title="Info"
-              color="red"
-              variant="light"
-            >
-              An error occured.
-            </Alert>
-          }
-        </Flex>
-      </Card>
+        </Card>
+      </Flex>
 
       <Footer />
     </Flex>

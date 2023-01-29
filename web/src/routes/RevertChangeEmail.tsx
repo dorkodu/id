@@ -5,6 +5,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { useUserStore } from "../stores/userStore";
+import { widthLimit } from "../styles/css";
 
 interface State {
   loading: boolean;
@@ -38,56 +39,59 @@ function RevertChangeEmail() {
   useEffect(() => { revertEmailChange() }, []);
 
   return (
-    <Flex direction="column">
+    <Flex direction="column" gap="md">
       <Header />
 
-      <Title order={2} align="center" mb={5}>
+      <Title order={2} align="center">
         Revert Email
       </Title>
       <Text color="dimmed" size="md" align="center" weight={500}>
         lorem ipsum
       </Text>
 
-      <Card shadow="sm" p="lg" m="md" radius="md" withBorder>
-        <Flex direction="column" gap="md">
-          {state.loading &&
-            <Flex justify="center">
-              <Loader variant="dots" color="green" />
-            </Flex>
-          }
-
-          {!state.loading &&
-            <Anchor size={15} onClick={goBack}>
-              <Flex align="center" gap="xs">
-                <IconArrowLeft size={16} stroke={2.5} />
-                <Text>Go Back</Text>
+      <Flex justify="center">
+        <Card shadow="sm" p="lg" m="md" radius="md" withBorder css={widthLimit}>
+          <Flex direction="column" gap="md">
+            {state.loading &&
+              <Flex justify="center">
+                <Loader variant="dots" color="green" />
               </Flex>
-            </Anchor>
-          }
+            }
 
-          {state.status === true &&
-            <Alert
-              icon={<IconCircleCheck size={24} />}
-              title="Success"
-              color="green"
-              variant="light"
-            >
-              Email is reverted.
-            </Alert>
-          }
+            {!state.loading &&
+              <Anchor size={15} onClick={goBack}>
+                <Flex align="center" gap="xs">
+                  <IconArrowLeft size={16} stroke={2.5} />
+                  <Text>Go Back</Text>
+                </Flex>
+              </Anchor>
+            }
 
-          {state.status === false &&
-            <Alert
-              icon={<IconAlertCircle size={24} />}
-              title="Error"
-              color="red"
-              variant="light"
-            >
-              An error occured.
-            </Alert>
-          }
-        </Flex>
-      </Card>
+            {state.status === true &&
+              <Alert
+                icon={<IconCircleCheck size={24} />}
+                title="Success"
+                color="green"
+                variant="light"
+              >
+                Email is reverted.
+              </Alert>
+            }
+
+            {state.status === false &&
+              <Alert
+                icon={<IconAlertCircle size={24} />}
+                title="Error"
+                color="red"
+                variant="light"
+              >
+                An error occured.
+              </Alert>
+            }
+          </Flex>
+        </Card>
+      </Flex>
+
       <Footer />
     </Flex>
   )
