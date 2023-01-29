@@ -14,7 +14,6 @@ import {
 
 import { FormPage } from "../components/_shared";
 import { IconDiscountCheck, IconLock, IconUnlink, IconUser } from "@tabler/icons";
-import { MouseEvent } from "react";
 
 const styles: { themeIcons: Partial<ThemeIconProps> } = {
   themeIcons: {
@@ -31,10 +30,8 @@ function Welcome() {
 
   const gotoCreateAccount = () => navigate("/create-account");
   const gotoLogin = () => navigate("/login");
-  const gotoChangePassword = (ev: MouseEvent) => {
-    ev.preventDefault();
-    navigate("/change-password");
-  }
+  const gotoDashboard = () => navigate("/dashboard");
+  const gotoChangePassword = () => navigate("/change-password");
 
   const AuthOptions = () => (
     <Flex direction="column" gap="md">
@@ -76,9 +73,7 @@ function Welcome() {
       {authorized &&
         <Button
           variant="filled"
-          onClick={() => {
-            navigate("/dashboard");
-          }}
+          onClick={gotoDashboard}
           radius="md">
           Continue to Dashboard
         </Button>
