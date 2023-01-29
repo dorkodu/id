@@ -1,223 +1,204 @@
 import {
   Alert,
   Anchor,
-  Box,
   Button,
-  Center,
-  Container,
-  createStyles,
-  Group,
+  Card,
+  Flex,
   Loader,
-  Paper,
+  LoadingOverlay,
   PasswordInput,
-  Space,
-  Stack,
   Text,
   TextInput,
   Title,
 } from "@mantine/core";
-import {
-  IconArrowLeft,
-  IconCheck,
-  IconEye,
-  IconEyeOff,
-} from "@tabler/icons";
-import { useEffect, useRef, useState } from "react";
+import { IconAlertCircle, IconArrowLeft, IconCircleCheck, IconEye, IconEyeOff } from "@tabler/icons";
+import { useEffect, useReducer } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { FormPage } from "../components/_shared";
 import { useUserStore } from "../stores/userStore";
 
-const useStyles = createStyles((theme) => ({
-  controls: {
-    [theme.fn.smallerThan("xs")]: {
-      flexDirection: "column-reverse",
-    },
-  },
+interface State {
+  loading: boolean;
+  status: undefined | "verify" | "error" | "ok";
 
-  control: {
-    [theme.fn.smallerThan("xs")]: {
-      width: "100%",
-      textAlign: "center",
-    },
-    [theme.fn.largerThan("xs")]: {
-      width: "30%",
-      textAlign: "center",
-    },
-  },
-}));
+  info: string;
+  password: string;
+  token: string | null;
+
+  stage: "login" | "verify";
+}
 
 function Login() {
-  const { classes: styles } = useStyles();
-
-  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
+  const [state, setState] = useReducer((prev: State, next: State) => {
+    const newState = { ...prev, ...next };
+
+    if (newState.info.length > 320)
+      newState.info = newState.info.substring(0, 320);
+
+    return newState;
+  }, {
+    loading: false,
+    status: undefined,
+    info: "",
+    password: "",
+    token: searchParams.get("token"),
+    stage: searchParams.get("token") ? "verify" : "login"
+  });
+
+  const navigate = useNavigate();
   const queryLogin = useUserStore((state) => state.queryLogin);
   const queryVerifyLogin = useUserStore((state) => state.queryVerifyLogin);
 
-  const initialStage = searchParams.get("token") ? "verify" : "login";
-  const [stage, setStage] = useState<"login" | "verify" | "confirm">(
-    initialStage
-  );
-  const [status, setStatus] = useState<boolean | undefined>(undefined);
-
-  const loginInfo = useRef<HTMLInputElement>(null);
-  const loginPassword = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (stage === "verify") verifyLogin();
-  }, []);
+  const gotoSignup = () => navigate("/create-account");
+  const goBack = () => navigate(-1);
 
   const login = async () => {
-    const info = loginInfo.current?.value;
-    const password = loginPassword.current?.value;
+    if (state.loading) return;
 
-    if (!info || !password) return;
-    const res = await queryLogin(info, password);
+    setState({ ...state, loading: true, status: undefined });
+    const status = await queryLogin(state.info, state.password);
+    setState({ ...state, loading: false, status: status });
 
-    if (res === "error") return;
-    if (res === "confirm") {
-      setStage("confirm");
-      return;
-    }
+    if (status !== "ok") return;
 
     const redirect = searchParams.get("redirect");
     if (!redirect) navigate("/dashboard");
     else navigate(redirect);
-  };
+  }
 
   const verifyLogin = async () => {
-    const token = searchParams.get("token");
-    if (!token) return;
+    if (state.loading) return;
+    if (state.token === null) return;
 
-    const verified = await queryVerifyLogin(token);
-    setStatus(verified);
-  };
+    setState({ ...state, loading: true, status: undefined });
+    const status = await queryVerifyLogin(state.token);
+    setState({ ...state, loading: false, status: status ? "ok" : "error" });
+  }
+
+  const loginStage = () => {
+    return (
+      <>
+        <TextInput
+          variant="filled"
+          type="text"
+          label="Username or Email"
+          placeholder="Enter @username"
+          withAsterisk={false}
+          required
+        />
+
+        <PasswordInput
+          variant="filled"
+          label="Password"
+          placeholder="Enter Password"
+          visibilityToggleIcon={({ reveal, size }) =>
+            reveal ?
+              <IconEyeOff size={size} stroke={2.5} /> :
+              <IconEye size={size} stroke={2.5} />
+          }
+          withAsterisk={false}
+          required
+        />
+
+        <Flex align="center" justify="space-between">
+          <Anchor size={15} onClick={goBack}>
+            <Flex align="center" gap="xs">
+              <IconArrowLeft size={16} stroke={2.5} />
+              <Text>Go Back</Text>
+            </Flex>
+          </Anchor>
+
+          <Button onClick={login} radius="md">
+            Login
+          </Button>
+        </Flex>
+      </>
+    )
+  }
+
+  const verifyLoginStage = () => {
+    return (
+      <>
+        {state.loading &&
+          <Flex justify="center">
+            <Loader variant="dots" color="green" />
+          </Flex>
+        }
+
+        {!state.loading &&
+          <Anchor size={15} onClick={goBack}>
+            <Flex align="center" gap="xs">
+              <IconArrowLeft size={16} stroke={2.5} />
+              <Text>Go Back</Text>
+            </Flex>
+          </Anchor>
+        }
+
+        {state.status === "ok" &&
+          <Alert
+            icon={<IconCircleCheck size={24} />}
+            title="Success"
+            color="green"
+            variant="light"
+          >
+            Verified.
+          </Alert>
+        }
+
+        {state.status === "error" &&
+          <Alert
+            icon={<IconAlertCircle size={24} />}
+            title="Error"
+            color="red"
+            variant="light"
+          >
+            An error occured.
+          </Alert>
+        }
+      </>
+    )
+  }
+
+  useEffect(() => { state.stage === "verify" && verifyLogin() }, []);
 
   return (
-    <Container size={460} my={25}>
-      {stage !== "verify" && (
-        <>
-          <FormPage.Header />
+    <Flex direction="column">
+      <FormPage.Header />
 
-          <Title order={2} align="center" mb={5}>
-            Log In
-          </Title>
-          <Text color="dimmed" size="md" align="center" weight={500}>
-            Welcome home. You were missed.
-          </Text>
+      <Title order={2} align="center" mb={5}>
+        Log In
+      </Title>
+      <Text color="dimmed" size="md" align="center" weight={500}>
+        Welcome home. You were missed.
+      </Text>
 
-          <Paper withBorder shadow="sm" p={30} radius="lg" mt="xl">
-            <TextInput
-              label="Username or Email"
-              placeholder="Enter @username"
-              ref={loginInfo}
-              type={"text"}
-              disabled={stage === "confirm"}
-              required
-              withAsterisk={false}
-              radius="md"
-              variant="filled"
-            />
+      <Card shadow="sm" p="lg" m="md" radius="md" withBorder>
+        <LoadingOverlay visible={state.loading} overlayBlur={2} />
 
-            <Space h="md" />
+        <Flex direction="column" gap="md">
+          {/*Use Component() instead of <Component /> to avoid state-loss*/}
+          {state.stage === "login" && loginStage()}
+          {state.stage === "verify" && verifyLoginStage()}
+        </Flex>
+      </Card>
 
-            <PasswordInput
-              label="Password"
-              placeholder="Enter Password"
-              ref={loginPassword}
-              visibilityToggleIcon={({ reveal, size }) =>
-                reveal ? (
-                  <IconEyeOff size={size} stroke={2.5} />
-                ) : (
-                  <IconEye size={size} stroke={2.5} />
-                )
-              }
-              variant="filled"
-              required
-              withAsterisk={false}
-            />
+      {state.stage !== "verify" &&
+        <Flex direction="column" align="center" gap="md">
+          <Anchor color="blue" size={15} onClick={gotoSignup}>
+            Forgot your password?
+          </Anchor>
 
-            <Group position="apart" mt="lg" className={styles.controls}>
-              <Anchor
-                size={15}
-                onClick={(e) => {
-                  e.preventDefault();
-                  navigate("/welcome");
-                }}
-                className={styles.control}>
-                <Center inline>
-                  <IconArrowLeft size={16} stroke={2.5} />
-                  <Box ml={5}>Go Back</Box>
-                </Center>
-              </Anchor>
+          <Anchor color="blue" size={15} onClick={gotoSignup}>
+            Don't have an account?
+          </Anchor>
+        </Flex>
+      }
 
-              <Button className={styles.control} onClick={login} radius="md">
-                Login
-              </Button>
-            </Group>
-          </Paper>
-
-          <Stack my="md">
-            <Anchor
-              color="blue"
-              size={15}
-              weight={450}
-              onClick={(e) => {
-                e.preventDefault();
-                navigate("/change-password");
-              }}
-              align="center"
-              mt={10}>
-              <Box ml={5}>Forgot your password?</Box>
-            </Anchor>
-
-            <Text size={14} align="center">
-              Don't have an account?
-            </Text>
-            <Anchor
-              color="blue"
-              weight={450}
-              onClick={(e) => {
-                e.preventDefault();
-                navigate("/create-account");
-              }}
-              align="center"
-              mt={10}>
-              Create an account.
-            </Anchor>
-          </Stack>
-
-          <FormPage.Footer />
-        </>
-      )}
-      {stage === "verify" && (
-        <>
-          {stage === "verify" && status === undefined && (
-            <Loader variant="dots" color="green" />
-          )}
-          {stage === "verify" && status === true && (
-            <Alert
-              icon={<IconCheck size={24} />}
-              title="Status"
-              color="green"
-              variant="light">
-              Verified.
-            </Alert>
-          )}
-          {stage === "verify" && status === false && (
-            <Alert
-              icon={<IconCheck size={24} />}
-              title="Status"
-              color="red"
-              variant="light">
-              Verification failed.
-            </Alert>
-          )}
-        </>
-      )}
-    </Container>
-  );
+      <FormPage.Footer />
+    </Flex>
+  )
 }
 
 export default Login;

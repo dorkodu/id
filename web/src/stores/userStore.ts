@@ -36,16 +36,9 @@ interface Action {
 
   querySignup: (username: string, email: string) => Promise<boolean>;
   queryVerifySignup: (token: string) => Promise<boolean>;
-  queryConfirmSignup: (
-    username: string,
-    email: string,
-    password: string
-  ) => Promise<boolean>;
+  queryConfirmSignup: (username: string, email: string, password: string) => Promise<boolean>;
 
-  queryLogin: (
-    info: string,
-    password: string
-  ) => Promise<"ok" | "error" | "confirm">;
+  queryLogin: (info: string, password: string) => Promise<"ok" | "error" | "verify">;
   queryVerifyLogin: (token: string) => Promise<boolean>;
 
   queryLogout: () => Promise<boolean>;
@@ -55,26 +48,14 @@ interface Action {
   queryInitiateEmailChange: (newEmail: string) => Promise<boolean>;
   queryConfirmEmailChange: (token: string) => Promise<boolean>;
   queryRevertEmailChange: (token: string) => Promise<boolean>;
-  queryInitiatePasswordChange: (
-    username: string,
-    email: string
-  ) => Promise<boolean>;
-  queryConfirmPasswordChange: (
-    newPassword: string,
-    token: string
-  ) => Promise<boolean>;
+  queryInitiatePasswordChange: (username: string, email: string) => Promise<boolean>;
+  queryConfirmPasswordChange: (newPassword: string, token: string) => Promise<boolean>;
 
   queryGetCurrentSession: () => Promise<void>;
-  queryGetSessions: (
-    type: "newer" | "older",
-    refresh?: boolean
-  ) => Promise<void>;
+  queryGetSessions: (type: "newer" | "older", refresh?: boolean) => Promise<void>;
   queryTerminateSession: (sessionId: string) => Promise<void>;
 
-  queryGetAccesses: (
-    type: "newer" | "older",
-    refresh?: boolean
-  ) => Promise<void>;
+  queryGetAccesses: (type: "newer" | "older", refresh?: boolean) => Promise<void>;
   queryGrantAccess: (service: string) => Promise<string | undefined>;
   queryRevokeAccess: (accessId: string) => Promise<void>;
 }
@@ -200,8 +181,7 @@ export const useUserStore = create(
       }
 
       switch (res.a.error) {
-        case ErrorCode.LoginNewLocation:
-          return "confirm";
+        case ErrorCode.LoginNewLocation: return "verify";
         case ErrorCode.Default:
         default:
           return "error";

@@ -110,7 +110,7 @@ function CreateAccount() {
 
   useEffect(() => { state.stage === "verify" && verifySignup() }, []);
 
-  const SignupStage = () => {
+  const signupStage = () => {
     return (
       <>
         <TextInput
@@ -165,7 +165,7 @@ function CreateAccount() {
     )
   }
 
-  const VerifySignupStage = () => {
+  const verifySignupStage = () => {
     return (
       <>
         {state.loading &&
@@ -208,7 +208,7 @@ function CreateAccount() {
     )
   }
 
-  const ConfirmSignupStage = () => {
+  const confirmSignupStage = () => {
     return (
       <>
         <PasswordInput
@@ -281,9 +281,9 @@ function CreateAccount() {
 
         <Flex direction="column" gap="md">
           {/*Use Component() instead of <Component /> to avoid state-loss*/}
-          {state.stage === "signup" && SignupStage()}
-          {state.stage === "verify" && VerifySignupStage()}
-          {state.stage === "confirm" && ConfirmSignupStage()}
+          {state.stage === "signup" && signupStage()}
+          {state.stage === "verify" && verifySignupStage()}
+          {state.stage === "confirm" && confirmSignupStage()}
         </Flex>
       </Card>
 
