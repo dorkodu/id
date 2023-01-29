@@ -2,7 +2,8 @@ import { Alert, Anchor, Button, Card, Flex, LoadingOverlay, PasswordInput, Text,
 import { IconAlertCircle, IconArrowLeft, IconAsterisk, IconEye, IconEyeOff, IconInfoCircle } from "@tabler/icons";
 import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { FormPage } from "../components/_shared";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
 import { useUserStore } from "../stores/userStore";
 
 interface State {
@@ -37,7 +38,7 @@ function ConfirmChangePassword() {
 
   return (
     <Flex direction="column">
-      <FormPage.Header />
+      <Header />
 
       <Title order={2} align="center" mb={5}>
         Change Password
@@ -103,7 +104,7 @@ function ConfirmChangePassword() {
         </Flex>
       </Card>
 
-      <FormPage.Footer />
+      <Footer />
     </Flex>
   )
 }

@@ -4,7 +4,8 @@ import { useUserStore } from "../stores/userStore";
 import { Title, Text, TextInput, Button, Anchor, Alert, Card, Flex, LoadingOverlay } from "@mantine/core";
 import { IconAlertCircle, IconArrowLeft, IconInfoCircle } from "@tabler/icons";
 
-import { FormPage } from "../components/_shared";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
 import { useNavigate } from "react-router-dom";
 
 interface State {
@@ -50,7 +51,7 @@ function ChangePassword() {
 
   return (
     <Flex direction="column">
-      <FormPage.Header />
+      <Header />
 
       <Title order={2} align="center" mb={5}>
         Change Password
@@ -120,7 +121,7 @@ function ChangePassword() {
         </Flex>
       </Card>
 
-      <FormPage.Footer />
+      <Footer />
     </Flex>
   )
 }

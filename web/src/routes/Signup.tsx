@@ -25,7 +25,8 @@ import {
 } from "@tabler/icons";
 import { useEffect, useReducer } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { FormPage } from "../components/_shared";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
 import { useUserStore } from "../stores/userStore";
 
 interface State {
@@ -267,7 +268,7 @@ function CreateAccount() {
 
   return (
     <Flex direction="column">
-      <FormPage.Header />
+      <Header />
 
       <Title order={1} size="h2" align="center" mb={5}>
         Create Your Account
@@ -307,7 +308,7 @@ function CreateAccount() {
         </>
       }
 
-      <FormPage.Footer />
+      <Footer />
     </Flex>
   );
 }

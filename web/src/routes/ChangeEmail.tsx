@@ -2,7 +2,8 @@ import { Alert, Anchor, Button, Card, Flex, LoadingOverlay, Text, TextInput, Tit
 import { IconAlertCircle, IconArrowLeft, IconAt, IconInfoCircle } from "@tabler/icons";
 import { useReducer } from "react";
 import { useNavigate } from "react-router-dom";
-import { FormPage } from "../components/_shared";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
 import { useUserStore } from "../stores/userStore";
 
 interface State {
@@ -37,7 +38,7 @@ function ChangeEmail() {
 
   return (
     <Flex direction="column">
-      <FormPage.Header />
+      <Header />
 
       <Title order={2} align="center" mb={5}>
         Change Email
@@ -100,7 +101,7 @@ function ChangeEmail() {
         </Flex>
       </Card>
 
-      <FormPage.Footer />
+      <Footer />
     </Flex>
   )
 }

@@ -12,7 +12,8 @@ import {
   Space,
 } from "@mantine/core";
 
-import { FormPage } from "../components/_shared";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
 import { IconDiscountCheck, IconLock, IconUnlink, IconUser } from "@tabler/icons";
 
 const styles: { themeIcons: Partial<ThemeIconProps> } = {
@@ -56,7 +57,7 @@ function Welcome() {
 
   return (
     <Flex direction="column" align="center" gap="md">
-      <FormPage.Header />
+      <Header />
 
       <Title order={1} size={32} align="center">
         Your Digital Life,
@@ -112,7 +113,7 @@ function Welcome() {
         </Flex>
       </Flex>
 
-      <FormPage.Footer />
+      <Footer />
     </Flex>
   );
 }

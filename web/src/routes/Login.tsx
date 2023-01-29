@@ -14,7 +14,8 @@ import {
 import { IconAlertCircle, IconArrowLeft, IconCircleCheck, IconEye, IconEyeOff } from "@tabler/icons";
 import { useEffect, useReducer } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { FormPage } from "../components/_shared";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
 import { useUserStore } from "../stores/userStore";
 
 interface State {
@@ -165,7 +166,7 @@ function Login() {
 
   return (
     <Flex direction="column">
-      <FormPage.Header />
+      <Header />
 
       <Title order={2} align="center" mb={5}>
         Log In
@@ -196,7 +197,7 @@ function Login() {
         </Flex>
       }
 
-      <FormPage.Footer />
+      <Footer />
     </Flex>
   )
 }
