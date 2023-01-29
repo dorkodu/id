@@ -5,6 +5,7 @@ import { Outlet } from "react-router-dom";
 import { useAppStore } from "./stores/appStore";
 import { useUserStore } from "./stores/userStore";
 import theme from "./styles/theme";
+import RubikRegular from "@assets/fonts/Rubik-Regular.woff2";
 
 const width = css`
   max-width: 768px;
@@ -15,6 +16,11 @@ const global = css`
   body {
     ${width}
     overflow-y: scroll;
+  }
+  
+  @font-face {
+    font-family: Rubik;
+    src: url(${RubikRegular}) format("woff2");
   }
 `;
 
