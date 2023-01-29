@@ -6,7 +6,7 @@ import RequireAuth from "../components/RequireAuth";
 import Access from "./Access";
 
 const Welcome = React.lazy(() => import("./Welcome"));
-const CreateAccount = React.lazy(() => import("./CreateAccount"));
+const Signup = React.lazy(() => import("./Signup"));
 const Login = React.lazy(() => import("./Login"));
 const ChangeEmail = React.lazy(() => import("./ChangeEmail"));
 const ConfirmChangeEmail = React.lazy(() => import("./ConfirmChangeEmail"));
@@ -27,7 +27,7 @@ function Router() {
           {/* Routes that don't require authentication */}
           <Route path="/welcome" element={<Welcome />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/create-account" element={<CreateAccount />} />
+          <Route path="/create-account" element={<Signup />} />
           <Route path="/access" element={<Access />} />
           <Route path="/change-password" element={<ChangePassword />} />
           <Route path="/confirm-email-change" element={<ConfirmChangeEmail />} />
