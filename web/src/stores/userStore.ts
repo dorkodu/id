@@ -173,19 +173,23 @@ export const useUserStore = create(
         (query) => request(query)
       );
 
-      if (!res?.a.data || !res.a.error) {
-        set((state) => {
-          state.authorized = true;
-        });
+      const status = !(!res?.a.data || res.a.error);
+
+      if (status) {
+        set(state => { state.authorized = true });
         return "ok";
       }
 
-      switch (res.a.error) {
-        case ErrorCode.LoginNewLocation: return "verify";
-        case ErrorCode.Default:
-        default:
-          return "error";
+      if (res?.a.error) {
+        switch (res.a.error) {
+          case ErrorCode.LoginNewLocation: return "verify";
+          case ErrorCode.Default:
+          default:
+            return "error";
+        }
       }
+
+      return "error";
     },
 
     queryVerifyLogin: async (token) => {
