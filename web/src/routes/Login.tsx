@@ -11,7 +11,7 @@ import {
   TextInput,
   Title,
 } from "@mantine/core";
-import { IconAlertCircle, IconArrowLeft, IconCircleCheck, IconEye, IconEyeOff, IconInfoCircle } from "@tabler/icons";
+import { IconAlertCircle, IconArrowLeft, IconArrowRight, IconCircleCheck, IconEye, IconEyeOff, IconInfoCircle } from "@tabler/icons";
 import { useEffect, useReducer } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Header from "../components/Header";
@@ -218,15 +218,24 @@ function Login() {
       </Flex>
 
       {state.stage !== "verify" &&
-        <Flex direction="column" align="center" gap="md">
-          <Anchor color="blue" size={15} onClick={gotoChangePassword}>
-            Forgot your password?
-          </Anchor>
+        <>
+          <Flex direction="column" align="center" gap="md">
+            <Anchor color="blue" size={15} onClick={gotoChangePassword}>
+              Forgot your password?
+            </Anchor>
+          </Flex>
 
-          <Anchor color="blue" size={15} onClick={gotoSignup}>
-            Don't have an account?
-          </Anchor>
-        </Flex>
+          <Flex direction="column" align="center">
+            <Text size={15}>Don't have an account?</Text>
+
+            <Anchor color="blue" size={15} onClick={gotoSignup}>
+              <Flex align="center" gap="xs">
+                <Text>Create Account</Text>
+                <IconArrowRight size={16} stroke={2.5} />
+              </Flex>
+            </Anchor>
+          </Flex>
+        </>
       }
 
       <Footer />

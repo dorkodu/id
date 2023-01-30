@@ -294,26 +294,30 @@ function CreateAccount() {
       </Flex>
 
       {state.stage !== "verify" &&
-        <Flex direction="column" align="center" gap="md">
-          <Text color="dimmed" size="sm" align="center" maw={320}>
-            By creating an account, you will agree to
-            Dorkodu's <b>Terms of Service</b> and <b>Privacy Policy</b>.
-          </Text>
+        <>
+          <Flex direction="column" align="center" gap="md">
+            <Text color="dimmed" size="sm" align="center" maw={320}>
+              By creating an account, you will agree to
+              Dorkodu's <b>Terms of Service</b> and <b>Privacy Policy</b>.
+            </Text>
+          </Flex>
 
-          <Text>Already have an account? </Text>
+          <Flex direction="column" align="center">
+            <Text>Already have an account? </Text>
 
-          <Anchor color="blue" size={15} onClick={gotoLogin}>
-            <Flex align="center" gap="xs">
-              <Text>Log In</Text>
-              <IconArrowRight size={16} stroke={2.5} />
-            </Flex>
-          </Anchor>
-        </Flex>
+            <Anchor color="blue" size={15} onClick={gotoLogin}>
+              <Flex align="center" gap="xs">
+                <Text>Log In</Text>
+                <IconArrowRight size={16} stroke={2.5} />
+              </Flex>
+            </Anchor>
+          </Flex>
+        </>
       }
 
       <Footer />
     </Flex>
-  );
+  )
 }
 
 export default CreateAccount;
