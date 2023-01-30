@@ -208,7 +208,6 @@ const initiatePasswordChange = sage.resource(
       const row = {
         id: snowflake.id("email_change_password"),
         user_id: result0.id,
-        email: email,
         selector: tkn.selector,
         validator: crypto.sha256(tkn.validator),
         issued_at: date.utc(),
@@ -237,8 +236,8 @@ const confirmPasswordChange = sage.resource(
     const tkn = token.parse(parsed.data.token);
     if (!tkn) return { error: ErrorCode.Default };
 
-    const [result0]: [{ id: string, userId: string, email: string, validator: Buffer, sentAt: string, expiresAt: string }?] = await pg`
-      SELECT id, user_id, email, validator, sent_at, expires_at FROM email_change_password
+    const [result0]: [{ id: string, userId: string, validator: Buffer, sentAt: string, expiresAt: string }?] = await pg`
+      SELECT id, user_id, validator, sent_at, expires_at FROM email_change_password
       WHERE selector=${tkn.selector}
     `;
     if (!result0) return { error: ErrorCode.Default };
