@@ -72,7 +72,7 @@ function CreateAccount() {
 
   const gotoDashboard = () => navigate("/dashboard");
   const gotoLogin = () => navigate("/login");
-  const goBack = () => navigate(-1);
+  const goBack = () => navigate("/welcome");
 
   const signup = async () => {
     if (state.loading) return;

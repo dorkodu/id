@@ -55,7 +55,7 @@ function Login() {
 
   const gotoChangePassword = () => navigate("/change-password");
   const gotoSignup = () => navigate("/create-account");
-  const goBack = () => navigate(-1);
+  const goBack = () => navigate("/welcome");
 
   const login = async () => {
     if (state.loading) return;
@@ -130,7 +130,8 @@ function Login() {
             variant="light"
           >
             A new location is detected.
-            Please check inbox or spam folder to verify your location.
+            Please check inbox or spam folder to verify your location,
+            then try again.
           </Alert>
         }
 
