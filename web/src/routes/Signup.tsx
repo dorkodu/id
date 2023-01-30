@@ -118,9 +118,9 @@ function CreateAccount() {
         <TextInput
           variant="filled"
           label="Your Username"
-          description="You can use letters (a-z), digits (0-9), dot (.) and underscore (_) with 16 characters maximum."
+          description="Use 1-16 chars from letters (a-z or A-Z), digits (0-9), dot (.), and underscore (_), avoiding consecutive and at start/end dots/underscores."
           icon={<IconUser size={16} />}
-          placeholder="@username"
+          placeholder="username"
           defaultValue={state.username}
           onChange={(ev) => { setState({ ...state, username: ev.target.value }) }}
           disabled={state.stage === "confirm"}
@@ -193,6 +193,7 @@ function CreateAccount() {
             variant="light"
           >
             Email is verified.
+            You can close this tab and continue to create your account.
           </Alert>
         }
 
@@ -218,7 +219,7 @@ function CreateAccount() {
           label="Your Password"
           description="Minimum 8 characters required."
           icon={<IconAsterisk size={16} />}
-          placeholder="Password"
+          placeholder="password"
           visibilityToggleIcon={({ reveal, size }) =>
             reveal ?
               <IconEyeOff size={size} stroke={2.5} /> :
@@ -238,7 +239,7 @@ function CreateAccount() {
           </Anchor>
 
           <Button onClick={confirmSignup} radius="md">
-            Continue
+            Finish
           </Button>
         </Flex>
 
@@ -249,7 +250,8 @@ function CreateAccount() {
             color="blue"
             variant="light"
           >
-            Mail is sent. Please check your inbox.
+            Mail is sent.
+            Please check inbox or spam folder to verify your email.
           </Alert>
         }
 

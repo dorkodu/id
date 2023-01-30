@@ -58,7 +58,7 @@ function ChangePassword() {
         Change Password
       </Title>
       <Text color="dimmed" size="md" weight={500} align="center">
-        Forgot your password? No worries.
+        Want to change your password? No worries.
       </Text>
 
       <Flex justify="center">
@@ -67,21 +67,19 @@ function ChangePassword() {
 
           <Flex direction="column" gap="md">
             <TextInput
-              label="Your Username:"
-              placeholder="@username"
+              label="Your Username"
+              placeholder="username"
               defaultValue={state.username}
               onChange={(ev) => { setState({ ...state, username: ev.target.value }) }}
-              radius="md"
               variant="filled"
               required
             />
 
             <TextInput
-              label="Your Email:"
+              label="Your Email"
               placeholder="you@mail.com"
               defaultValue={state.email}
               onChange={(ev) => { setState({ ...state, email: ev.target.value }) }}
-              radius="md"
               variant="filled"
               required
             />
@@ -106,7 +104,8 @@ function ChangePassword() {
                 color="blue"
                 variant="light"
               >
-                Mail is sent. Please check your inbox.
+                Mail is sent.
+                Please check inbox or spam folder to change your password.
               </Alert>
             }
 

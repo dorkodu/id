@@ -45,7 +45,7 @@ function ChangeEmail() {
         Change Email
       </Title>
       <Text color="dimmed" size="md" align="center" weight={500}>
-        lorem ipsum
+        Want to change your email? No worries.
       </Text>
 
       <Flex justify="center">
@@ -86,7 +86,8 @@ function ChangeEmail() {
                 color="blue"
                 variant="light"
               >
-                Mail is sent. Please check your inbox.
+                Mail is sent.
+                Please check inbox or spam folder to change your email.
               </Alert>
             }
 

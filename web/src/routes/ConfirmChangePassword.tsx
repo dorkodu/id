@@ -1,5 +1,5 @@
 import { Alert, Anchor, Button, Card, Flex, LoadingOverlay, PasswordInput, Text, Title } from "@mantine/core";
-import { IconAlertCircle, IconArrowLeft, IconAsterisk, IconEye, IconEyeOff, IconInfoCircle } from "@tabler/icons";
+import { IconAlertCircle, IconArrowLeft, IconAsterisk, IconCircleCheck, IconEye, IconEyeOff } from "@tabler/icons";
 import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Header from "../components/Header";
@@ -45,7 +45,7 @@ function ConfirmChangePassword() {
         Change Password
       </Title>
       <Text color="dimmed" size="md" align="center" weight={500}>
-        Forgot your password? No worries.
+        Want to change your password? No worries.
       </Text>
 
       <Flex justify="center">
@@ -84,12 +84,14 @@ function ConfirmChangePassword() {
 
             {state.status === true &&
               <Alert
-                icon={<IconInfoCircle size={24} />}
-                title="Info"
-                color="blue"
+                icon={<IconCircleCheck size={24} />}
+                title="Success"
+                color="green"
                 variant="light"
               >
-                Mail is sent. Please check your inbox.
+                Your password is changed.
+                All your sessions are terminated.
+                Please log in.
               </Alert>
             }
 

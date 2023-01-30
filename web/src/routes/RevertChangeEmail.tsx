@@ -46,7 +46,7 @@ function RevertChangeEmail() {
         Revert Email
       </Title>
       <Text color="dimmed" size="md" align="center" weight={500}>
-        lorem ipsum
+        Want to change your email? No worries.
       </Text>
 
       <Flex justify="center">

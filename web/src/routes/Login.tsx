@@ -11,7 +11,7 @@ import {
   TextInput,
   Title,
 } from "@mantine/core";
-import { IconAlertCircle, IconArrowLeft, IconCircleCheck, IconEye, IconEyeOff } from "@tabler/icons";
+import { IconAlertCircle, IconArrowLeft, IconCircleCheck, IconEye, IconEyeOff, IconInfoCircle } from "@tabler/icons";
 import { useEffect, useReducer } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Header from "../components/Header";
@@ -87,17 +87,17 @@ function Login() {
           variant="filled"
           type="text"
           label="Username or Email"
-          placeholder="Enter @username"
+          placeholder="username or you@mail.com"
           defaultValue={state.info}
           onChange={(ev) => { setState({ ...state, info: ev.target.value }) }}
-          withAsterisk={false}
+          withAsterisk={true}
           required
         />
 
         <PasswordInput
           variant="filled"
           label="Password"
-          placeholder="Enter Password"
+          placeholder="password"
           visibilityToggleIcon={({ reveal, size }) =>
             reveal ?
               <IconEyeOff size={size} stroke={2.5} /> :
@@ -105,7 +105,7 @@ function Login() {
           }
           defaultValue={state.password}
           onChange={(ev) => { setState({ ...state, password: ev.target.value }) }}
-          withAsterisk={false}
+          withAsterisk={true}
           required
         />
 
@@ -121,6 +121,29 @@ function Login() {
             Login
           </Button>
         </Flex>
+
+        {state.status === "verify" &&
+          <Alert
+            icon={<IconInfoCircle size={24} />}
+            title="Info"
+            color="blue"
+            variant="light"
+          >
+            A new location is detected.
+            Please check inbox or spam folder to verify your location.
+          </Alert>
+        }
+
+        {state.status === "error" &&
+          <Alert
+            icon={<IconAlertCircle size={24} />}
+            title="Error"
+            color="red"
+            variant="light"
+          >
+            An error occured.
+          </Alert>
+        }
       </>
     )
   }
@@ -150,7 +173,8 @@ function Login() {
             color="green"
             variant="light"
           >
-            Verified.
+            Location is verified.
+            You can close this tab and continue to log in.
           </Alert>
         }
 
