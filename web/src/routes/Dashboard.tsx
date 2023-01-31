@@ -83,7 +83,7 @@ function Dashboard() {
     }
   }
 
-  const routeMenu = () => navigate("/menu");
+  const routeMenu = () => {/*navigate("/menu")*/ };
   const goBack = () => navigate(-1);
 
   useEffect(() => {
