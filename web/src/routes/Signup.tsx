@@ -32,7 +32,7 @@ import { widthLimit } from "../styles/css";
 
 interface State {
   loading: boolean;
-  status: boolean | undefined;
+  status: undefined | "ok" | "error" | "username" | "email" | "both";
 
   username: string;
   email: string;
@@ -83,7 +83,7 @@ function CreateAccount() {
       ...state,
       loading: false,
       status: status,
-      stage: status ? "confirm" : "signup"
+      stage: status === "ok" ? "confirm" : "signup"
     });
   }
 
@@ -93,7 +93,7 @@ function CreateAccount() {
 
     setState({ ...state, loading: true, status: undefined });
     const status = await queryVerifySignup(state.token);
-    setState({ ...state, loading: false, status: status });
+    setState({ ...state, loading: false, status: status ? "ok" : "error" });
   }
 
   const confirmSignup = async () => {
@@ -101,7 +101,7 @@ function CreateAccount() {
 
     setState({ ...state, loading: true, status: undefined });
     const status = await queryConfirmSignup(state.username, state.email, state.password);
-    setState({ ...state, loading: false, status: status });
+    setState({ ...state, loading: false, status: status ? "ok" : "error" });
 
     if (!status) return;
 
@@ -153,14 +153,17 @@ function CreateAccount() {
           </Button>
         </Flex>
 
-        {state.status === false &&
-          <Alert
+        {state.status !== "ok" &&
+          < Alert
             icon={<IconAlertCircle size={24} />}
             title="Info"
             color="red"
             variant="light"
           >
-            An error occured.
+            {state.status === "error" && "An error occured."}
+            {state.status === "username" && "Username is already in use."}
+            {state.status === "email" && "Email is already in use."}
+            {state.status === "both" && "Username and email are already in use."}
           </Alert>
         }
       </>
@@ -185,7 +188,7 @@ function CreateAccount() {
           </Anchor>
         }
 
-        {state.status === true &&
+        {state.status === "ok" &&
           <Alert
             icon={<IconCircleCheck size={24} />}
             title="Success"
@@ -197,7 +200,7 @@ function CreateAccount() {
           </Alert>
         }
 
-        {state.status === false &&
+        {state.status === "error" &&
           <Alert
             icon={<IconAlertCircle size={24} />}
             title="Error"
@@ -243,7 +246,7 @@ function CreateAccount() {
           </Button>
         </Flex>
 
-        {state.status === true &&
+        {state.status === "ok" &&
           <Alert
             icon={<IconInfoCircle size={24} />}
             title="Info"
@@ -255,7 +258,7 @@ function CreateAccount() {
           </Alert>
         }
 
-        {state.status === false &&
+        {state.status === "error" &&
           <Alert
             icon={<IconAlertCircle size={24} />}
             title="Info"

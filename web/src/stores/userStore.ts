@@ -34,7 +34,7 @@ interface Action {
 
   queryAuth: () => Promise<boolean>;
 
-  querySignup: (username: string, email: string) => Promise<boolean>;
+  querySignup: (username: string, email: string) => Promise<"ok" | "error" | "username" | "email" | "both">;
   queryVerifySignup: (token: string) => Promise<boolean>;
   queryConfirmSignup: (username: string, email: string, password: string) => Promise<boolean>;
 
@@ -140,8 +140,16 @@ export const useUserStore = create(
         (query) => request(query)
       );
 
-      if (!res?.a.data || res.a.error) return false;
-      return true;
+      if (res?.a.error) {
+        switch (res.a.error) {
+          case ErrorCode.UsernameUsed: return "username";
+          case ErrorCode.EmailUsed: return "email";
+          case ErrorCode.UsernameAndEmailUsed: return "both";
+          default: return "error";
+        }
+      }
+
+      return "ok";
     },
 
     queryVerifySignup: async (token) => {
