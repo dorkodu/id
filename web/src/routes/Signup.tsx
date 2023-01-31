@@ -306,7 +306,7 @@ function CreateAccount() {
           </Flex>
 
           <Flex direction="column" align="center">
-            <Text>Already have an account? </Text>
+            <Text>Already have an account?</Text>
 
             <Anchor color="blue" size={15} onClick={gotoLogin}>
               <Flex align="center" gap="xs">

@@ -23,6 +23,7 @@ import { IconArrowLeft, IconMenu2 } from "@tabler/icons";
 import { css } from "@emotion/react";
 import { Session } from "../components/Session";
 import Access from "../components/Access";
+import Footer from "../components/Footer";
 
 const width = css`
   max-width: 768px;
@@ -170,6 +171,8 @@ function Dashboard() {
 
       {state.show === "sessions" && sessions.map((s) => <Session key={s.id} session={s} />)}
       {state.show === "accesses" && accesses.map((a) => <Access key={a.id} access={a} />)}
+
+      <Footer />
     </AppShell>
   );
 };

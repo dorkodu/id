@@ -6,7 +6,7 @@ import Header from "../components/Header";
 
 function NotFound() {
   const navigate = useNavigate();
-  const goBack = () => navigate("/welcome");
+  const goBack = () => navigate("/dashboard");
 
   return (
     <Flex direction="column" gap="md">

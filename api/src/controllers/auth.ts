@@ -240,7 +240,7 @@ const login = sage.resource(
           userId: result0.id,
           selector: tkn.selector,
           validator: crypto.sha256(tkn.validator),
-          issuedSt: date.utc(),
+          issuedAt: date.utc(),
           sentAt: -1,
           expiresAt: -1,
           verified: false,
