@@ -18,6 +18,7 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { useUserStore } from "../stores/userStore";
 import { widthLimit } from "../styles/css";
+import { useTranslation } from "react-i18next";
 
 interface State {
   loading: boolean;
@@ -49,6 +50,7 @@ function Login() {
     stage: searchParams.get("token") ? "verify" : "login"
   });
 
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const queryLogin = useUserStore((state) => state.queryLogin);
   const queryVerifyLogin = useUserStore((state) => state.queryVerifyLogin);
@@ -86,8 +88,8 @@ function Login() {
         <TextInput
           variant="filled"
           type="text"
-          label="Username or Email"
-          placeholder="Enter username or email"
+          label={t("usernameOrEmail")}
+          placeholder={t("enterUsernameOrEmail")}
           defaultValue={state.info}
           onChange={(ev) => { setState({ ...state, info: ev.target.value }) }}
           withAsterisk={true}
@@ -96,8 +98,8 @@ function Login() {
 
         <PasswordInput
           variant="filled"
-          label="Password"
-          placeholder="Enter password"
+          label={t("password")}
+          placeholder={t("enterPassword")}
           visibilityToggleIcon={({ reveal, size }) =>
             reveal ?
               <IconEyeOff size={size} stroke={2.5} /> :
@@ -113,12 +115,12 @@ function Login() {
           <Anchor size={15} onClick={goBack}>
             <Flex align="center" gap="xs">
               <IconArrowLeft size={16} stroke={2.5} />
-              <Text>Go Back</Text>
+              <Text>{t("goBack")}</Text>
             </Flex>
           </Anchor>
 
           <Button onClick={login} radius="md">
-            Login
+            {t("login")}
           </Button>
         </Flex>
 
@@ -129,9 +131,7 @@ function Login() {
             color="blue"
             variant="light"
           >
-            A new location is detected.
-            Please check inbox or spam folder to verify your location,
-            then try again.
+            {t("info.newLocation")}
           </Alert>
         }
 
@@ -142,7 +142,7 @@ function Login() {
             color="red"
             variant="light"
           >
-            An error occured.
+            {t("error.default")}
           </Alert>
         }
       </>
@@ -162,7 +162,7 @@ function Login() {
           <Anchor size={15} onClick={goBack}>
             <Flex align="center" gap="xs">
               <IconArrowLeft size={16} stroke={2.5} />
-              <Text>Go Back</Text>
+              <Text>{t("goBack")}</Text>
             </Flex>
           </Anchor>
         }
@@ -174,8 +174,7 @@ function Login() {
             color="green"
             variant="light"
           >
-            Location is verified.
-            You can close this tab and continue to log in.
+            {t("success.locationVerified")}
           </Alert>
         }
 
@@ -186,7 +185,7 @@ function Login() {
             color="red"
             variant="light"
           >
-            An error occured.
+            {t("error.default")}
           </Alert>
         }
       </>
@@ -200,10 +199,10 @@ function Login() {
       <Header />
 
       <Title order={2} align="center">
-        Log In
+        {t("route.login.title")}
       </Title>
       <Text color="dimmed" size="md" align="center" weight={500}>
-        Welcome home. You were missed.
+        {t("route.login.description")}
       </Text>
 
       <Flex justify="center">
@@ -222,16 +221,16 @@ function Login() {
         <>
           <Flex direction="column" align="center" gap="md">
             <Anchor color="blue" size={15} onClick={gotoChangePassword}>
-              Forgot your password?
+              {t("forgotYourPassword")}
             </Anchor>
           </Flex>
 
           <Flex direction="column" align="center">
-            <Text size={15}>Don't have an account?</Text>
+            <Text size={15}>{t("dontHaveAnAccount")}</Text>
 
             <Anchor color="blue" size={15} onClick={gotoSignup}>
               <Flex align="center" gap="xs">
-                <Text>Create Account</Text>
+                <Text>{t("createAccount")}</Text>
                 <IconArrowRight size={16} stroke={2.5} />
               </Flex>
             </Anchor>

@@ -6,6 +6,7 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { useUserStore } from "../stores/userStore";
 import { widthLimit } from "../styles/css";
+import { useTranslation } from "react-i18next";
 
 interface State {
   loading: boolean;
@@ -23,6 +24,7 @@ function RevertChangeEmail() {
     token: searchParams.get("token") ?? ""
   });
 
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const queryRevertEmailChange = useUserStore(state => state.queryRevertEmailChange);
 
@@ -43,10 +45,10 @@ function RevertChangeEmail() {
       <Header />
 
       <Title order={2} align="center">
-        Revert Email
+        {t("route.signup.title")}
       </Title>
       <Text color="dimmed" size="md" align="center" weight={500}>
-        Want to change your email? No worries.
+        {t("route.signup.description")}
       </Text>
 
       <Flex justify="center">
@@ -62,7 +64,7 @@ function RevertChangeEmail() {
               <Anchor size={15} onClick={goBack}>
                 <Flex align="center" gap="xs">
                   <IconArrowLeft size={16} stroke={2.5} />
-                  <Text>Go Back</Text>
+                  <Text>{t("goBack")}</Text>
                 </Flex>
               </Anchor>
             }
@@ -74,7 +76,7 @@ function RevertChangeEmail() {
                 color="green"
                 variant="light"
               >
-                Email is reverted.
+                {t("success.emailReverted")}
               </Alert>
             }
 
@@ -85,7 +87,7 @@ function RevertChangeEmail() {
                 color="red"
                 variant="light"
               >
-                An error occured.
+                {t("error.default")}
               </Alert>
             }
           </Flex>

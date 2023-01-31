@@ -24,6 +24,7 @@ import { css } from "@emotion/react";
 import { Session } from "../components/Session";
 import Access from "../components/Access";
 import Footer from "../components/Footer";
+import { useTranslation } from "react-i18next";
 
 const width = css`
   max-width: 768px;
@@ -37,6 +38,7 @@ interface State {
 function Dashboard() {
   const [state, setState] = useState<State>({ show: "sessions" });
 
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const setUser = useUserStore((state) => state.setUser);
@@ -156,15 +158,15 @@ function Dashboard() {
             value={state.show}
             onChange={(show: typeof state.show) => setState({ ...state, show })}
             data={[
-              { label: "Sessions", value: "sessions" },
-              { label: "Accesses", value: "accesses" },
+              { label: t("sessions"), value: "sessions" },
+              { label: t("accesses"), value: "accesses" },
             ]}
           />
 
           <Button.Group>
-            <Button radius="md" fullWidth variant="default" onClick={refresh}>Refresh</Button>
-            <Button radius="md" fullWidth variant="default" onClick={loadNewer}>Load Newer</Button>
-            <Button radius="md" fullWidth variant="default" onClick={loadOlder}>Load Older</Button>
+            <Button radius="md" fullWidth variant="default" onClick={refresh}>{t("refresh")}</Button>
+            <Button radius="md" fullWidth variant="default" onClick={loadNewer}>{t("loadNewer")}</Button>
+            <Button radius="md" fullWidth variant="default" onClick={loadOlder}>{t("loadOlder")}</Button>
           </Button.Group>
         </Flex>
       </Card>

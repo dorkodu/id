@@ -8,6 +8,7 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { useNavigate } from "react-router-dom";
 import { widthLimit } from "../styles/css";
+import { useTranslation } from "react-i18next";
 
 interface State {
   loading: boolean;
@@ -20,6 +21,7 @@ interface State {
 function ChangePassword() {
   const user = useUserStore((state) => state.user);
 
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const queryInitiatePasswordChange = useUserStore((state) => state.queryInitiatePasswordChange);
 
@@ -55,10 +57,10 @@ function ChangePassword() {
       <Header />
 
       <Title order={2} align="center">
-        Change Password
+        {t("route.changePassword.title")}
       </Title>
       <Text color="dimmed" size="md" weight={500} align="center">
-        Want to change your password? No worries.
+        {t("route.changePassword.description")}
       </Text>
 
       <Flex justify="center">
@@ -67,8 +69,8 @@ function ChangePassword() {
 
           <Flex direction="column" gap="md">
             <TextInput
-              label="Your Username"
-              placeholder="username"
+              label={t("username")}
+              placeholder={t("enterUsername")}
               defaultValue={state.username}
               onChange={(ev) => { setState({ ...state, username: ev.target.value }) }}
               variant="filled"
@@ -76,8 +78,8 @@ function ChangePassword() {
             />
 
             <TextInput
-              label="Your Email"
-              placeholder="you@mail.com"
+              label={t("email")}
+              placeholder={t("enterEmail")}
               defaultValue={state.email}
               onChange={(ev) => { setState({ ...state, email: ev.target.value }) }}
               variant="filled"
@@ -88,12 +90,12 @@ function ChangePassword() {
               <Anchor size={15} onClick={goBack}>
                 <Flex align="center" gap="xs">
                   <IconArrowLeft size={16} stroke={2.5} />
-                  <Text>Go Back</Text>
+                  <Text>{t("goBack")}</Text>
                 </Flex>
               </Anchor>
 
               <Button onClick={initiateChangePassword} radius="md">
-                Change Password
+                {t("continue")}
               </Button>
             </Flex>
 
@@ -104,8 +106,7 @@ function ChangePassword() {
                 color="blue"
                 variant="light"
               >
-                Mail is sent.
-                Please check inbox or spam folder to change your password.
+                {t("info.changePassword")}
               </Alert>
             }
 
@@ -116,7 +117,7 @@ function ChangePassword() {
                 color="red"
                 variant="light"
               >
-                An error occured.
+                {t("error.default")}
               </Alert>
             }
           </Flex>

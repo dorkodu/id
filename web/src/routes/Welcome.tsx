@@ -9,7 +9,6 @@ import {
   ThemeIcon,
   ThemeIconProps,
   Flex,
-  Card,
   Space,
 } from "@mantine/core";
 
@@ -17,6 +16,7 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { IconDiscountCheck, IconLock, IconUnlink, IconUser } from "@tabler/icons";
 import { widthLimit } from "../styles/css";
+import { Trans, useTranslation } from "react-i18next";
 
 const styles: { themeIcons: Partial<ThemeIconProps> } = {
   themeIcons: {
@@ -27,8 +27,8 @@ const styles: { themeIcons: Partial<ThemeIconProps> } = {
 };
 
 function Welcome() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
-
   const authorized = useUserStore((state) => state.authorized);
 
   const gotoCreateAccount = () => navigate("/create-account");
@@ -42,49 +42,45 @@ function Welcome() {
 
       <Flex direction="column" align="center" gap="md">
         <Title order={1} size={32} align="center">
-          Your Digital Life,
-          <br />
-          One Account.
+          <Trans t={t} i18nKey="route.welcome.title" />
         </Title>
 
         <Text color="dimmed" size="lg" align="center" weight={600} css={widthLimit}>
-          Connect with ID, and get the most out of all the Dorkodu apps you use.
+          {t("route.welcome.description")}
         </Text>
       </Flex>
 
       <Flex justify="center">
-        <Card radius="md" css={widthLimit}>
-          <Flex direction="column" gap="md">
-            {authorized &&
-              <Button
-                variant="filled"
-                onClick={gotoDashboard}
-                radius="md">
-                Continue to Dashboard
+        <Flex direction="column" gap="md">
+          {authorized &&
+            <Button
+              variant="filled"
+              onClick={gotoDashboard}
+              radius="md">
+              {t("continueToDashboard")}
+            </Button>
+          }
+          {!authorized &&
+            <>
+              <Button variant="filled" onClick={gotoCreateAccount} radius="md">
+                {t("createAccount")}
               </Button>
-            }
-            {!authorized &&
-              <>
-                <Button variant="filled" onClick={gotoCreateAccount} radius="md">
-                  Create Account
-                </Button>
-                <Button variant="default" onClick={gotoLogin} radius="md">
-                  Log In
-                </Button>
+              <Button variant="default" onClick={gotoLogin} radius="md">
+                {t("login")}
+              </Button>
 
-                <Anchor
-                  color="blue"
-                  size={15}
-                  weight={450}
-                  onClick={gotoChangePassword}
-                  align="center"
-                >
-                  Forgot your password?
-                </Anchor>
-              </>
-            }
-          </Flex>
-        </Card>
+              <Anchor
+                color="blue"
+                size={15}
+                weight={450}
+                onClick={gotoChangePassword}
+                align="center"
+              >
+                {t("forgotYourPassword")}
+              </Anchor>
+            </>
+          }
+        </Flex>
       </Flex>
 
       <Flex justify="center">
@@ -93,28 +89,28 @@ function Welcome() {
             <ThemeIcon {...styles.themeIcons} color="cyan">
               <IconUser />
             </ThemeIcon>
-            Get a personalized experience.
+            {t("route.welcome.list.item1")}
           </Flex>
 
           <Flex align="center" gap="md">
             <ThemeIcon {...styles.themeIcons} color="blue">
               <IconDiscountCheck />
             </ThemeIcon>
-            Be verified everywhere.
+            {t("route.welcome.list.item2")}
           </Flex>
 
           <Flex align="center" gap="md">
             <ThemeIcon {...styles.themeIcons} color="indigo">
               <IconLock />
             </ThemeIcon>
-            Your life's information in one place.
+            {t("route.welcome.list.item3")}
           </Flex>
 
           <Flex align="center" gap="md">
             <ThemeIcon {...styles.themeIcons} color="violet">
               <IconUnlink />
             </ThemeIcon>
-            All apps are always connected.
+            {t("route.welcome.list.item4")}
           </Flex>
         </Flex>
       </Flex>

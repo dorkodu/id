@@ -1,7 +1,13 @@
-import { css } from "@emotion/react";
-import { Anchor, Divider, Flex, Text } from "@mantine/core";
+import { Anchor, Divider, Flex, NativeSelect, Text } from "@mantine/core";
+import { IconWorld } from "@tabler/icons";
+import i18n from "../lib/i18n";
+import { widthLimit } from "../styles/css";
+import { ColorToggleSegmented } from "./ColorToggle";
+import { useAppStore } from "../stores/appStore";
 
 function Footer() {
+  const changeLocale = useAppStore(state => state.changeLocale);
+
   const links = [
     { link: "https://dorkodu.com", label: "About", },
     { link: "https://dorkodu.com/privacy", label: "Privacy", },
@@ -17,11 +23,28 @@ function Footer() {
 
   return (
     <Flex direction="column" align="center" gap="xs">
-      <Divider css={css`width: 100%;`} />
+      <Divider css={widthLimit} />
+
       <Flex gap="xs">{items}</Flex>
+
       <Text color="dimmed" weight={450}>
         <b>Dorkodu</b> &copy; {new Date().getFullYear()}
       </Text>
+
+      <NativeSelect
+        radius="md"
+        variant="default"
+        placeholder="language..."
+        icon={<IconWorld />}
+        value={i18n.language}
+        onChange={(ev) => changeLocale(ev.currentTarget.value)}
+        data={[
+          { value: 'en', label: 'English' },
+          { value: 'tr', label: 'Türkçe' },
+        ]}
+      />
+
+      <ColorToggleSegmented />
     </Flex>
   )
 }

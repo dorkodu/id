@@ -6,6 +6,7 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { useUserStore } from "../stores/userStore";
 import { widthLimit } from "../styles/css";
+import { useTranslation } from "react-i18next";
 
 interface State {
   loading: boolean;
@@ -24,6 +25,7 @@ function ChangeEmail() {
     return newState;
   }, { loading: false, status: undefined, email: "" });
 
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const queryInitiateEmailChange = useUserStore(state => state.queryInitiateEmailChange);
 
@@ -42,10 +44,10 @@ function ChangeEmail() {
       <Header />
 
       <Title order={2} align="center">
-        Change Email
+        {t("route.changeEmail.title")}
       </Title>
       <Text color="dimmed" size="md" align="center" weight={500}>
-        Want to change your email? No worries.
+        {t("route.changeEmail.description")}
       </Text>
 
       <Flex justify="center">
@@ -54,9 +56,9 @@ function ChangeEmail() {
 
           <Flex direction="column" gap="md">
             <TextInput
-              label="New Email"
-              placeholder="you@mail.com"
-              description="Enter a valid email address."
+              label={t("newEmail")}
+              placeholder={t("enterNewEmail")}
+              description={t("emailDescription")}
               defaultValue={state.email}
               onChange={(ev) => { setState({ ...state, email: ev.target.value }) }}
               radius="md"
@@ -70,12 +72,12 @@ function ChangeEmail() {
               <Anchor size={15} onClick={goBack}>
                 <Flex align="center" gap="xs">
                   <IconArrowLeft size={16} stroke={2.5} />
-                  <Text>Go Back</Text>
+                  <Text>{t("goBack")}</Text>
                 </Flex>
               </Anchor>
 
               <Button onClick={initiateEmailChange} radius="md">
-                Change Email
+                {t("continue")}
               </Button>
             </Flex>
 
@@ -86,8 +88,7 @@ function ChangeEmail() {
                 color="blue"
                 variant="light"
               >
-                Mail is sent.
-                Please check inbox or spam folder to change your email.
+                {t("info.changeEmail")}
               </Alert>
             }
 
@@ -98,7 +99,7 @@ function ChangeEmail() {
                 color="red"
                 variant="light"
               >
-                An error occured.
+                {t("error.default")}
               </Alert>
             }
           </Flex>

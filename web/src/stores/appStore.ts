@@ -9,6 +9,7 @@ interface State {
     auth: boolean;
     locale: boolean;
   };
+  
   colorScheme: ColorScheme;
 }
 
@@ -25,6 +26,7 @@ const initialState: State = {
     auth: true,
     locale: true,
   },
+
   colorScheme: "light",
 };
 
@@ -62,9 +64,7 @@ export const useAppStore = create(
       await Promise.all([i18n.changeLanguage(lang), changeDateLanguage(lang)]);
       document.documentElement.lang = lang;
 
-      set((state) => {
-        state.loading.locale = false;
-      });
+      set(state => { state.loading.locale = false })
     },
   }))
 );

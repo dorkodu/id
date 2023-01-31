@@ -6,6 +6,7 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { useUserStore } from "../stores/userStore";
 import { widthLimit } from "../styles/css";
+import { useTranslation } from "react-i18next";
 
 interface State {
   loading: boolean;
@@ -23,6 +24,7 @@ function ConfirmChangeEmail() {
     token: searchParams.get("token") ?? ""
   });
 
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const queryConfirmEmailChange = useUserStore(state => state.queryConfirmEmailChange);
 
@@ -43,10 +45,10 @@ function ConfirmChangeEmail() {
       <Header />
 
       <Title order={2} align="center">
-        Change Email
+        {t("route.confirmEmailChange.title")}
       </Title>
       <Text color="dimmed" size="md" align="center" weight={500}>
-        Want to change your email? No worries.
+        {t("route.confirmEmailChange.description")}
       </Text>
 
       <Flex justify="center">
@@ -62,7 +64,7 @@ function ConfirmChangeEmail() {
               <Anchor size={15} onClick={goBack}>
                 <Flex align="center" gap="xs">
                   <IconArrowLeft size={16} stroke={2.5} />
-                  <Text>Go Back</Text>
+                  <Text>{t("goBack")}</Text>
                 </Flex>
               </Anchor>
             }
@@ -74,7 +76,7 @@ function ConfirmChangeEmail() {
                 color="green"
                 variant="light"
               >
-                Email is changed.
+                {t("success.emailChanged")}
               </Alert>
             }
 
@@ -85,7 +87,7 @@ function ConfirmChangeEmail() {
                 color="red"
                 variant="light"
               >
-                An error occured.
+                {t("error.default")}
               </Alert>
             }
           </Flex>

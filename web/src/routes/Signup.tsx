@@ -29,6 +29,7 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { useUserStore } from "../stores/userStore";
 import { widthLimit } from "../styles/css";
+import { Trans, useTranslation } from "react-i18next";
 
 interface State {
   loading: boolean;
@@ -65,6 +66,7 @@ function CreateAccount() {
     stage: searchParams.get("token") ? "verify" : "signup"
   });
 
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const querySignup = useUserStore((state) => state.querySignup);
   const queryVerifySignup = useUserStore((state) => state.queryVerifySignup);
@@ -117,10 +119,10 @@ function CreateAccount() {
       <>
         <TextInput
           variant="filled"
-          label="Username"
-          description="Use 1-16 chars from letters (a-z or A-Z), digits (0-9), dot (.), and underscore (_), avoiding consecutive and at start/end dots/underscores."
+          label={t("username")}
+          description={t("usernameDescription")}
           icon={<IconUser size={16} />}
-          placeholder="Enter username"
+          placeholder={t("enterUsername")}
           defaultValue={state.username}
           onChange={(ev) => { setState({ ...state, username: ev.target.value }) }}
           disabled={state.stage === "confirm"}
@@ -130,10 +132,10 @@ function CreateAccount() {
         <TextInput
           variant="filled"
           type="email"
-          label="Email"
-          description="Enter a valid email address."
+          label={t("email")}
+          description={t("emailDescription")}
           icon={<IconAt size={16} />}
-          placeholder="Enter email"
+          placeholder={t("enterEmail")}
           defaultValue={state.email}
           onChange={(ev) => { setState({ ...state, email: ev.target.value }) }}
           disabled={state.stage === "confirm"}
@@ -144,12 +146,12 @@ function CreateAccount() {
           <Anchor size={15} onClick={goBack}>
             <Flex align="center" gap="xs">
               <IconArrowLeft size={16} stroke={2.5} />
-              <Text>Go Back</Text>
+              <Text>{t("goBack")}</Text>
             </Flex>
           </Anchor>
 
           <Button onClick={signup} radius="md">
-            Continue
+            {t("continue")}
           </Button>
         </Flex>
 
@@ -160,10 +162,10 @@ function CreateAccount() {
             color="red"
             variant="light"
           >
-            {state.status === "error" && "An error occured."}
-            {state.status === "username" && "Username is already in use."}
-            {state.status === "email" && "Email is already in use."}
-            {state.status === "both" && "Username and email are already in use."}
+            {state.status === "error" && t("error.default")}
+            {state.status === "username" && t("error.usernameUsed")}
+            {state.status === "email" && t("error.emailUsed")}
+            {state.status === "both" && t("error.username&emailUsed")}
           </Alert>
         }
       </>
@@ -183,7 +185,7 @@ function CreateAccount() {
           <Anchor size={15} onClick={gotoDashboard}>
             <Flex align="center" gap="xs">
               <IconArrowLeft size={16} stroke={2.5} />
-              <Text>Go Back</Text>
+              <Text>{t("goBack")}</Text>
             </Flex>
           </Anchor>
         }
@@ -195,8 +197,7 @@ function CreateAccount() {
             color="green"
             variant="light"
           >
-            Email is verified.
-            You can close this tab and continue to create your account.
+            {t("success.emailVerified")}
           </Alert>
         }
 
@@ -207,7 +208,7 @@ function CreateAccount() {
             color="red"
             variant="light"
           >
-            An error occured.
+            {t("error.default")}
           </Alert>
         }
       </>
@@ -219,10 +220,10 @@ function CreateAccount() {
       <>
         <PasswordInput
           variant="filled"
-          label="Password"
-          description="Minimum 8 characters required."
+          label={t("password")}
+          description={t("passwordDescription")}
           icon={<IconAsterisk size={16} />}
-          placeholder="Enter password"
+          placeholder={t("enterPassword")}
           visibilityToggleIcon={({ reveal, size }) =>
             reveal ?
               <IconEyeOff size={size} stroke={2.5} /> :
@@ -237,12 +238,12 @@ function CreateAccount() {
           <Anchor size={15} onClick={goBack}>
             <Flex align="center" gap="xs">
               <IconArrowLeft size={16} stroke={2.5} />
-              <Text>Go Back</Text>
+              <Text>{t("goBack")}</Text>
             </Flex>
           </Anchor>
 
           <Button onClick={confirmSignup} radius="md">
-            Finish
+            {t("finish")}
           </Button>
         </Flex>
 
@@ -253,8 +254,7 @@ function CreateAccount() {
             color="blue"
             variant="light"
           >
-            Mail is sent.
-            Please check inbox or spam folder to verify your email.
+            {t("info.verifyEmail")}
           </Alert>
         }
 
@@ -265,7 +265,7 @@ function CreateAccount() {
             color="red"
             variant="light"
           >
-            An error occured.
+            {t("error.default")}
           </Alert>
         }
       </>
@@ -277,10 +277,10 @@ function CreateAccount() {
       <Header />
 
       <Title order={1} size="h2" align="center">
-        Create Your Account
+        {t("route.signup.title")}
       </Title>
       <Text color="dimmed" size="md" weight={500} align="center">
-        In a minute, say hello to your new digital life.
+        {t("route.signup.description")}
       </Text>
 
       <Flex justify="center">
@@ -300,17 +300,16 @@ function CreateAccount() {
         <>
           <Flex direction="column" align="center" gap="md">
             <Text color="dimmed" size="sm" align="center" maw={320}>
-              By creating an account, you will agree to
-              Dorkodu's <b>Terms of Service</b> and <b>Privacy Policy</b>.
+              <Trans t={t} i18nKey="route.signup.notice" />
             </Text>
           </Flex>
 
           <Flex direction="column" align="center">
-            <Text>Already have an account?</Text>
+            <Text>{t("alreadyHaveAnAccount")}</Text>
 
             <Anchor color="blue" size={15} onClick={gotoLogin}>
               <Flex align="center" gap="xs">
-                <Text>Log In</Text>
+                <Text>{t("login")}</Text>
                 <IconArrowRight size={16} stroke={2.5} />
               </Flex>
             </Anchor>

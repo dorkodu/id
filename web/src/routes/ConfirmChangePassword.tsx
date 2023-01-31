@@ -6,6 +6,7 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { useUserStore } from "../stores/userStore";
 import { widthLimit } from "../styles/css";
+import { useTranslation } from "react-i18next";
 
 interface State {
   loading: boolean;
@@ -25,6 +26,7 @@ function ConfirmChangePassword() {
     token: searchParams.get("token") ?? ""
   });
 
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const queryConfirmPasswordChange = useUserStore(state => state.queryConfirmPasswordChange);
   const goBack = () => navigate("/dashboard");
@@ -42,10 +44,10 @@ function ConfirmChangePassword() {
       <Header />
 
       <Title order={2} align="center">
-        Change Password
+        {t("route.confirmPasswordChange.title")}
       </Title>
       <Text color="dimmed" size="md" align="center" weight={500}>
-        Want to change your password? No worries.
+        {t("route.confirmPasswordChange.description")}
       </Text>
 
       <Flex justify="center">
@@ -54,9 +56,9 @@ function ConfirmChangePassword() {
 
           <Flex direction="column" gap="md">
             <PasswordInput
-              label="New Password"
-              placeholder="Password"
-              description="Minimum 8 characters required."
+              label={t("newPassword")}
+              placeholder={t("enterNewPassword")}
+              description={t("passwordDescription")}
               defaultValue={state.password}
               onChange={(ev) => { setState({ ...state, password: ev.target.value }) }}
               visibilityToggleIcon={({ reveal, size }) =>
@@ -73,12 +75,12 @@ function ConfirmChangePassword() {
               <Anchor size={15} onClick={goBack}>
                 <Flex align="center" gap="xs">
                   <IconArrowLeft size={16} stroke={2.5} />
-                  <Text>Go Back</Text>
+                  <Text>{t("goBack")}</Text>
                 </Flex>
               </Anchor>
 
               <Button onClick={confirmChangePassword} radius="md">
-                Change Password
+                {t("changePassword")}
               </Button>
             </Flex>
 
@@ -89,9 +91,7 @@ function ConfirmChangePassword() {
                 color="green"
                 variant="light"
               >
-                Your password is changed.
-                All your sessions are terminated.
-                Please log in.
+                {t("success.passwordChanged")}
               </Alert>
             }
 
@@ -102,7 +102,7 @@ function ConfirmChangePassword() {
                 color="red"
                 variant="light"
               >
-                An error occured.
+                {t("error.default")}
               </Alert>
             }
           </Flex>

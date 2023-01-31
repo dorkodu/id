@@ -1,3 +1,118 @@
 {
-  "welcome": "welcome"
+  "success": {
+    "emailVerified": "Email is verified. You can close this tab and continue to create your account.",
+    "emailReverted": "Email is reverted.",
+    "locationVerified": "Location is verified. You can close this tab and continue to log in.",
+    "emailChanged": "Email is changed.",
+    "passwordChanged": "Your password is changed. All your sessions and accesses are terminated. Please log in."
+  },
+
+  "error": {
+    "default": "An error occured.",
+    "usernameUsed": "Username is already in use.",
+    "emailUsed": "Email is already in use.",
+    "username&emailUsed": "Username and email are already in use."
+  },
+
+  "info": {
+    "verifyEmail": "Mail is sent. Please check inbox or spam folder to verify your email.",
+    "newLocation": "A new location is detected. Please check inbox or spam folder to verify your location, then try again.",
+    "changeEmail": "Mail is sent. Please check inbox or spam folder to change your email.",
+    "changePassword": "Mail is sent. Please check inbox or spam folder to change your password."
+  },
+
+  "route": {
+    "welcome": {
+      "title": "Your Digital Life, <br /> One Account.",
+  
+      "description": "Connect with ID, and get the most out of all the Dorkodu apps you use.",
+      
+      "list": {
+        "item1": "Get a personalized experience.",
+        "item2": "Be verified everywhere.",
+        "item3": "Your life's information in one place.",
+        "item4": "All apps are always connected."
+      }
+    },
+
+    "login": {
+      "title": "Log In",
+      "description": "Welcome home. You were missed."
+    },
+
+    "signup": {
+      "title": "Create Your Account",
+  
+      "description": "In a minute, say hello to your new digital life.",
+    
+      "notice": "By creating an account, you will agree to Dorkodu's <strong>Terms of Service</strong> and <strong>Privacy Policy</strong>."
+    },
+
+    "changeEmail": {
+      "title": "Change Email",
+      "description": "Want to change your email? No worries."
+    },
+
+    "confirmEmailChange": {
+      "title": "Confirm Email Change",
+      "description": "Want to change your email? No worries."
+    },
+
+    "revertEmailChange": {
+      "title": "Revert Email",
+      "description": "Want to change your email? No worries."
+    },
+
+    "changePassword": {
+      "title": "Change Password",
+      "description": "Want to change your password? No worries."
+    },
+
+    "confirmPasswordChange": {
+      "title": "Confirm Password Change",
+      "description": "Want to change your password? No worries."
+    },
+
+    "404": {
+      "title": "404",
+      "description": "Couldn't find the thing you are looking for."
+    }
+  },
+
+  "refresh": "Refresh",
+  "loadNewer": "Load Newer",
+  "loadOlder": "Load Older",
+
+  "sessions": "Sessions",
+  "accesses": "Accesses",
+
+  "username": "Username",
+  "enterUsername": "Enter Username",
+  "usernameDescription": "Use 1-16 chars from letters (a-z or A-Z), digits (0-9), dot (.), and underscore (_), avoiding consecutive and at start/end dots/underscores.",
+
+  "usernameOrEmail": "Username or Email",
+  "enterUsernameOrEmail": "Enter Username or Email",
+
+  "email": "Email",
+  "enterEmail": "Enter Email",
+  "emailDescription": "Enter a valid email address.",
+  "newEmail": "New Email",
+  "enterNewEmail": "Enter New Email",
+
+  "password": "Password",
+  "enterPassword": "Enter Password",
+  "passwordDescription": "Minimum 8 characters required.",
+  "newPassword": "New Password",
+  "enterNewPassword": "Enter New Password",
+
+  "continueToDashboard": "Continue to Dashboard",
+  "createAccount": "Create Account",
+  "alreadyHaveAnAccount": "Already have an account?",
+  "login": "Log In",
+  "forgotYourPassword": "Forgot your password?",
+  "dontHaveAnAccount": "Don't have an account?",
+  "goBack": "Go Back",
+  "continue": "Continue",
+  "finish": "Finish",
+  "changePassword": "Change Password"
 }
