@@ -92,7 +92,7 @@ const signup = sage.resource(
     })();
 
     // Attach a temporary cookie for signup confirmation
-    token.attach(ctx.res, { value: tkn.full, expiresAt: row.expires_at }, "temp");
+    token.attach(ctx.res, { value: tkn.full, expiresAt: date.minute(10) }, "temp");
 
     return { data: {} }
   }

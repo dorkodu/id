@@ -57,7 +57,7 @@ const getUserData = sage.resource(
     const result0 = await validateAccessToken(parsed.data.token);
     if (!result0) return { error: ErrorCode.Default };
 
-    const result = await pg`
+    const [result] = await pg`
       SELECT id, name, username, bio, email, joined_at
       FROM users WHERE id=${result0.userId}
     `;

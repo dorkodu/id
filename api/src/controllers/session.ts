@@ -14,8 +14,7 @@ const getCurrentSession = sage.resource(
   async (_arg, ctx): Promise<{ data?: ISessionParsed, error?: ErrorCode }> => {
     const info = await auth.getAuthInfo(ctx);
     if (!info) return { error: ErrorCode.Default };
-
-    const result = await pg`
+    const [result] = await pg`
       SELECT id, created_at, expires_at, user_agent, ip FROM sessions WHERE id=${info.sessionId}
     `;
     const parsed = iSessionSchema.safeParse(result);
