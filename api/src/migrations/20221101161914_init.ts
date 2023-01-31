@@ -4,21 +4,33 @@ export async function up(knex: Knex): Promise<void> {
   return knex.schema
     .createTable("users", (table) => {
       table.bigint("id").primary()
-      table.string("username", 16).unique()
-      table.string("email", 320).unique()
-      table.binary("password", 60)
-      table.bigint("joined_at")
+      table.specificType("name", "varchar(64) COLLATE \"C\"").notNullable()
+      table.specificType("bio", "varchar(500) COLLATE \"C\"").notNullable()
+      table.specificType("username", "varchar(16) COLLATE \"C\"").notNullable()
+      table.specificType("username_ci", "varchar(16) COLLATE \"C\"").notNullable()
+      table.specificType("email", "varchar(320) COLLATE \"C\"").notNullable()
+      table.specificType("email_ci", "varchar(320) COLLATE \"C\"").notNullable()
+      table.bigint("joined_at").notNullable()
+      table.binary("password", 60).notNullable()
+
+      table.unique(["username_ci"], undefined)
+      table.unique(["email_ci"], undefined)
     })
 
     .createTable("sessions", (table) => {
       table.bigint("id").primary()
-      table.bigint("user_id")
-      table.binary("selector", 32).unique()
-      table.binary("validator", 32)
-      table.bigint("created_at")
-      table.bigint("expires_at")
-      table.string("user_agent", 256)
-      table.specificType("ip", "inet")
+      table.bigint("user_id").notNullable()
+      table.binary("selector", 32).notNullable()
+      table.binary("validator", 32).notNullable()
+      table.bigint("created_at").notNullable()
+      table.bigint("expires_at").notNullable()
+      table.specificType("user_agent", "varchar(256) COLLATE \"C\"").notNullable()
+      table.specificType("ip", "inet").notNullable()
+
+      table.index("ip", undefined, "hash")
+      table.index("user_id", undefined, "hash")
+
+      table.unique(["selector"], undefined)
     })
 }
 

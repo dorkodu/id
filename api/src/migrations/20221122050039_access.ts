@@ -5,25 +5,29 @@ export async function up(knex: Knex): Promise<void> {
     .createTable("access_tokens", (table) => {
       table.bigint("id").primary()
       table.bigint("user_id")
-      table.binary("selector", 32).unique()
+      table.binary("selector", 32)
       table.binary("validator", 32)
       table.bigint("created_at")
       table.bigint("expires_at")
       table.string("user_agent", 256)
       table.specificType("ip", "inet")
       table.string("service", 128)
+      
+      table.unique(["selector"], undefined)
     })
 
     .createTable("access_codes", (table) => {
       table.bigint("id").primary()
       table.bigint("user_id")
-      table.binary("selector", 32).unique()
+      table.binary("selector", 32)
       table.binary("validator", 32)
       table.bigint("created_at")
       table.bigint("expires_at")
       table.string("user_agent", 256)
       table.specificType("ip", "inet")
       table.string("service", 128)
+      
+      table.unique(["selector"], undefined)
     })
 }
 

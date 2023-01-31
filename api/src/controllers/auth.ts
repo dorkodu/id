@@ -48,14 +48,22 @@ const signup = sage.resource(
 
     // Check if username/email is already used
     const [result0, result1] = await pg.begin(async (pg) => {
-      const [result0]: [{ count: string }?] = await pg`SELECT COUNT(*) FROM users WHERE username=${username}`;
-      const [result1]: [{ count: string }?] = await pg`SELECT COUNT(*) FROM users WHERE email=${email}`;
+      const [result0]: [{ exists: boolean }?] = await pg`
+        SELECT EXISTS (
+          SELECT * FROM users WHERE username_ci=${username.toLowerCase()}
+        )
+      `;
+      const [result1]: [{ exists: boolean }?] = await pg`
+        SELECT EXISTS (
+          SELECT * FROM users WHERE email_ci=${email.toLowerCase()}
+        )
+      `;
       return [result0, result1];
     })
     if (!result0) return { error: ErrorCode.Default };
     if (!result1) return { error: ErrorCode.Default };
-    const usernameUsed = util.intParse(result0.count, -1) !== 0;
-    const emailUsed = util.intParse(result1.count, -1) !== 0;
+    const usernameUsed = result0.exists;
+    const emailUsed = result1.exists;
     if (usernameUsed && emailUsed) return { error: ErrorCode.UsernameAndEmailUsed };
     else if (usernameUsed) return { error: ErrorCode.UsernameUsed };
     else if (emailUsed) return { error: ErrorCode.EmailUsed };
@@ -72,15 +80,16 @@ const signup = sage.resource(
       sent_at: -1,
       expires_at: -1,
       verified: false,
-    }
+    };
 
-    mailer.sendVerifySignup(email, tkn.full);
+    (async () => {
+      await mailer.sendVerifySignup(email, tkn.full);
 
-    // Set sent_at to now, expires_at to 10 minutes & insert to the database
-    row.sent_at = date.utc();
-    row.expires_at = date.minute(10);
-    const result2 = await pg`INSERT INTO email_verify_signup ${pg(row)}`;
-    if (result2.count === 0) return { error: ErrorCode.Default };
+      // Set sent_at to now, expires_at to 10 minutes & insert to the database
+      row.sent_at = date.utc();
+      row.expires_at = date.minute(10);
+      await pg`INSERT INTO email_verify_signup ${pg(row)}`;
+    })();
 
     // Attach a temporary cookie for signup confirmation
     token.attach(ctx.res, { value: tkn.full, expiresAt: row.expires_at }, "temp");
@@ -103,7 +112,7 @@ const verifySignup = sage.resource(
     const [result0]: [{ id: string, validator: Buffer, sentAt: string, expiresAt: string }?] = await pg`
       SELECT id, validator, sent_at, expires_at FROM email_verify_signup
       WHERE selector=${parsedToken.selector}
-    `
+    `;
     if (!result0) return { error: ErrorCode.Default };
     if (!token.check(result0, parsedToken.validator)) return { error: ErrorCode.Default };
     if (util.intParse(result0.sentAt, -1) === -1) return { error: ErrorCode.Default };
@@ -111,7 +120,7 @@ const verifySignup = sage.resource(
     const result1 = await pg`
       UPDATE email_verify_signup SET verified=TRUE
       WHERE id=${result0.id}
-    `
+    `;
     if (result1.count === 0) return { error: ErrorCode.Default };
 
     return { data: {} };
@@ -151,8 +160,12 @@ const confirmSignup = sage.resource(
 
     const row = {
       id: snowflake.id("users"),
+      name: username,
+      bio: "",
       username: username,
+      username_ci: username.toLowerCase(),
       email: email,
+      email_ci: email.toLowerCase(),
       password: await crypto.encryptPassword(password),
       joined_at: date.utc(),
     }
@@ -182,8 +195,18 @@ const login = sage.resource(
     const email = emailParsed.success ? emailParsed.data : undefined;
 
     let [result0]: [{ id: string, email: string, password: Buffer }?] = [undefined];
-    if (username) [result0] = await pg`SELECT id, email, password FROM users WHERE username=${username}`;
-    else if (email) [result0] = await pg`SELECT id, email, password FROM users WHERE email=${email}`;
+    if (username) {
+      [result0] = await pg`
+        SELECT id, email, password FROM users 
+        WHERE username_ci=${username.toLowerCase()}
+      `;
+    }
+    else if (email) {
+      [result0] = await pg`
+        SELECT id, email, password FROM users 
+        WHERE email_ci=${email.toLowerCase()}
+      `;
+    }
     else return { error: ErrorCode.Default };
 
     if (!result0) return { error: ErrorCode.Default };
@@ -193,36 +216,44 @@ const login = sage.resource(
     const ua = userAgent.get(ctx.req);
 
     // If there is no session & no login verification with this ip
-    // for the given users, send an email link which expires in 10 minutes 
-    const [result1]: [{ count: string }?] = await pg`
-      SELECT COUNT(*) FROM sessions
-      WHERE user_id=${result0.id} AND ip=${ip}
+    // for the given user, send an email link which expires in 10 minutes
+    const [result1]: [{ exists: boolean }?] = await pg`
+      SELECT EXISTS (
+        SELECT * FROM sessions WHERE user_id=${result0.id} AND ip=${ip}
+      )
     `;
-    if (!result1 || util.intParse(result1.count, 0) === 0) {
-      const [result2]: [{ count: string }?] = await pg`
-        SELECT COUNT(*) FROM email_verify_login
-        WHERE user_id=${result0.id} AND ip=${ip} AND verified=TRUE
+    if (!result1) return { error: ErrorCode.Default };
+
+    if (!result1.exists) {
+      const [result2]: [{ exists: boolean }?] = await pg`
+        SELECT EXISTS (
+          SELECT * FROM email_verify_login
+          WHERE user_id=${result0.id} AND ip=${ip} AND verified=TRUE
+        )
       `;
-      if (!result2 || util.intParse(result2.count, 0) === 0) {
+      if (!result2) return { error: ErrorCode.Default };
+
+      if (!result2.exists) {
         const tkn = token.create();
         const row = {
           id: snowflake.id("email_verify_login"),
           userId: result0.id,
           selector: tkn.selector,
           validator: crypto.sha256(tkn.validator),
-          issued_at: date.utc(),
-          sent_at: -1,
-          expires_at: -1,
+          issuedSt: date.utc(),
+          sentAt: -1,
+          expiresAt: -1,
           verified: false,
           ip: ip,
-        }
+        };
 
-        mailer.sendVerifyLogin(result0.email, tkn.full, ip, ua);
+        (async () => {
+          await mailer.sendVerifyLogin(result0.email, tkn.full, ip, ua);
 
-        row.sent_at = date.utc();
-        row.expires_at = date.minute(10);
-        const result1 = await pg`INSERT INTO email_verify_login ${pg(row)}`;
-        if (result1.count === 0) return { error: ErrorCode.Default };
+          row.sentAt = date.utc();
+          row.expiresAt = date.minute(10);
+          await pg`INSERT INTO email_verify_login ${pg(row)}`;
+        })();
 
         return { error: ErrorCode.LoginNewLocation };
       }
@@ -253,7 +284,7 @@ const verifyLogin = sage.resource(
     }?] = await pg`
       SELECT id, validator, sent_at, expires_at FROM email_verify_login
       WHERE selector=${parsedToken.selector}
-    `
+    `;
     if (!result0) return { error: ErrorCode.Default };
     if (util.intParse(result0.sentAt, -1) === -1) return { error: ErrorCode.Default };
     if (!token.check(result0, parsedToken.validator)) return { error: ErrorCode.Default };
@@ -261,7 +292,7 @@ const verifyLogin = sage.resource(
     const result1 = await pg`
       UPDATE email_verify_login SET verified=TRUE
       WHERE id=${result0.id}
-    `
+    `;
     if (result1.count === 0) return { error: ErrorCode.Default };
 
     return { data: {} };
@@ -298,21 +329,21 @@ async function queryCreateSession(req: Request, res: Response, userId: string): 
     user_id: userId,
     selector: tkn.selector,
     validator: crypto.sha256(tkn.validator),
-    created_at: date.utc(),
-    expires_at: date.day(30),
-    user_agent: userAgent.get(req),
+    createdAt: date.utc(),
+    expiresAt: date.day(30),
+    userAgent: userAgent.get(req),
     ip: util.getIP(req),
   }
 
   const result = await pg`INSERT INTO sessions ${pg(row)}`;
   if (result.count === 0) return false;
 
-  token.attach(res, { value: tkn.full, expiresAt: row.expires_at }, "session");
+  token.attach(res, { value: tkn.full, expiresAt: row.expiresAt }, "session");
   return true;
 }
 
 async function queryExpireSession(res: Response, sessionId: string, userId: string) {
-  await pg`UPDATE sessions SET expires_at=${Date.now()} WHERE id=${sessionId} AND user_id=${userId}`;
+  await pg`UPDATE sessions SET expires_at=${date.utc()} WHERE id=${sessionId} AND user_id=${userId}`;
   token.detach(res, "session");
 }
 
