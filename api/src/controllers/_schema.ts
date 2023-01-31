@@ -36,7 +36,7 @@ export const schema = sage.schema(
     /* user */
     getUser: user.getUser,
 
-    changeUsername: user.changeUsername,
+    editProfile: user.editProfile,
 
     initiateEmailChange: user.initiateEmailChange,
     confirmEmailChange: user.confirmEmailChange,

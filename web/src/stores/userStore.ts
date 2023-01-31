@@ -44,7 +44,7 @@ interface Action {
   queryLogout: () => Promise<boolean>;
 
   queryGetUser: () => Promise<boolean>;
-  queryChangeUsername: (newUsername: string) => Promise<boolean>;
+  queryEditProfile: (name: string, username: string, bio: string) => Promise<boolean>;
   queryInitiateEmailChange: (newEmail: string) => Promise<boolean>;
   queryConfirmEmailChange: (token: string) => Promise<boolean>;
   queryRevertEmailChange: (token: string) => Promise<boolean>;
@@ -226,9 +226,9 @@ export const useUserStore = create(
       return true;
     },
 
-    queryChangeUsername: async (newUsername) => {
+    queryEditProfile: async (name, username, bio) => {
       const res = await sage.get(
-        { a: sage.query("changeUsername", { newUsername }) },
+        { a: sage.query("editProfile", { name, username, bio }) },
         (query) => request(query)
       );
 

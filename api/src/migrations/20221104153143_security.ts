@@ -43,6 +43,8 @@ export async function up(knex: Knex): Promise<void> {
       table.bigint("sent_at")
       table.bigint("expires_at")
 
+      table.index("user_id", undefined, "hash")
+
       table.unique(["selector"], undefined)
     })
 
@@ -56,6 +58,8 @@ export async function up(knex: Knex): Promise<void> {
       table.bigint("sent_at")
       table.bigint("expires_at")
 
+      table.index("user_id", undefined, "hash")
+
       table.unique(["selector"], undefined)
     })
 
@@ -67,6 +71,8 @@ export async function up(knex: Knex): Promise<void> {
       table.bigint("issued_at")
       table.bigint("sent_at")
       table.bigint("expires_at")
+      
+      table.index("user_id", undefined, "hash")
 
       table.unique(["selector"], undefined)
     })

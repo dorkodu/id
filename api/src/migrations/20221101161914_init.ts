@@ -29,6 +29,7 @@ export async function up(knex: Knex): Promise<void> {
 
       table.index("ip", undefined, "hash")
       table.index("user_id", undefined, "hash")
+      table.index("expires_at", undefined, "btree")
 
       table.unique(["selector"], undefined)
     })

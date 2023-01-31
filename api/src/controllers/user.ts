@@ -1,5 +1,5 @@
 import {
-  changeUsernameSchema,
+  editProfileSchema,
   confirmEmailChangeSchema,
   confirmPasswordChangeSchema,
   initiateEmailChangeSchema,
@@ -11,7 +11,7 @@ import { SchemaContext } from "./_schema";
 import { z } from "zod";
 import auth from "./auth";
 import pg from "../pg";
-import { IUserParsed, IUserRaw, iUserSchema } from "../types/user";
+import { IUserParsed, iUserSchema } from "../types/user";
 import { token } from "../lib/token";
 import { crypto } from "../lib/crypto";
 import { mailer } from "../lib/mailer";
@@ -27,8 +27,9 @@ const getUser = sage.resource(
     const info = await auth.getAuthInfo(ctx);
     if (!info) return { error: ErrorCode.Default };
 
-    const [result]: [IUserRaw?] = await pg`
-      SELECT id, username, email, joined_at FROM users WHERE id=${info.userId}
+    const [result] = await pg`
+      SELECT id, name, username, bio, email, joined_at
+      FROM users WHERE id=${info.userId}
     `;
     const parsed = iUserSchema.safeParse(result);
     if (!parsed.success) return { error: ErrorCode.Default };
@@ -37,18 +38,23 @@ const getUser = sage.resource(
   }
 )
 
-const changeUsername = sage.resource(
+const editProfile = sage.resource(
   {} as SchemaContext,
-  {} as z.infer<typeof changeUsernameSchema>,
+  {} as z.infer<typeof editProfileSchema>,
   async (arg, ctx): Promise<{ data?: {}, error?: ErrorCode }> => {
-    const parsed = changeUsernameSchema.safeParse(arg);
+    const parsed = editProfileSchema.safeParse(arg);
     if (!parsed.success) return { error: ErrorCode.Default };
 
     const info = await auth.getAuthInfo(ctx);
     if (!info) return { error: ErrorCode.Default };
 
-    const { newUsername } = parsed.data;
-    const result = await pg`UPDATE users SET username=${newUsername} WHERE id=${info.userId}`;
+    const { name, username, bio } = parsed.data;
+    const result = await pg`
+      UPDATE users
+      SET name=${name}, bio=${bio}, 
+      username=${username}, username_ci=${username.toLowerCase()}
+      WHERE id=${info.userId}
+    `;
     if (result.count === 0) return { error: ErrorCode.Default };
 
     return { data: {} };
@@ -65,31 +71,33 @@ const initiateEmailChange = sage.resource(
     const info = await auth.getAuthInfo(ctx);
     if (!info) return { error: ErrorCode.Default };
 
-    const [result0]: [{ email: string }?] = await pg`
-      SELECT email FROM users WHERE id=${info.userId}
+    const { newEmail } = parsed.data;
+
+    const [result0]: [{ emailCi: string }?] = await pg`
+      SELECT email_ci FROM users WHERE id=${info.userId}
     `;
     if (!result0) return { error: ErrorCode.Default };
-    if (result0.email === parsed.data.newEmail) return { error: ErrorCode.Default };
+    if (result0.emailCi === newEmail.toLowerCase()) return { error: ErrorCode.Default };
 
-    const newEmail = parsed.data.newEmail;
     const tkn = token.create();
     const row = {
       id: snowflake.id("email_confirm_email"),
-      user_id: info.userId,
+      userId: info.userId,
       email: newEmail,
       selector: tkn.selector,
       validator: crypto.sha256(tkn.validator),
-      issued_at: date.utc(),
-      sent_at: -1,
-      expires_at: -1,
-    }
+      issuedAt: date.utc(),
+      sentAt: -1,
+      expiresAt: -1,
+    };
 
-    mailer.sendConfirmEmailChange(newEmail, tkn.full);
+    (async () => {
+      await mailer.sendConfirmEmailChange(newEmail, tkn.full);
 
-    row.sent_at = date.utc();
-    row.expires_at = date.hour(1);
-    const result1 = await pg`INSERT INTO email_confirm_email ${pg(row)}`;
-    if (result1.count === 0) return { error: ErrorCode.Default };
+      row.sentAt = date.utc();
+      row.expiresAt = date.hour(1);
+      await pg`INSERT INTO email_confirm_email ${pg(row)}`;
+    })();
 
     return { data: {} };
   }
@@ -115,40 +123,45 @@ const confirmEmailChange = sage.resource(
 
     const [result1]: [{ email: string }?] = await pg`SELECT email FROM users WHERE id=${result0.userId}`;
     if (!result1) return { error: ErrorCode.Default };
-    if (result1.email === result0.email) return { error: ErrorCode.Default };
+    if (result1.email.toLocaleLowerCase() === result0.email.toLocaleLowerCase()) return { error: ErrorCode.Default };
 
-    const [result2]: [{ count: string }?] = await pg`
-      SELECT COUNT(*) FROM email_confirm_email
-      WHERE id>${result0.id} AND user_id=${result0.userId}
+    const [result2]: [{ exists: boolean }?] = await pg`
+      SELECT EXISTS (
+        SELECT * FROM email_confirm_email
+        WHERE id>${result0.id} AND user_id=${result0.userId}
+      )
     `;
     if (!result2) return { error: ErrorCode.Default };
-    if (util.intParse(result2.count, -1) !== 0) return { error: ErrorCode.Default };
+    if (result2.exists) return { error: ErrorCode.Default };
 
     const oldEmail = result1.email;
     const tkn1 = token.create();
     const row = {
       id: snowflake.id("email_revert_email"),
-      user_id: result0.userId,
+      userId: result0.userId,
       email: oldEmail,
       selector: tkn1.selector,
       validator: crypto.sha256(tkn1.validator),
-      issued_at: date.utc(),
-      sent_at: -1,
-      expires_at: -1,
-    }
+      issuedAt: date.utc(),
+      sentAt: -1,
+      expiresAt: -1,
+    };
 
-    mailer.sendRevertEmailChange(oldEmail, tkn1.full);
+    (async () => {
+      await mailer.sendRevertEmailChange(oldEmail, tkn1.full);
 
-    row.sent_at = date.utc();
-    row.expires_at = date.day(30);
-    const [result3, result4, result5] = await pg.begin(pg => [
-      pg`INSERT INTO email_revert_email ${pg(row)}`,
-      pg`UPDATE users SET email=${result0.email} WHERE id=${result0.userId}`,
-      pg`UPDATE email_confirm_email SET expires_at=${date.utc()} WHERE id=${result0.id}`
-    ]);
-    if (!result3.count) return { error: ErrorCode.Default };
-    if (!result4.count) return { error: ErrorCode.Default };
-    if (!result5.count) return { error: ErrorCode.Default };
+      row.sentAt = date.utc();
+      row.expiresAt = date.day(30);
+      await pg.begin(pg => [
+        pg`INSERT INTO email_revert_email ${pg(row)}`,
+        pg`
+          UPDATE users
+          SET email=${result0.email}, email_ci=${result0.email.toLowerCase()}
+          WHERE id=${result0.userId}
+        `,
+        pg`UPDATE email_confirm_email SET expires_at=${date.utc()} WHERE id=${result0.id}`
+      ]);
+    })();
 
     return { data: {} };
   }
@@ -174,13 +187,17 @@ const revertEmailChange = sage.resource(
 
     const [result1]: [{ email: string }?] = await pg` SELECT email FROM users WHERE id=${result0.userId}`;
     if (!result1) return { error: ErrorCode.Default };
-    if (result1.email === result0.email) return { error: ErrorCode.Default };
+    if (result1.email.toLocaleLowerCase() === result0.email.toLocaleLowerCase()) return { error: ErrorCode.Default };
 
     const [result2, result3, _result4] = await pg.begin(pg => [
-      pg`UPDATE users SET email=${result0.email} WHERE id=${result0.userId}`,
+      pg`UPDATE users
+        SET email=${result0.email}, email_ci=${result0.email.toLowerCase()}
+        WHERE id=${result0.userId}
+      `,
       pg`UPDATE email_revert_email SET expires_at=${date.utc()} WHERE id=${result0.id}`,
       pg`UPDATE email_revert_email SET expires_at=${date.utc()} 
-         WHERE id>${result0.id} AND user_id=${result0.userId}`
+         WHERE id>${result0.id} AND user_id=${result0.userId}
+      `,
     ]);
     if (!result2.count) return { error: ErrorCode.Default };
     if (!result3.count) return { error: ErrorCode.Default };
@@ -200,25 +217,26 @@ const initiatePasswordChange = sage.resource(
       const { username, email } = parsed.data;
 
       const [result0]: [{ id: string }?] = await pg`
-        SELECT id FROM users WHERE username=${username} AND email=${email}
+        SELECT id FROM users
+        WHERE username_ci=${username.toLowerCase()} AND email_ci=${email.toLowerCase()}
       `;
       if (!result0) return;
 
       const tkn = token.create();
       const row = {
         id: snowflake.id("email_change_password"),
-        user_id: result0.id,
+        userId: result0.id,
         selector: tkn.selector,
         validator: crypto.sha256(tkn.validator),
-        issued_at: date.utc(),
-        sent_at: -1,
-        expires_at: -1,
+        issuedAt: date.utc(),
+        sentAt: -1,
+        expiresAt: -1,
       }
 
-      mailer.sendConfirmPasswordChange(email, tkn.full);
+      await mailer.sendConfirmPasswordChange(email, tkn.full);
 
-      row.sent_at = date.utc();
-      row.expires_at = date.hour(1);
+      row.sentAt = date.utc();
+      row.expiresAt = date.hour(1);
       await pg`INSERT INTO email_change_password ${pg(row)}`;
     })();
 
@@ -244,19 +262,21 @@ const confirmPasswordChange = sage.resource(
     if (!token.check(result0, tkn.validator)) return { error: ErrorCode.Default };
     if (util.intParse(result0.sentAt, -1) === -1) return { error: ErrorCode.Default };
 
-    const [result2]: [{ count: string }?] = await pg`
-      SELECT COUNT(*) FROM email_change_password
-      WHERE id>${result0.id} AND user_id=${result0.userId}
+    const [result2]: [{ exists: boolean }?] = await pg`
+      SELECT EXISTS (
+        SELECT * FROM email_change_password
+        WHERE id>${result0.id} AND user_id=${result0.userId}
+      )
     `;
     if (!result2) return { error: ErrorCode.Default };
-    if (util.intParse(result2.count, -1) !== 0) return { error: ErrorCode.Default };
+    if (result2.exists) return { error: ErrorCode.Default };
 
     const password = await crypto.encryptPassword(parsed.data.newPassword);
     const [result3, _result4, result5] = await pg.begin(pg => [
       pg`UPDATE users SET password=${password} WHERE id=${result0.userId}`,
       pg`UPDATE sessions SET expires_at=${date.utc()} WHERE user_id=${result0.userId} AND expires_at>${date.utc()}`,
       pg`UPDATE email_change_password SET expires_at=${date.utc()} WHERE id=${result0.id}`
-    ])
+    ]);
     if (result3.count === 0) return { error: ErrorCode.Default };
     if (result5.count === 0) return { error: ErrorCode.Default };
 
@@ -267,7 +287,7 @@ const confirmPasswordChange = sage.resource(
 export default {
   getUser,
 
-  changeUsername,
+  editProfile,
 
   initiateEmailChange,
   confirmEmailChange,
