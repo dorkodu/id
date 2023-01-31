@@ -1,6 +1,5 @@
 import {
   SegmentedControl,
-  Group,
   Center,
   ActionIcon,
   useMantineColorScheme,
