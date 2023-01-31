@@ -1,5 +1,7 @@
 import nodemailer from "nodemailer";
-import { config } from "../config";
+import { config } from "../../config";
+
+import { VerifyLogin } from "./templates";
 
 const url = "https://id.dorkodu.com";
 
@@ -23,13 +25,7 @@ function sendVerifyLogin(
 
   return new Promise((resolve) => {
     transporter.sendMail(
-      {
-        from: '"ID" <id@dorkodu.com>',
-        to: email,
-        subject: "Verify Login",
-        text: `${ip} ${userAgent} ${link}`,
-        html: `<div>${ip}</div><div>${userAgent}</div><a href="${link}">${link}</a>`,
-      },
+      VerifyLogin({ address: email, ip, userAgent, link }),
       async (err, info) => {
         const sent =
           !err && (!info.rejected.length || info.rejected[0] !== email);
