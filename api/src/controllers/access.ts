@@ -13,7 +13,7 @@ import {
   getAccessesSchema, grantAccessSchema,
   revokeAccessSchema
 } from "../schemas/access";
-import { IAccessParsed, IAccessRaw, iAccessSchema } from "../types/access";
+import { IAccessParsed, iAccessSchema } from "../types/access";
 import { ErrorCode } from "../types/error_codes";
 import auth from "./auth";
 import { SchemaContext } from "./_schema";
@@ -29,7 +29,7 @@ const getAccesses = sage.resource(
     if (!info) return { error: ErrorCode.Default };
 
     const { anchor, type } = parsed.data;
-    const result = await pg<IAccessRaw[]>`
+    const result = await pg`
       SELECT id, created_at, expires_at, user_agent, ip, service FROM access_tokens
       WHERE user_id=${info.userId} AND expires_at>${date.utc()}
       ${anchor === "-1" ? pg`` : type === "newer" ? pg`AND id>${anchor}` : pg`AND id<${anchor}`}
@@ -42,7 +42,7 @@ const getAccesses = sage.resource(
     result.forEach(session => {
       const parsed = iAccessSchema.safeParse(session);
       if (parsed.success) res.push(parsed.data);
-    })
+    });
 
     return { data: res };
   }
@@ -90,12 +90,12 @@ async function queryCreateAccessToken(userId: string, userAgent: string, ip: str
   const tkn = token.create();
   const row = {
     id: snowflake.id("access_tokens"),
-    user_id: userId,
+    userId: userId,
     selector: tkn.selector,
     validator: crypto.sha256(tkn.validator),
-    created_at: date.utc(),
-    expires_at: date.day(30),
-    user_agent: userAgent,
+    createdAt: date.utc(),
+    expiresAt: date.day(30),
+    userAgent: userAgent,
     ip: ip,
     service: service,
   }
@@ -132,12 +132,12 @@ async function queryCreateAccessCode(userId: string, userAgent: string, ip: stri
   const tkn = token.create();
   const row = {
     id: snowflake.id("access_codes"),
-    user_id: userId,
+    userId: userId,
     selector: tkn.selector,
     validator: crypto.sha256(tkn.validator),
-    created_at: date.utc(),
-    expires_at: date.minute(10),
-    user_agent: userAgent,
+    createdAt: date.utc(),
+    expiresAt: date.minute(10),
+    userAgent: userAgent,
     ip: ip,
     service: service,
   }
@@ -146,10 +146,6 @@ async function queryCreateAccessCode(userId: string, userAgent: string, ip: stri
   if (result.count === 0) return undefined;
 
   return tkn.full;
-}
-
-async function queryExpireAccessCode(codeId: string, userId: string) {
-  await pg`UPDATE access_codes SET expires_at=${date.utc()} WHERE id=${codeId} AND user_id=${userId}`;
 }
 
 async function queryGetAccessCode(code: string) {
@@ -168,7 +164,7 @@ async function queryGetAccessCode(code: string) {
   }?] = await pg`
     SELECT id, user_id, validator, expires_at, user_agent, ip, service FROM access_codes 
     WHERE selector=${parsedToken.selector}
-  `
+  `;
 
   return result;
 }
@@ -181,7 +177,7 @@ export default {
   queryCreateAccessToken,
   queryExpireAccessToken,
   queryGetAccessToken,
+  
   queryCreateAccessCode,
-  queryExpireAccessCode,
   queryGetAccessCode,
 }

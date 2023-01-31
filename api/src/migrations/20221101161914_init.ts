@@ -27,7 +27,7 @@ export async function up(knex: Knex): Promise<void> {
       table.specificType("user_agent", "varchar(256) COLLATE \"C\"").notNullable()
       table.specificType("ip", "inet").notNullable()
 
-      table.index("ip", undefined, "btree")
+      table.index("ip", undefined, "hash")
       table.index("user_id", undefined, "hash")
       table.index("expires_at", undefined, "btree")
 

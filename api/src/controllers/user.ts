@@ -275,6 +275,8 @@ const confirmPasswordChange = sage.resource(
     const [result3, _result4, result5] = await pg.begin(pg => [
       pg`UPDATE users SET password=${password} WHERE id=${result0.userId}`,
       pg`UPDATE sessions SET expires_at=${date.utc()} WHERE user_id=${result0.userId} AND expires_at>${date.utc()}`,
+      pg`UPDATE access_tokens SET expires_at=${date.utc()} WHERE user_id=${result0.userId} AND expires_at>${date.utc()}`,
+      pg`UPDATE access_codes SET expires_at=${date.utc()} WHERE user_id=${result0.userId} AND expires_at>${date.utc()}`,
       pg`UPDATE email_change_password SET expires_at=${date.utc()} WHERE id=${result0.id}`
     ]);
     if (result3.count === 0) return { error: ErrorCode.Default };

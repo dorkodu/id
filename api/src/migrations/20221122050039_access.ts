@@ -12,7 +12,10 @@ export async function up(knex: Knex): Promise<void> {
       table.string("user_agent", 256)
       table.specificType("ip", "inet")
       table.string("service", 128)
-      
+
+      table.index("user_id", undefined, "hash")
+      table.index("expires_at", undefined, "btree")
+
       table.unique(["selector"], undefined)
     })
 
@@ -26,7 +29,10 @@ export async function up(knex: Knex): Promise<void> {
       table.string("user_agent", 256)
       table.specificType("ip", "inet")
       table.string("service", 128)
-      
+
+      table.index("user_id", undefined, "hash")
+      table.index("expires_at", undefined, "btree")
+
       table.unique(["selector"], undefined)
     })
 }

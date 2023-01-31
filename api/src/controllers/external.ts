@@ -5,7 +5,7 @@ import { z } from "zod";
 import { token } from "../lib/token";
 import access from "./access";
 import pg from "../pg";
-import { IUserParsed, IUserRaw, iUserSchema } from "../types/user";
+import { IUserParsed, iUserSchema } from "../types/user";
 import { ErrorCode } from "../types/error_codes";
 
 /* These functions are used by external apps that use Dorkodu ID for authentication. */
@@ -57,8 +57,9 @@ const getUserData = sage.resource(
     const result0 = await validateAccessToken(parsed.data.token);
     if (!result0) return { error: ErrorCode.Default };
 
-    const [result]: [IUserRaw?] = await pg`
-      SELECT id, username, email, joined_at FROM users WHERE id=${result0.userId}
+    const result = await pg`
+      SELECT id, name, username, bio, email, joined_at
+      FROM users WHERE id=${result0.userId}
     `;
     const userParsed = iUserSchema.safeParse(result);
     if (!userParsed.success) return { error: ErrorCode.Default };
