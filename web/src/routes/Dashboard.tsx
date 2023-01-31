@@ -51,39 +51,6 @@ function Dashboard() {
   const sessions = useUserStore((state) => state.session.sorted);
   const accesses = useUserStore((state) => state.access.sorted);
 
-  useEffect(() => {
-    (async () => {
-      const sessionAnchor = array.getAnchor(sessions, "id", "-1", "newer", true);
-      const accessAnchor = array.getAnchor(accesses, "id", "-1", "newer", true);
-
-      const res = await sage.get(
-        {
-          a: sage.query("getUser", undefined, { ctx: "ctx" }),
-          b: sage.query("getCurrentSession",
-            undefined,
-            { ctx: "ctx", wait: "a", }
-          ),
-          c: sage.query(
-            "getSessions",
-            { anchor: sessionAnchor, type: "newer" },
-            { ctx: "ctx", wait: "a" }
-          ),
-          d: sage.query(
-            "getAccesses",
-            { anchor: accessAnchor, type: "newer" },
-            { ctx: "ctx", wait: "a" }
-          ),
-        },
-        (query) => request(query)
-      );
-
-      setUser(res?.a.data);
-      setCurrentSession(res?.b.data);
-      setSessions(res?.c.data, true);
-      setAccesses(res?.d.data, true);
-    })();
-  }, []);
-
   const getSessions = async (type: "older" | "newer", refresh?: boolean) => {
     if (!user) return;
     await queryGetSessions(type, refresh);
@@ -117,6 +84,39 @@ function Dashboard() {
 
   const routeMenu = () => navigate("/menu");
   const goBack = () => navigate(-1);
+
+  useEffect(() => {
+    (async () => {
+      const sessionAnchor = array.getAnchor(sessions, "id", "-1", "newer", true);
+      const accessAnchor = array.getAnchor(accesses, "id", "-1", "newer", true);
+
+      const res = await sage.get(
+        {
+          a: sage.query("getUser", undefined, { ctx: "ctx" }),
+          b: sage.query("getCurrentSession",
+            undefined,
+            { ctx: "ctx", wait: "a", }
+          ),
+          c: sage.query(
+            "getSessions",
+            { anchor: sessionAnchor, type: "newer" },
+            { ctx: "ctx", wait: "a" }
+          ),
+          d: sage.query(
+            "getAccesses",
+            { anchor: accessAnchor, type: "newer" },
+            { ctx: "ctx", wait: "a" }
+          ),
+        },
+        (query) => request(query)
+      );
+
+      setUser(res?.a.data);
+      setCurrentSession(res?.b.data);
+      setSessions(res?.c.data, true);
+      setAccesses(res?.d.data, true);
+    })();
+  }, []);
 
   const DashboardHeader = () => {
     return (
@@ -155,15 +155,15 @@ function Dashboard() {
             value={state.show}
             onChange={(show: typeof state.show) => setState({ ...state, show })}
             data={[
-              { label: "sessions", value: "sessions" },
-              { label: "accesses", value: "accesses" },
+              { label: "Sessions", value: "sessions" },
+              { label: "Accesses", value: "accesses" },
             ]}
           />
 
           <Button.Group>
-            <Button radius="md" fullWidth variant="default" onClick={refresh}>refresh</Button>
-            <Button radius="md" fullWidth variant="default" onClick={loadNewer}>load newer</Button>
-            <Button radius="md" fullWidth variant="default" onClick={loadOlder}>load older</Button>
+            <Button radius="md" fullWidth variant="default" onClick={refresh}>Refresh</Button>
+            <Button radius="md" fullWidth variant="default" onClick={loadNewer}>Load Newer</Button>
+            <Button radius="md" fullWidth variant="default" onClick={loadOlder}>Load Older</Button>
           </Button.Group>
         </Flex>
       </Card>

@@ -47,7 +47,7 @@ export function Session({ session }: Props) {
                 icon={<IconTrash size={14} />}
                 onClick={terminateSession}
               >
-                terminate session
+                Terminate Session
               </Menu.Item>
             </Menu.Dropdown>
           </Menu>

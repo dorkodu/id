@@ -48,7 +48,7 @@ function Access({ access }: Props) {
                 icon={<IconTrash size={14} />}
                 onClick={revokeAccess}
               >
-                revoke access
+                Revoke Access
               </Menu.Item>
             </Menu.Dropdown>
           </Menu>

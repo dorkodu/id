@@ -240,8 +240,15 @@ export const useUserStore = create(
         (query) => request(query)
       );
 
-      if (!res?.a.data || res.a.error) return false;
-      return true;
+      const status = !(!res?.a.data || res.a.error);
+      set(state => {
+        if (!status || !state.user) return;
+        state.user.name = name;
+        state.user.username = username;
+        state.user.bio = bio;
+      });
+
+      return status;
     },
 
     queryInitiateEmailChange: async (newEmail) => {

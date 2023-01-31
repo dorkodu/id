@@ -46,6 +46,9 @@ interface State {
   bio: string;
 
   editing: boolean;
+
+  loading: boolean;
+  status: boolean | undefined;
 }
 
 interface Props {
@@ -58,25 +61,42 @@ function User({ user }: Props) {
   const [state, setState] = useReducer((prev: State, next: State) => {
     const newState = { ...prev, ...next };
     return newState
-  }, { name: "", username: "", bio: "", editing: false });
+  }, {
+    name: "",
+    username: "",
+    bio: "",
+    editing: false,
+    loading: false,
+    status: undefined,
+  });
 
   const navigate = useNavigate();
+  const queryEditProfile = useUserStore((state) => state.queryEditProfile);
   const queryLogout = useUserStore((state) => state.queryLogout);
 
   const changeEmail = () => navigate("/change-email");
   const changePassword = () => navigate("/change-password");
 
+  const editProfile = async () => {
+    if (state.loading) return;
+
+    setState({ ...state, loading: true, status: undefined });
+    const status = await queryEditProfile(state.name, state.username, state.bio);
+    setState({ ...state, loading: false, status: status });
+  }
+
   const startEdit = () => {
     setState({
       ...state,
-      name: "Berk Cambaz",
+      name: user.name,
       username: user.username,
-      bio: "hello, world",
+      bio: user.bio,
       editing: true,
     })
   }
 
-  const stopEdit = (_saveChanges: boolean) => {
+  const stopEdit = async (saveChanges: boolean) => {
+    if (saveChanges) await editProfile();
     setState({ ...state, editing: false });
   }
 
@@ -90,7 +110,7 @@ function User({ user }: Props) {
         <Grid.Col span="auto">
           <Flex direction="column">
             <Flex align="center" justify="space-between">
-              <Text size="xl" weight={600}>Berk Cambaz</Text>
+              <Text size="xl" weight={600}>{user.name}</Text>
 
               <Menu shadow="md" radius="md">
                 <Menu.Target>
@@ -102,7 +122,7 @@ function User({ user }: Props) {
                     icon={<IconUser size={14} />}
                     onClick={startEdit}
                   >
-                    edit profile
+                    Edit Profile
                   </Menu.Item>
 
                   <Menu.Divider />
@@ -111,14 +131,14 @@ function User({ user }: Props) {
                     icon={<IconAt size={14} />}
                     onClick={changeEmail}
                   >
-                    change email
+                    Change Email
                   </Menu.Item>
 
                   <Menu.Item
                     icon={<IconAsterisk size={14} />}
                     onClick={changePassword}
                   >
-                    change password
+                    Change Password
                   </Menu.Item>
 
                   <Menu.Divider />
@@ -127,7 +147,7 @@ function User({ user }: Props) {
                     icon={<IconLogout size={14} />}
                     onClick={queryLogout}
                   >
-                    log out
+                    Log Out
                   </Menu.Item>
                 </Menu.Dropdown>
               </Menu>
@@ -136,14 +156,16 @@ function User({ user }: Props) {
 
             <Flex>
               <Text style={{ color: tokens.color.gray(50), fontWeight: 750 }}>@</Text>
-              <Text size="md" weight={500}>{user.username} </Text>
+              <Text size="md" weight={500}>{user.username}</Text>
+            </Flex>
+
+            <Flex align="center" gap="md">
+              <Text size="sm" color="dimmed">{user.bio}</Text>
             </Flex>
 
             <Flex align="center" gap="md">
               <IconMailOpened className={styles.icon} />
-              <Text size="sm" color="dimmed">
-                {user.email}
-              </Text>
+              <Text size="sm" color="dimmed">{user.email}</Text>
             </Flex>
 
             <Flex align="center" gap="md">
@@ -157,14 +179,14 @@ function User({ user }: Props) {
       <Modal
         opened={state.editing}
         onClose={() => stopEdit(false)}
-        title="edit profile"
+        title="Edit Profile"
       >
         <Flex direction="column" gap="md">
           <TextInput
             radius="md"
-            placeholder="name..."
-            label="name"
-            description="your name"
+            label="Your Name"
+            description="Use 1-64 chars."
+            placeholder="Your name..."
             icon={<IconUserCircle size={16} />}
             defaultValue={state.name}
             onChange={(ev) => { setState({ ...state, name: ev.target.value }) }}
@@ -172,9 +194,9 @@ function User({ user }: Props) {
 
           <TextInput
             radius="md"
-            placeholder="username..."
-            label="username"
-            description="your username"
+            label="Your Username"
+            description="Use 1-16 chars from letters (a-z or A-Z), digits (0-9), dot (.), and underscore (_), avoiding consecutive and at start/end dots/underscores."
+            placeholder="Your username..."
             icon={<IconUser size={16} />}
             defaultValue={state.username}
             onChange={(ev) => { setState({ ...state, username: ev.target.value }) }}
@@ -182,9 +204,9 @@ function User({ user }: Props) {
 
           <Textarea
             radius="md"
-            placeholder="bio..."
-            label="bio"
-            description="your biography"
+            placeholder="Your bio..."
+            label="Your Bio"
+            description="Maximum of 500 characters."
             defaultValue={state.bio}
             onChange={(ev) => { setState({ ...state, bio: ev.target.value }) }}
             autosize
@@ -192,7 +214,7 @@ function User({ user }: Props) {
 
           <Flex justify="flex-end">
             <Button onClick={() => stopEdit(true)} radius="md">
-              confirm
+              Confirm
             </Button>
           </Flex>
         </Flex>

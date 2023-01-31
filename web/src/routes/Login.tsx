@@ -87,7 +87,7 @@ function Login() {
           variant="filled"
           type="text"
           label="Username or Email"
-          placeholder="username or you@mail.com"
+          placeholder="Enter username or email"
           defaultValue={state.info}
           onChange={(ev) => { setState({ ...state, info: ev.target.value }) }}
           withAsterisk={true}
@@ -97,7 +97,7 @@ function Login() {
         <PasswordInput
           variant="filled"
           label="Password"
-          placeholder="password"
+          placeholder="Enter password"
           visibilityToggleIcon={({ reveal, size }) =>
             reveal ?
               <IconEyeOff size={size} stroke={2.5} /> :

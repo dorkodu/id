@@ -117,10 +117,10 @@ function CreateAccount() {
       <>
         <TextInput
           variant="filled"
-          label="Your Username"
+          label="Username"
           description="Use 1-16 chars from letters (a-z or A-Z), digits (0-9), dot (.), and underscore (_), avoiding consecutive and at start/end dots/underscores."
           icon={<IconUser size={16} />}
-          placeholder="username"
+          placeholder="Enter username"
           defaultValue={state.username}
           onChange={(ev) => { setState({ ...state, username: ev.target.value }) }}
           disabled={state.stage === "confirm"}
@@ -130,10 +130,10 @@ function CreateAccount() {
         <TextInput
           variant="filled"
           type="email"
-          label="Your Email"
+          label="Email"
           description="Enter a valid email address."
           icon={<IconAt size={16} />}
-          placeholder="you@mail.com"
+          placeholder="Enter email"
           defaultValue={state.email}
           onChange={(ev) => { setState({ ...state, email: ev.target.value }) }}
           disabled={state.stage === "confirm"}
@@ -153,7 +153,7 @@ function CreateAccount() {
           </Button>
         </Flex>
 
-        {state.status !== "ok" &&
+        {state.status !== "ok" && state.status !== undefined &&
           < Alert
             icon={<IconAlertCircle size={24} />}
             title="Info"
@@ -219,10 +219,10 @@ function CreateAccount() {
       <>
         <PasswordInput
           variant="filled"
-          label="Your Password"
+          label="Password"
           description="Minimum 8 characters required."
           icon={<IconAsterisk size={16} />}
-          placeholder="password"
+          placeholder="Enter password"
           visibilityToggleIcon={({ reveal, size }) =>
             reveal ?
               <IconEyeOff size={size} stroke={2.5} /> :
