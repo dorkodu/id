@@ -4,7 +4,7 @@ import { SchemaContext } from "./_schema";
 import { z } from "zod";
 import auth from "./auth";
 import pg from "../pg";
-import { ISessionParsed, ISessionRaw, iSessionSchema } from "../types/session";
+import { ISessionParsed, iSessionSchema } from "../types/session";
 import { date } from "../lib/date";
 import { ErrorCode } from "../types/error_codes";
 
@@ -15,7 +15,7 @@ const getCurrentSession = sage.resource(
     const info = await auth.getAuthInfo(ctx);
     if (!info) return { error: ErrorCode.Default };
 
-    const [result]: [ISessionRaw?] = await pg`
+    const result = await pg`
       SELECT id, created_at, expires_at, user_agent, ip FROM sessions WHERE id=${info.sessionId}
     `;
     const parsed = iSessionSchema.safeParse(result);
@@ -36,7 +36,7 @@ const getSessions = sage.resource(
     if (!info) return { error: ErrorCode.Default };
 
     const { anchor, type } = parsed.data;
-    const result = await pg<ISessionRaw[]>`
+    const result = await pg`
       SELECT id, created_at, expires_at, user_agent, ip FROM sessions
       WHERE user_id=${info.userId} AND expires_at>${date.utc()}
       ${anchor === "-1" ? pg`` : type === "newer" ? pg`AND id>${anchor}` : pg`AND id<${anchor}`}
