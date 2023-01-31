@@ -26,7 +26,7 @@ import {
   IconUserCircle,
 } from "@tabler/icons";
 import { date } from "../lib/date";
-import DummyAvatar from "@assets/gilmour.webp";
+import UserAvatar from "@assets/avatar.webp";
 import { useUserStore } from "../stores/userStore";
 import { useReducer } from "react";
 import { useNavigate } from "react-router-dom";
@@ -104,7 +104,7 @@ function User({ user }: Props) {
     <Card shadow="sm" p="lg" m="md" radius="md" withBorder css={css`overflow: visible;`}>
       <Grid gutter="md">
         <Grid.Col span="content">
-          <Avatar src={DummyAvatar} size={100} radius="md" />
+          <Avatar src={UserAvatar} size={100} radius="md" />
         </Grid.Col>
 
         <Grid.Col span="auto">
