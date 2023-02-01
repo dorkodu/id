@@ -103,18 +103,17 @@ const theme: MantineThemeOverride = {
   focusRingStyles: {
     styles: (theme: MantineTheme) => ({
       outlineOffset: 2,
-      outline: `2px solid ${
-        theme.colors["blue"][theme.colorScheme === "dark" ? 7 : 5]
-      }`,
+      outline: `2px solid ${theme.colors["blue"]?.[theme.colorScheme === "dark" ? 7 : 5]
+        }`,
     }),
     resetStyles: () => ({ outline: "none" }),
     inputStyles: (theme: MantineTheme) => ({
       outline: "none",
       borderColor:
-        theme.colors["blue"][
-          typeof theme.primaryShade === "object"
-            ? theme.primaryShade[theme.colorScheme]
-            : theme.primaryShade
+        theme.colors["blue"]?.[
+        typeof theme.primaryShade === "object"
+          ? theme.primaryShade[theme.colorScheme]
+          : theme.primaryShade
         ],
     }),
   },
