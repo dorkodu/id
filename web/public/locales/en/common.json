@@ -11,7 +11,8 @@
     "default": "An error occured.",
     "usernameUsed": "Username is already in use.",
     "emailUsed": "Email is already in use.",
-    "username&emailUsed": "Username and email are already in use."
+    "username&emailUsed": "Username and email are already in use.",
+    "accessServiceNotFound": "Service is not specified."
   },
 
   "info": {
@@ -73,10 +74,24 @@
       "description": "Want to change your password? No worries."
     },
 
+    "access": {
+      "title": "Access",
+      "description": "One account, all Dorkodu apps.",
+
+      "serviceRequirements": "wants to use your: <br /> name, username, bio, email and join date."
+    },
+
     "404": {
       "title": "404",
       "description": "Couldn't find the thing you are looking for."
     }
+  },
+
+  "footer": {
+    "about": "About",
+    "privacy": "Privacy",
+    "garden": "Garden",
+    "work": "Work"
   },
 
   "refresh": "Refresh",
@@ -85,6 +100,10 @@
 
   "sessions": "Sessions",
   "accesses": "Accesses",
+  
+  "name": "Name",
+  "nameDescription": "Use 1-64 chars.",
+  "enterName": "Enter Name",
 
   "username": "Username",
   "enterUsername": "Enter Username",
@@ -92,6 +111,10 @@
 
   "usernameOrEmail": "Username or Email",
   "enterUsernameOrEmail": "Enter Username or Email",
+
+  "bio": "Bio",
+  "bioDescription": "Maximum of 500 characters.",
+  "enterBio": "Enter Bio",
 
   "email": "Email",
   "enterEmail": "Enter Email",
@@ -109,10 +132,16 @@
   "createAccount": "Create Account",
   "alreadyHaveAnAccount": "Already have an account?",
   "login": "Log In",
+  "logout": "Log Out",
   "forgotYourPassword": "Forgot your password?",
   "dontHaveAnAccount": "Don't have an account?",
   "goBack": "Go Back",
   "continue": "Continue",
   "finish": "Finish",
-  "changePassword": "Change Password"
+  "changePassword": "Change Password",
+  "changeEmail": "Change Email",
+  "editProfile": "Edit Profile",
+  "reject": "Reject",
+  "accept": "Accept",
+  "confirm": "Confirm"
 }

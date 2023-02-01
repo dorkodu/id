@@ -168,11 +168,10 @@ export const useUserStore = create(
         (query) => request(query)
       );
 
-      if (!res?.a.data || res.a.error) return false;
-      set((state) => {
-        state.authorized = true;
-      });
-      return true;
+      const status = !(!res?.a.data || res.a.error);
+      if (status) set((state) => { state.authorized = true });
+
+      return status;
     },
 
     queryLogin: async (info, password) => {

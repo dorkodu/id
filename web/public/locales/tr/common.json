@@ -1,3 +1,147 @@
 {
-  "welcome": "hoş geldiniz"
+  "success": {
+    "emailVerified": "E-posta doğrulandı. Bu sekmeyi kapatabilir ve hesabınızı oluşturmaya devam edebilirsiniz.",
+    "emailReverted": "E-posta geri alındı.",
+    "locationVerified": "Konum doğrulandı. Bu sekmeyi kapatabilir ve oturum açmaya devam edebilirsiniz.",
+    "emailChanged": "E-posta değiştirildi.",
+    "passwordChanged": "Şifreniz değiştirildi. Tüm oturumlarınız ve erişimleriniz sonlandırıldı. Lütfen giriş yapın."
+  },
+
+  "error": {
+    "default": "Bir hata oluştu.",
+    "usernameUsed": "Kullanıcı adı zaten kullanımda.",
+    "emailUsed": "E-posta zaten kullanımda.",
+    "username&emailUsed": "Kullanıcı adı ve e-posta zaten kullanımda.",
+    "accessServiceNotFound": "Servis belirtilmedi."
+  },
+
+  "info": {
+    "verifyEmail": "Posta gönderildi. E-postanızı doğrulamak için lütfen gelen kutusunu veya spam klasörünü kontrol edin.",
+    "newLocation": "Yeni bir konum algılandı. Lütfen konumunuzu doğrulamak için gelen kutusunu veya spam klasörünü kontrol edin ve ardından tekrar deneyin.",
+    "changeEmail": "Posta gönderildi. E-postanızı değiştirmek için lütfen gelen kutusunu veya spam klasörünü kontrol edin.",
+    "changePassword": "Posta gönderildi. Lütfen şifrenizi değiştirmek için gelen kutusunu veya spam klasörünü kontrol edin."
+  },
+
+  "route": {
+    "welcome": {
+      "title": "Dijital Yaşamınız, <br /> Tek Hesap.",
+  
+      "description": "ID ile bağlanın ve kullandığınız tüm Dorkodu uygulamalarından en iyi şekilde yararlanın.",
+      
+      "list": {
+        "item1": "Kişiselleştirilmiş bir deneyim elde edin.",
+        "item2": "Her yerde doğrulanmış olun.",
+        "item3": "Hayatınızın bilgileri tek bir yerde.",
+        "item4": "Tüm uygulamalar her zaman bağlı."
+      }
+    },
+
+    "login": {
+      "title": "Giriş Yap",
+      "description": "Eve Hoşgeldin. Özlendin."
+    },
+
+    "signup": {
+      "title": "Hesabını Oluştur",
+  
+      "description": "Bir dakika içinde yeni dijital hayatınıza merhaba deyin.",
+    
+      "notice": "Bir hesap oluşturarak, Dorkodu'nun <strong>Hizmet Şartları</strong>'nı ve <strong>Gizlilik Politikası</strong>'nı kabul etmiş olursunuz."
+    },
+
+    "changeEmail": {
+      "title": "E-postanı Değiştir",
+      "description": "E-postanı değiştirmek mi istiyorsun? Endişelenme."
+    },
+
+    "confirmEmailChange": {
+      "title": "E-posta Değişimini Onayla",
+      "description": "E-postanı değiştirmek mi istiyorsun? Endişelenme."
+    },
+
+    "revertEmailChange": {
+      "title": "E-postayı Geri Al",
+      "description": "E-postanı değiştirmek mi istiyorsun? Endişelenme."
+    },
+
+    "changePassword": {
+      "title": "Şifre değiştir",
+      "description": "Want to change your password? No worries."
+    },
+
+    "confirmPasswordChange": {
+      "title": "Confirm Password Change",
+      "description": "Şifreni değiştirmek mi istiyorsun? Endişelenme."
+    },
+
+    "access": {
+      "title": "Erişim",
+      "description": "Tek hesap, tüm Dorkodu uygulamaları.",
+
+      "serviceRequirements": "adınızı, kullanıcı adınızı, biyografinizi, e-posta adresinizi ve katılım tarihinizi kullanmak istiyor."
+    },
+
+    "404": {
+      "title": "404",
+      "description": "Aradığınız şeyi bulamadık."
+    }
+  },
+
+  "footer": {
+    "about": "Hakkında",
+    "privacy": "Gizlilik",
+    "garden": "Bahçe",
+    "work": "Çalışmalar"
+  },
+
+  "refresh": "Yenile",
+  "loadNewer": "Yenileri Yükle",
+  "loadOlder": "Eskileri Yükle",
+
+  "sessions": "Oturumlar",
+  "accesses": "Erişimler",
+
+  "name": "Ad",
+  "nameDescription": "1-64 karakter kullanın.",
+  "enterName": "Ad Girin",
+
+  "username": "Kullanıcı Adı",
+  "enterUsername": "Kullanıcı Adı Girin",
+  "usernameDescription": "Harf (a-z veya A-Z), rakam (0-9), nokta (.) ve alt çizgi (_) ile 1-16 karakter kullanın. Başta, sonda ve yan yana nokta (.) ve alt çizgi (_) kullanmayın.",
+
+  "usernameOrEmail": "Kullanıcı Adı veya E-posta",
+  "enterUsernameOrEmail": "Kullanıcı Adı veya E-posta Girin",
+
+  "bio": "Biyografi",
+  "bioDescription": "Maksimum 500 karakter.",
+  "enterBio": "Biyografi Girin",
+
+  "email": "E-posta",
+  "enterEmail": "E-posta Girin",
+  "emailDescription": "Geçerli bir e-posta adresi girin.",
+  "newEmail": "Yeni E-posta",
+  "enterNewEmail": "Yeni E-posta Girin",
+
+  "password": "Parola",
+  "enterPassword": "Parola Girin",
+  "passwordDescription": "Minimum 8 karakter gereklidir.",
+  "newPassword": "Yeni Parola",
+  "enterNewPassword": "Yeni Parola Girin",
+
+  "continueToDashboard": "Hesabıma Devam Et",
+  "createAccount": "Hesap Oluştur",
+  "alreadyHaveAnAccount": "Zaten hesabım var.",
+  "login": "Giriş Yap",
+  "logout": "Çıkış Yap",
+  "forgotYourPassword": "Parolamı unuttum.",
+  "dontHaveAnAccount": "Hesabım yok.",
+  "goBack": "Geri Dön",
+  "continue": "Devam Et",
+  "finish": "Bitir",
+  "changePassword": "Parola Değiştir",
+  "changeEmail": "E-posta Değiştir",
+  "editProfile": "Profili Düzenle",
+  "reject": "Reddet",
+  "accept": "Onayla",
+  "confirm": "Onayla"
 }

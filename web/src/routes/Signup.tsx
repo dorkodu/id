@@ -30,6 +30,7 @@ import Footer from "../components/Footer";
 import { useUserStore } from "../stores/userStore";
 import { widthLimit } from "../styles/css";
 import { Trans, useTranslation } from "react-i18next";
+import { useAppStore } from "../stores/appStore";
 
 interface State {
   loading: boolean;
@@ -107,7 +108,7 @@ function CreateAccount() {
 
     if (!status) return;
 
-    const redirect = searchParams.get("redirect");
+    const redirect = useAppStore.getState().redirect;
     if (!redirect) navigate("/dashboard");
     else navigate(redirect);
   }

@@ -30,6 +30,7 @@ import UserAvatar from "@assets/avatar.webp";
 import { useUserStore } from "../stores/userStore";
 import { useReducer } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const useStyles = createStyles((theme) => ({
   icon: {
@@ -70,6 +71,7 @@ function User({ user }: Props) {
     status: undefined,
   });
 
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const queryEditProfile = useUserStore((state) => state.queryEditProfile);
   const queryLogout = useUserStore((state) => state.queryLogout);
@@ -122,7 +124,7 @@ function User({ user }: Props) {
                     icon={<IconUser size={14} />}
                     onClick={startEdit}
                   >
-                    Edit Profile
+                    {t("editProfile")}
                   </Menu.Item>
 
                   <Menu.Divider />
@@ -131,14 +133,14 @@ function User({ user }: Props) {
                     icon={<IconAt size={14} />}
                     onClick={changeEmail}
                   >
-                    Change Email
+                    {t("changeEmail")}
                   </Menu.Item>
 
                   <Menu.Item
                     icon={<IconAsterisk size={14} />}
                     onClick={changePassword}
                   >
-                    Change Password
+                    {t("changePassword")}
                   </Menu.Item>
 
                   <Menu.Divider />
@@ -147,7 +149,7 @@ function User({ user }: Props) {
                     icon={<IconLogout size={14} />}
                     onClick={queryLogout}
                   >
-                    Log Out
+                    {t("logout")}
                   </Menu.Item>
                 </Menu.Dropdown>
               </Menu>
@@ -179,14 +181,14 @@ function User({ user }: Props) {
       <Modal
         opened={state.editing}
         onClose={() => stopEdit(false)}
-        title="Edit Profile"
+        title={t("editProfile")}
       >
         <Flex direction="column" gap="md">
           <TextInput
             radius="md"
-            label="Your Name"
-            description="Use 1-64 chars."
-            placeholder="Your name..."
+            label={t("name")}
+            description={t("nameDescription")}
+            placeholder={t("enterName")}
             icon={<IconUserCircle size={16} />}
             defaultValue={state.name}
             onChange={(ev) => { setState({ ...state, name: ev.target.value }) }}
@@ -194,9 +196,9 @@ function User({ user }: Props) {
 
           <TextInput
             radius="md"
-            label="Your Username"
-            description="Use 1-16 chars from letters (a-z or A-Z), digits (0-9), dot (.), and underscore (_), avoiding consecutive and at start/end dots/underscores."
-            placeholder="Your username..."
+            label={t("username")}
+            description={t("usernameDescription")}
+            placeholder={t("enterUsername")}
             icon={<IconUser size={16} />}
             defaultValue={state.username}
             onChange={(ev) => { setState({ ...state, username: ev.target.value }) }}
@@ -204,9 +206,9 @@ function User({ user }: Props) {
 
           <Textarea
             radius="md"
-            placeholder="Your bio..."
-            label="Your Bio"
-            description="Maximum of 500 characters."
+            label={t("bio")}
+            description={t("bioDescription")}
+            placeholder={t("enterBio")}
             defaultValue={state.bio}
             onChange={(ev) => { setState({ ...state, bio: ev.target.value }) }}
             autosize
@@ -214,7 +216,7 @@ function User({ user }: Props) {
 
           <Flex justify="flex-end">
             <Button onClick={() => stopEdit(true)} radius="md">
-              Confirm
+              {t("confirm")}
             </Button>
           </Flex>
         </Flex>

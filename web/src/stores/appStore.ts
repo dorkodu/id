@@ -9,8 +9,10 @@ interface State {
     auth: boolean;
     locale: boolean;
   };
-  
+
   colorScheme: ColorScheme;
+
+  redirect: string | undefined;
 }
 
 interface Action {
@@ -18,7 +20,10 @@ interface Action {
   setAuthLoading: (loading: boolean) => void;
   setLocaleLoading: (loading: boolean) => void;
   changeLocale: (lang: string) => void;
+
   toggleColorScheme: (value: ColorScheme) => void;
+
+  setRedirect: (redirect: string | undefined) => void;
 }
 
 const initialState: State = {
@@ -28,43 +33,41 @@ const initialState: State = {
   },
 
   colorScheme: "light",
+
+  redirect: undefined,
 };
 
 export const useAppStore = create(
   immer<State & Action>((set, get) => ({
     ...initialState,
 
-    toggleColorScheme(value) {
-      set((state) => {
-        state.colorScheme = value;
-      });
-    },
-
     getLoading: () => {
       return get().loading.auth || get().loading.locale;
     },
 
     setAuthLoading: (loading) => {
-      set((state) => {
-        state.loading.auth = loading;
-      });
+      set((state) => { state.loading.auth = loading });
     },
 
     setLocaleLoading: (loading) => {
-      set((state) => {
-        state.loading.locale = loading;
-      });
+      set((state) => { state.loading.locale = loading });
     },
 
     changeLocale: async (lang) => {
-      set((state) => {
-        state.loading.locale = true;
-      });
+      set((state) => { state.loading.locale = true });
 
       await Promise.all([i18n.changeLanguage(lang), changeDateLanguage(lang)]);
       document.documentElement.lang = lang;
 
       set(state => { state.loading.locale = false })
+    },
+
+    toggleColorScheme(value) {
+      set((state) => { state.colorScheme = value });
+    },
+
+    setRedirect: (redirect) => {
+      set(state => { state.redirect = redirect });
     },
   }))
 );

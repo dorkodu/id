@@ -4,15 +4,17 @@ import i18n from "../lib/i18n";
 import { widthLimit } from "../styles/css";
 import { ColorToggleSegmented } from "./ColorToggle";
 import { useAppStore } from "../stores/appStore";
+import { useTranslation } from "react-i18next";
 
 function Footer() {
+  const { t } = useTranslation();
   const changeLocale = useAppStore(state => state.changeLocale);
 
   const links = [
-    { link: "https://dorkodu.com", label: "About", },
-    { link: "https://dorkodu.com/privacy", label: "Privacy", },
-    { link: "https://garden.dorkodu.com", label: "Garden", },
-    { link: "https://dorkodu.com/work", label: "Work", },
+    { link: "https://dorkodu.com", label: t("footer.about"), },
+    { link: "https://dorkodu.com/privacy", label: t("footer.privacy"), },
+    { link: "https://garden.dorkodu.com", label: t("footer.garden"), },
+    { link: "https://dorkodu.com/work", label: t("footer.work"), },
   ];
 
   const items = links.map((link) => (
@@ -34,7 +36,6 @@ function Footer() {
       <NativeSelect
         radius="md"
         variant="default"
-        placeholder="language..."
         icon={<IconWorld />}
         value={i18n.language}
         onChange={(ev) => changeLocale(ev.currentTarget.value)}
