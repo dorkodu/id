@@ -130,4 +130,27 @@ export namespace EmailTemplate {
       `,
     });
 
+  export const ConfirmEmailChange: EmailBlueprint<{
+    address: string;
+    link: string;
+  }> = ({ address, link }) =>
+    StandardEmailMessage({
+      to: address,
+      subject: "Confirm Email Change @ Dorkodu",
+      summary:
+        "You need to verify your email to complete creating a Dorkodu account.",
+      text: `
+      We need you to confirm a recent email change request.
+  
+      If you didn't intend so, ignore this email.
+      
+      Confirm Email Change:
+      ${link}
+      `,
+      html: `
+      ${Block.Text(`We need you to confirm a recent email change request.`)}
+      ${Block.Text(`If you didn't intend so, ignore this email.`)}
+      ${Block.CallToAction("Confirm Email Change", link)}
+      `,
+    });
 }
