@@ -153,4 +153,34 @@ export namespace EmailTemplate {
       ${Block.CallToAction("Confirm Email Change", link)}
       `,
     });
+
+  export const RevertEmailChange: EmailBlueprint<{
+    address: string;
+    link: string;
+  }> = ({ address, link }) =>
+    StandardEmailMessage({
+      to: address,
+      subject: "Revert Email Change @ Dorkodu",
+      summary: "You may want to revert the recent email change.",
+      text: `
+        Recently the email address at your Dorkodu account has been changed.
+        Now your account is connected to a different email address, not this one.
+
+        If you didn't intend so, you may want to revert the email change.
+        
+        
+        Revert Email Change:
+        ${link}
+        `,
+      html: `
+        ${Block.Text(
+          `Recently the email address at your <b>Dorkodu</b> account has been <b>changed</b>. <br>Now your account is connected to a <b>different email address, not this one</b>.`
+        )}
+        ${Block.Text(
+          `If you didn't intend to do so, you <b>may</b> want to <b>revert the email change</b>.`
+        )}
+        ${Block.CallToAction("Revert Email Change", link)}
+        `,
+    });
+
 }
