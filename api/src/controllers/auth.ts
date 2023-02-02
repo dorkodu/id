@@ -2,14 +2,20 @@ import { Request, Response } from "express";
 import { token } from "../lib/token";
 
 import pg from "../pg";
-import { confirmSignupSchema, loginSchema, signupSchema, verifyLoginSchema, verifySignupSchema } from "../schemas/auth";
+import {
+  confirmSignupSchema,
+  loginSchema,
+  signupSchema,
+  verifyLoginSchema,
+  verifySignupSchema,
+} from "../schemas/auth";
 import { SchemaContext } from "./_schema";
 import sage from "@dorkodu/sage-server";
 import { z } from "zod";
 import { snowflake } from "../lib/snowflake";
 import { date } from "../lib/date";
 import { crypto } from "../lib/crypto";
-import { mailer } from "../lib/mailer";
+import { mailer } from "../lib/mail/mailer";
 import { util } from "../lib/util";
 import { userAgent } from "../lib/user_agent";
 import { sharedSchemas } from "../schemas/_shared";
@@ -31,16 +37,16 @@ async function middleware(ctx: SchemaContext) {
 const auth = sage.resource(
   {} as SchemaContext,
   undefined,
-  async (_arg, ctx): Promise<{ data?: {}, error?: ErrorCode }> => {
-    if (!await getAuthInfo(ctx)) return { error: ErrorCode.Default };
+  async (_arg, ctx): Promise<{ data?: {}; error?: ErrorCode }> => {
+    if (!(await getAuthInfo(ctx))) return { error: ErrorCode.Default };
     return { data: {} };
   }
-)
+);
 
 const signup = sage.resource(
   {} as SchemaContext,
   {} as z.infer<typeof signupSchema>,
-  async (arg, ctx): Promise<{ data?: {}, error?: ErrorCode }> => {
+  async (arg, ctx): Promise<{ data?: {}; error?: ErrorCode }> => {
     const parsed = signupSchema.safeParse(arg);
     if (!parsed.success) return { error: ErrorCode.Default };
 
@@ -59,7 +65,7 @@ const signup = sage.resource(
         )
       `;
       return [result0, result1];
-    })
+    });
     if (!result0) return { error: ErrorCode.Default };
     if (!result1) return { error: ErrorCode.Default };
     const usernameUsed = result0.exists;
@@ -94,14 +100,14 @@ const signup = sage.resource(
     // Attach a temporary cookie for signup confirmation
     token.attach(ctx.res, { value: tkn.full, expiresAt: date.minute(10) }, "temp");
 
-    return { data: {} }
+    return { data: {} };
   }
-)
+);
 
 const verifySignup = sage.resource(
   {} as SchemaContext,
   {} as z.infer<typeof verifySignupSchema>,
-  async (arg, _ctx): Promise<{ data?: {}, error?: ErrorCode }> => {
+  async (arg, _ctx): Promise<{ data?: {}; error?: ErrorCode }> => {
     const parsed = verifySignupSchema.safeParse(arg);
     if (!parsed.success) return { error: ErrorCode.Default };
 
@@ -109,13 +115,17 @@ const verifySignup = sage.resource(
     const parsedToken = rawToken ? token.parse(rawToken) : undefined;
     if (!parsedToken) return { error: ErrorCode.Default };
 
-    const [result0]: [{ id: string, validator: Buffer, sentAt: string, expiresAt: string }?] = await pg`
+    const [result0]: [
+      { id: string; validator: Buffer; sentAt: string; expiresAt: string }?
+    ] = await pg`
       SELECT id, validator, sent_at, expires_at FROM email_verify_signup
       WHERE selector=${parsedToken.selector}
     `;
     if (!result0) return { error: ErrorCode.Default };
-    if (!token.check(result0, parsedToken.validator)) return { error: ErrorCode.Default };
-    if (util.intParse(result0.sentAt, -1) === -1) return { error: ErrorCode.Default };
+    if (!token.check(result0, parsedToken.validator))
+      return { error: ErrorCode.Default };
+    if (util.intParse(result0.sentAt, -1) === -1)
+      return { error: ErrorCode.Default };
 
     const result1 = await pg`
       UPDATE email_verify_signup SET verified=TRUE
@@ -125,12 +135,12 @@ const verifySignup = sage.resource(
 
     return { data: {} };
   }
-)
+);
 
 const confirmSignup = sage.resource(
   {} as SchemaContext,
   {} as z.infer<typeof confirmSignupSchema>,
-  async (arg, ctx): Promise<{ data?: {}, error?: ErrorCode }> => {
+  async (arg, ctx): Promise<{ data?: {}; error?: ErrorCode }> => {
     const parsed = confirmSignupSchema.safeParse(arg);
     if (!parsed.success) return { error: ErrorCode.Default };
 
@@ -140,23 +150,27 @@ const confirmSignup = sage.resource(
     const parsedToken = rawToken ? token.parse(rawToken) : undefined;
     if (!parsedToken) return { error: ErrorCode.Default };
 
-    const [result0]: [{
-      username: string,
-      email: string,
-      validator: Buffer,
-      sentAt: string,
-      expiresAt: string,
-      verified: boolean,
-    }?] = await pg`
+    const [result0]: [
+      {
+        username: string;
+        email: string;
+        validator: Buffer;
+        sentAt: string;
+        expiresAt: string;
+        verified: boolean;
+      }?
+    ] = await pg`
       SELECT username, email, validator, sent_at, expires_at, verified FROM email_verify_signup
       WHERE selector=${parsedToken.selector}
-    `
+    `;
     if (!result0) return { error: ErrorCode.Default };
     if (!result0.verified) return { error: ErrorCode.Default };
     if (result0.username !== username) return { error: ErrorCode.Default };
     if (result0.email !== email) return { error: ErrorCode.Default };
-    if (util.intParse(result0.sentAt, -1) === -1) return { error: ErrorCode.Default };
-    if (!token.check(result0, parsedToken.validator)) return { error: ErrorCode.Default };
+    if (util.intParse(result0.sentAt, -1) === -1)
+      return { error: ErrorCode.Default };
+    if (!token.check(result0, parsedToken.validator))
+      return { error: ErrorCode.Default };
 
     const row = {
       id: snowflake.id("users"),
@@ -168,22 +182,23 @@ const confirmSignup = sage.resource(
       email_ci: email.toLowerCase(),
       password: await crypto.encryptPassword(password),
       joined_at: date.utc(),
-    }
+    };
 
     const result1 = await pg`INSERT INTO users ${pg(row)}`;
     if (result1.count === 0) return { error: ErrorCode.Default };
 
-    if (!await queryCreateSession(ctx.req, ctx.res, row.id)) return { error: ErrorCode.Default };
+    if (!(await queryCreateSession(ctx.req, ctx.res, row.id)))
+      return { error: ErrorCode.Default };
     token.detach(ctx.res, "temp");
 
     return { data: {} };
   }
-)
+);
 
 const login = sage.resource(
   {} as SchemaContext,
   {} as z.infer<typeof loginSchema>,
-  async (arg, ctx): Promise<{ data?: {}, error?: ErrorCode }> => {
+  async (arg, ctx): Promise<{ data?: {}; error?: ErrorCode }> => {
     const parsed = loginSchema.safeParse(arg);
     if (!parsed.success) return { error: ErrorCode.Default };
 
@@ -210,7 +225,8 @@ const login = sage.resource(
     else return { error: ErrorCode.Default };
 
     if (!result0) return { error: ErrorCode.Default };
-    if (!await crypto.comparePassword(password, result0.password)) return { error: ErrorCode.Default };
+    if (!(await crypto.comparePassword(password, result0.password)))
+      return { error: ErrorCode.Default };
 
     const ip = util.getIP(ctx.req);
     const ua = userAgent.get(ctx.req);
@@ -259,16 +275,17 @@ const login = sage.resource(
       }
     }
 
-    if (!await queryCreateSession(ctx.req, ctx.res, result0.id)) return { error: ErrorCode.Default };
+    if (!(await queryCreateSession(ctx.req, ctx.res, result0.id)))
+      return { error: ErrorCode.Default };
 
     return { data: {} };
   }
-)
+);
 
 const verifyLogin = sage.resource(
   {} as SchemaContext,
   {} as z.infer<typeof verifyLoginSchema>,
-  async (arg, _ctx): Promise<{ data?: {}, error?: ErrorCode }> => {
+  async (arg, _ctx): Promise<{ data?: {}; error?: ErrorCode }> => {
     const parsed = verifyLoginSchema.safeParse(arg);
     if (!parsed.success) return { error: ErrorCode.Default };
 
@@ -276,18 +293,22 @@ const verifyLogin = sage.resource(
     const parsedToken = rawToken ? token.parse(rawToken) : undefined;
     if (!parsedToken) return { error: ErrorCode.Default };
 
-    const [result0]: [{
-      id: string,
-      validator: Buffer,
-      sentAt: string,
-      expiresAt: string,
-    }?] = await pg`
+    const [result0]: [
+      {
+        id: string;
+        validator: Buffer;
+        sentAt: string;
+        expiresAt: string;
+      }?
+    ] = await pg`
       SELECT id, validator, sent_at, expires_at FROM email_verify_login
       WHERE selector=${parsedToken.selector}
     `;
     if (!result0) return { error: ErrorCode.Default };
-    if (util.intParse(result0.sentAt, -1) === -1) return { error: ErrorCode.Default };
-    if (!token.check(result0, parsedToken.validator)) return { error: ErrorCode.Default };
+    if (util.intParse(result0.sentAt, -1) === -1)
+      return { error: ErrorCode.Default };
+    if (!token.check(result0, parsedToken.validator))
+      return { error: ErrorCode.Default };
 
     const result1 = await pg`
       UPDATE email_verify_login SET verified=TRUE
@@ -297,32 +318,38 @@ const verifyLogin = sage.resource(
 
     return { data: {} };
   }
-)
+);
 
 const logout = sage.resource(
   {} as SchemaContext,
   undefined,
-  async (_arg, ctx): Promise<{ data?: {}, error?: ErrorCode }> => {
+  async (_arg, ctx): Promise<{ data?: {}; error?: ErrorCode }> => {
     const authInfo = await getAuthInfo(ctx);
     if (!authInfo) return { error: ErrorCode.Default };
     await queryExpireSession(ctx.res, authInfo.sessionId, authInfo.userId);
     return { data: {} };
   }
-)
+);
 
 async function queryGetSession(req: Request) {
   const rawToken = token.get(req, "session");
   const parsedToken = rawToken ? token.parse(rawToken) : undefined;
   if (!parsedToken) return undefined;
 
-  const [result]: [{ id: string, userId: string, validator: Buffer, expiresAt: string }?] = await pg`
+  const [result]: [
+    { id: string; userId: string; validator: Buffer; expiresAt: string }?
+  ] = await pg`
     SELECT id, user_id, validator, expires_at FROM sessions WHERE selector=${parsedToken.selector}
   `;
 
   return result;
 }
 
-async function queryCreateSession(req: Request, res: Response, userId: string): Promise<boolean> {
+async function queryCreateSession(
+  req: Request,
+  res: Response,
+  userId: string
+): Promise<boolean> {
   const tkn = token.create();
   const row = {
     id: snowflake.id("sessions"),
@@ -333,7 +360,7 @@ async function queryCreateSession(req: Request, res: Response, userId: string): 
     expiresAt: date.day(30),
     userAgent: userAgent.get(req),
     ip: util.getIP(req),
-  }
+  };
 
   const result = await pg`INSERT INTO sessions ${pg(row)}`;
   if (result.count === 0) return false;

@@ -1,5 +1,7 @@
 import nodemailer from "nodemailer";
-import { config } from "../config";
+import { config } from "../../config";
+
+import { EmailTemplate } from "./template";
 
 const url = "https://id.dorkodu.com";
 
@@ -23,13 +25,8 @@ function sendVerifyLogin(
 
   return new Promise((resolve) => {
     transporter.sendMail(
-      {
-        from: '"ID" <id@dorkodu.com>',
-        to: email,
-        subject: "Verify Login",
-        text: `${ip} ${userAgent} ${link}`,
-        html: `<div>${ip}</div><div>${userAgent}</div><a href="${link}">${link}</a>`,
-      },
+      EmailTemplate.VerifyLogin({ address: email, ip, userAgent, link }),
+
       async (err, info) => {
         const sent =
           !err && (!info.rejected.length || info.rejected[0] !== email);
@@ -44,13 +41,8 @@ function sendVerifySignup(email: string, token: string): Promise<boolean> {
 
   return new Promise((resolve) => {
     transporter.sendMail(
-      {
-        from: '"ID" <id@dorkodu.com>',
-        to: email,
-        subject: "Verify Create Account",
-        text: `${link}`,
-        html: `<a href="${link}">${link}</a>`,
-      },
+      EmailTemplate.VerifySignup({ address: email, link }),
+
       async (err, info) => {
         const sent =
           !err && (!info.rejected.length || info.rejected[0] !== email);
@@ -68,13 +60,7 @@ function sendConfirmEmailChange(
 
   return new Promise((resolve) => {
     transporter.sendMail(
-      {
-        from: '"ID" <id@dorkodu.com>',
-        to: email,
-        subject: "Confirm Email Change",
-        text: `${link}`,
-        html: `<a href="${link}">${link}</a>`,
-      },
+      EmailTemplate.ConfirmEmailChange({ address: email, link }),
       async (err, info) => {
         const sent =
           !err && (!info.rejected.length || info.rejected[0] !== email);
@@ -89,13 +75,7 @@ function sendRevertEmailChange(email: string, token: string): Promise<boolean> {
 
   return new Promise((resolve) => {
     transporter.sendMail(
-      {
-        from: '"ID" <id@dorkodu.com>',
-        to: email,
-        subject: "Revert Email Change",
-        text: `${link}`,
-        html: `<a href="${link}">${link}</a>`,
-      },
+      EmailTemplate.RevertEmailChange({ address: email, link }),
       async (err, info) => {
         const sent =
           !err && (!info.rejected.length || info.rejected[0] !== email);
@@ -113,13 +93,7 @@ function sendConfirmPasswordChange(
 
   return new Promise((resolve) => {
     transporter.sendMail(
-      {
-        from: '"ID" <id@dorkodu.com>',
-        to: email,
-        subject: "Confirm Password Change",
-        text: `${link}`,
-        html: `<a href="${link}">${link}</a>`,
-      },
+      EmailTemplate.ConfirmPasswordChange({ address: email, link }),
       async (err, info) => {
         const sent =
           !err && (!info.rejected.length || info.rejected[0] !== email);

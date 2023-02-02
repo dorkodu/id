@@ -4,7 +4,7 @@ import {
   confirmPasswordChangeSchema,
   initiateEmailChangeSchema,
   initiatePasswordChangeSchema,
-  revertEmailChangeSchema
+  revertEmailChangeSchema,
 } from "../schemas/user";
 import sage from "@dorkodu/sage-server";
 import { SchemaContext } from "./_schema";
@@ -14,7 +14,7 @@ import pg from "../pg";
 import { IUserParsed, iUserSchema } from "../types/user";
 import { token } from "../lib/token";
 import { crypto } from "../lib/crypto";
-import { mailer } from "../lib/mailer";
+import { mailer } from "../lib/mail/mailer";
 import { date } from "../lib/date";
 import { snowflake } from "../lib/snowflake";
 import { util } from "../lib/util";
@@ -23,7 +23,7 @@ import { ErrorCode } from "../types/error_codes";
 const getUser = sage.resource(
   {} as SchemaContext,
   undefined,
-  async (_arg, ctx): Promise<{ data?: IUserParsed, error?: ErrorCode }> => {
+  async (_arg, ctx): Promise<{ data?: IUserParsed; error?: ErrorCode }> => {
     const info = await auth.getAuthInfo(ctx);
     if (!info) return { error: ErrorCode.Default };
 
@@ -36,7 +36,7 @@ const getUser = sage.resource(
 
     return { data: parsed.data };
   }
-)
+);
 
 const editProfile = sage.resource(
   {} as SchemaContext,
@@ -59,12 +59,12 @@ const editProfile = sage.resource(
 
     return { data: {} };
   }
-)
+);
 
 const initiateEmailChange = sage.resource(
   {} as SchemaContext,
   {} as z.infer<typeof initiateEmailChangeSchema>,
-  async (arg, ctx): Promise<{ data?: {}, error?: ErrorCode }> => {
+  async (arg, ctx): Promise<{ data?: {}; error?: ErrorCode }> => {
     const parsed = initiateEmailChangeSchema.safeParse(arg);
     if (!parsed.success) return { error: ErrorCode.Default };
 
@@ -101,27 +101,39 @@ const initiateEmailChange = sage.resource(
 
     return { data: {} };
   }
-)
+);
 
 const confirmEmailChange = sage.resource(
   {} as SchemaContext,
   {} as z.infer<typeof confirmEmailChangeSchema>,
-  async (arg, _ctx): Promise<{ data?: {}, error?: ErrorCode }> => {
+  async (arg, _ctx): Promise<{ data?: {}; error?: ErrorCode }> => {
     const parsed = confirmEmailChangeSchema.safeParse(arg);
     if (!parsed.success) return { error: ErrorCode.Default };
 
     const tkn0 = token.parse(parsed.data.token);
     if (!tkn0) return { error: ErrorCode.Default };
 
-    const [result0]: [{ id: string, userId: string, email: string, validator: Buffer, sentAt: string, expiresAt: string }?] = await pg`
+    const [result0]: [
+      {
+        id: string;
+        userId: string;
+        email: string;
+        validator: Buffer;
+        sentAt: string;
+        expiresAt: string;
+      }?
+    ] = await pg`
       SELECT id, user_id, email, validator, sent_at, expires_at FROM email_confirm_email
       WHERE selector=${tkn0.selector}
     `;
     if (!result0) return { error: ErrorCode.Default };
-    if (!token.check(result0, tkn0.validator)) return { error: ErrorCode.Default };
-    if (util.intParse(result0.sentAt, -1) === -1) return { error: ErrorCode.Default };
+    if (!token.check(result0, tkn0.validator))
+      return { error: ErrorCode.Default };
+    if (util.intParse(result0.sentAt, -1) === -1)
+      return { error: ErrorCode.Default };
 
-    const [result1]: [{ email: string }?] = await pg`SELECT email FROM users WHERE id=${result0.userId}`;
+    const [result1]: [{ email: string }?] =
+      await pg`SELECT email FROM users WHERE id=${result0.userId}`;
     if (!result1) return { error: ErrorCode.Default };
     if (result1.email.toLocaleLowerCase() === result0.email.toLocaleLowerCase()) return { error: ErrorCode.Default };
 
@@ -165,27 +177,39 @@ const confirmEmailChange = sage.resource(
 
     return { data: {} };
   }
-)
+);
 
 const revertEmailChange = sage.resource(
   {} as SchemaContext,
   {} as z.infer<typeof revertEmailChangeSchema>,
-  async (arg, _ctx): Promise<{ data?: {}, error?: ErrorCode }> => {
+  async (arg, _ctx): Promise<{ data?: {}; error?: ErrorCode }> => {
     const parsed = revertEmailChangeSchema.safeParse(arg);
     if (!parsed.success) return { error: ErrorCode.Default };
 
     const tkn0 = token.parse(parsed.data.token);
     if (!tkn0) return { error: ErrorCode.Default };
 
-    const [result0]: [{ id: string, userId: string, email: string, validator: Buffer, sentAt: string, expiresAt: string }?] = await pg`
+    const [result0]: [
+      {
+        id: string;
+        userId: string;
+        email: string;
+        validator: Buffer;
+        sentAt: string;
+        expiresAt: string;
+      }?
+    ] = await pg`
       SELECT id, user_id, email, validator, sent_at, expires_at FROM email_revert_email
       WHERE selector=${tkn0.selector}
     `;
     if (!result0) return { error: ErrorCode.Default };
-    if (!token.check(result0, tkn0.validator)) return { error: ErrorCode.Default };
-    if (util.intParse(result0.sentAt, -1) === -1) return { error: ErrorCode.Default };
+    if (!token.check(result0, tkn0.validator))
+      return { error: ErrorCode.Default };
+    if (util.intParse(result0.sentAt, -1) === -1)
+      return { error: ErrorCode.Default };
 
-    const [result1]: [{ email: string }?] = await pg` SELECT email FROM users WHERE id=${result0.userId}`;
+    const [result1]: [{ email: string }?] =
+      await pg` SELECT email FROM users WHERE id=${result0.userId}`;
     if (!result1) return { error: ErrorCode.Default };
     if (result1.email.toLocaleLowerCase() === result0.email.toLocaleLowerCase()) return { error: ErrorCode.Default };
 
@@ -204,12 +228,12 @@ const revertEmailChange = sage.resource(
 
     return { data: {} };
   }
-)
+);
 
 const initiatePasswordChange = sage.resource(
   {} as SchemaContext,
   {} as z.infer<typeof initiatePasswordChangeSchema>,
-  async (arg, _ctx): Promise<{ data?: {}, error?: ErrorCode }> => {
+  async (arg, _ctx): Promise<{ data?: {}; error?: ErrorCode }> => {
     const parsed = initiatePasswordChangeSchema.safeParse(arg);
     if (!parsed.success) return { error: ErrorCode.Default };
 
@@ -242,12 +266,12 @@ const initiatePasswordChange = sage.resource(
 
     return { data: {} };
   }
-)
+);
 
 const confirmPasswordChange = sage.resource(
   {} as SchemaContext,
   {} as z.infer<typeof confirmPasswordChangeSchema>,
-  async (arg, _ctx): Promise<{ data?: {}, error?: ErrorCode }> => {
+  async (arg, _ctx): Promise<{ data?: {}; error?: ErrorCode }> => {
     const parsed = confirmPasswordChangeSchema.safeParse(arg);
     if (!parsed.success) return { error: ErrorCode.Default };
 
@@ -259,8 +283,10 @@ const confirmPasswordChange = sage.resource(
       WHERE selector=${tkn.selector}
     `;
     if (!result0) return { error: ErrorCode.Default };
-    if (!token.check(result0, tkn.validator)) return { error: ErrorCode.Default };
-    if (util.intParse(result0.sentAt, -1) === -1) return { error: ErrorCode.Default };
+    if (!token.check(result0, tkn.validator))
+      return { error: ErrorCode.Default };
+    if (util.intParse(result0.sentAt, -1) === -1)
+      return { error: ErrorCode.Default };
 
     const [result2]: [{ exists: boolean }?] = await pg`
       SELECT EXISTS (
@@ -272,7 +298,7 @@ const confirmPasswordChange = sage.resource(
     if (result2.exists) return { error: ErrorCode.Default };
 
     const password = await crypto.encryptPassword(parsed.data.newPassword);
-    const [result3, _result4, result5] = await pg.begin(pg => [
+    const [result3, _result4, result5] = await pg.begin((pg) => [
       pg`UPDATE users SET password=${password} WHERE id=${result0.userId}`,
       pg`UPDATE sessions SET expires_at=${date.utc()} WHERE user_id=${result0.userId} AND expires_at>${date.utc()}`,
       pg`UPDATE access_tokens SET expires_at=${date.utc()} WHERE user_id=${result0.userId} AND expires_at>${date.utc()}`,
@@ -284,7 +310,7 @@ const confirmPasswordChange = sage.resource(
 
     return { data: {} };
   }
-)
+);
 
 export default {
   getUser,
@@ -297,4 +323,4 @@ export default {
 
   initiatePasswordChange,
   confirmPasswordChange,
-}
+};
