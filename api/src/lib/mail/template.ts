@@ -97,4 +97,37 @@ export namespace EmailTemplate {
       `,
     });
 
+  export const VerifySignup: EmailBlueprint<{
+    address: string;
+    link: string;
+  }> = ({ address, link }) =>
+    StandardEmailMessage({
+      to: address,
+      subject: "Verify Your Email @ Dorkodu",
+      summary:
+        "You need to verify your email to complete creating a Dorkodu account.",
+      text: `
+      Hello.
+      Welcome to Dorkodu! 
+  
+      We need to verify that this email is active and belongs to you.
+  
+      If you didn't try to create a Dorkodu account recently, ignore this email.
+      
+      Verification Link:
+      ${link}
+      `,
+      html: `
+      ${Block.Subtitle("Welcome to Dorkodu!")}
+      ${Block.Text("Hello, there.")}
+      ${Block.Text(
+        `We need to verify this email is active and belongs to you.`
+      )}
+      ${Block.Text(
+        `If you didn't try to create a Dorkodu account recently, <b>ignore this email</b>.`
+      )}
+      ${Block.CallToAction("Verify Email", link)}
+      `,
+    });
+
 }
