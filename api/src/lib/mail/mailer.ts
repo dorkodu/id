@@ -93,13 +93,7 @@ function sendConfirmPasswordChange(
 
   return new Promise((resolve) => {
     transporter.sendMail(
-      {
-        from: '"ID" <id@dorkodu.com>',
-        to: email,
-        subject: "Confirm Password Change",
-        text: `${link}`,
-        html: `<a href="${link}">${link}</a>`,
-      },
+      EmailTemplate.ConfirmPasswordChange({ address: email, link }),
       async (err, info) => {
         const sent =
           !err && (!info.rejected.length || info.rejected[0] !== email);
