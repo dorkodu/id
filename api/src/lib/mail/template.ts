@@ -50,4 +50,51 @@ export namespace EmailTemplate {
       ),
     } satisfies Mail.Options;
   };
+
+  export const VerifyLogin: EmailBlueprint<{
+    address: string;
+    ip: string;
+    userAgent: string;
+    link: string;
+  }> = ({ address, ip, userAgent, link }) =>
+    StandardEmailMessage({
+      to: address,
+      subject: "Verify Login @ Dorkodu",
+      summary: "We need to verify if recent login was you.",
+      text: `
+      Hello,
+
+      We need to verify that it was you. If you didn't login with Dorkodu from a new device recently, you should ignore this email.
+      
+      Verification Link: 
+      ${link}
+      
+      Login Details
+      ---------
+      IP: ${ip}
+      Device: ${userAgent}
+  
+      If you are sure it wasn't you, someone might logged in with your account.
+  
+      We suggest you to check security and change your password.
+      `,
+      html: `
+  
+      ${Block.Text("Hello, ")}
+      ${Block.Text(
+        `We need to verify that it was you. If you didn't login with <b>Dorkodu</b> from a new device recently, you should <b>ignore</b> this email.`
+      )}
+      ${Block.CallToAction("Verify Login", link)}
+      ${Block.Divider()}
+      ${Block.Subtitle("Details")}
+      ${Block.ValuePairs([
+        ["IP", ip],
+        ["Device", userAgent],
+      ])}
+      ${Block.Text(
+        "If you are sure it wasn't you, someone might logged in with your account. <br>We suggest you to check security and change your password."
+      )}
+      `,
+    });
+
 }
