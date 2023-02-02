@@ -89,7 +89,8 @@ const signup = sage.resource(
     };
 
     (async () => {
-      await mailer.sendVerifySignup(email, tkn.full);
+      const sent = await mailer.sendVerifySignup(email, tkn.full);
+      if (!sent) return;
 
       // Set sent_at to now, expires_at to 10 minutes & insert to the database
       row.sent_at = date.utc();
@@ -264,7 +265,8 @@ const login = sage.resource(
         };
 
         (async () => {
-          await mailer.sendVerifyLogin(result0.email, tkn.full, ip, ua);
+          const sent = await mailer.sendVerifyLogin(result0.email, tkn.full, ip, ua);
+          if (!sent) return;
 
           row.sentAt = date.utc();
           row.expiresAt = date.minute(10);

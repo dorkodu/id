@@ -92,7 +92,8 @@ const initiateEmailChange = sage.resource(
     };
 
     (async () => {
-      await mailer.sendConfirmEmailChange(newEmail, tkn.full);
+      const sent = await mailer.sendConfirmEmailChange(newEmail, tkn.full);
+      if (!sent) return;
 
       row.sentAt = date.utc();
       row.expiresAt = date.hour(1);
@@ -160,7 +161,8 @@ const confirmEmailChange = sage.resource(
     };
 
     (async () => {
-      await mailer.sendRevertEmailChange(oldEmail, tkn1.full);
+      const sent = await mailer.sendRevertEmailChange(oldEmail, tkn1.full);
+      if (!sent) return;
 
       row.sentAt = date.utc();
       row.expiresAt = date.day(30);
@@ -257,7 +259,8 @@ const initiatePasswordChange = sage.resource(
         expiresAt: -1,
       }
 
-      await mailer.sendConfirmPasswordChange(email, tkn.full);
+      const sent = await mailer.sendConfirmPasswordChange(email, tkn.full);
+      if (!sent) return;
 
       row.sentAt = date.utc();
       row.expiresAt = date.hour(1);
