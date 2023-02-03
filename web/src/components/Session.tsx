@@ -15,6 +15,7 @@ import {
 import { tokens } from "@dorkodu/prism";
 import { css } from "@emotion/react";
 import { useUserStore } from "../stores/userStore";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   session: ISession;
@@ -24,6 +25,7 @@ const flexNoShrink = css`flex-shrink: 0;`;
 const fullWidth = css`width: 100%;`;
 
 export function Session({ session }: Props) {
+  const { t } = useTranslation();
   const queryTerminateSession = useUserStore((state) => state.queryTerminateSession);
   const terminateSession = () => queryTerminateSession(session.id);
 
@@ -47,7 +49,7 @@ export function Session({ session }: Props) {
                 icon={<IconTrash size={14} />}
                 onClick={terminateSession}
               >
-                Terminate Session
+                {t("terminateSession")}
               </Menu.Item>
             </Menu.Dropdown>
           </Menu>

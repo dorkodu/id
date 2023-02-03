@@ -146,5 +146,7 @@
   "editProfile": "Profili Düzenle",
   "reject": "Reddet",
   "accept": "Onayla",
-  "confirm": "Onayla"
+  "confirm": "Onayla",
+  "terminateSession": "Oturumu Sonlandır",
+  "revokeAccess": "Erişimi İptal Et"
 }

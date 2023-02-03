@@ -16,6 +16,7 @@ import { tokens } from "@dorkodu/prism";
 import { css } from "@emotion/react";
 import { IAccess } from "@api/types/access";
 import { useUserStore } from "../stores/userStore";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   access: IAccess;
@@ -25,6 +26,7 @@ const flexNoShrink = css`flex-shrink: 0;`;
 const fullWidth = css`width: 100%;`;
 
 function Access({ access }: Props) {
+  const { t } = useTranslation();
   const queryRevokeAccess = useUserStore((state) => state.queryRevokeAccess);
   const revokeAccess = () => queryRevokeAccess(access.id);
 
@@ -48,7 +50,7 @@ function Access({ access }: Props) {
                 icon={<IconTrash size={14} />}
                 onClick={revokeAccess}
               >
-                Revoke Access
+                {t("revokeAccess")}
               </Menu.Item>
             </Menu.Dropdown>
           </Menu>

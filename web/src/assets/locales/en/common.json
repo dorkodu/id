@@ -146,5 +146,7 @@
   "editProfile": "Edit Profile",
   "reject": "Reject",
   "accept": "Accept",
-  "confirm": "Confirm"
+  "confirm": "Confirm",
+  "terminateSession": "Terminate Session",
+  "revokeAccess": "Revoke Access"
 }
