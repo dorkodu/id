@@ -95,7 +95,7 @@ function ChangePassword() {
               </Anchor>
 
               <Button onClick={initiateChangePassword} radius="md">
-                {t("continue")}
+                {t("continue_")}
               </Button>
             </Flex>
 

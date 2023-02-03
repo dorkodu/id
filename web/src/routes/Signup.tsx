@@ -152,7 +152,7 @@ function CreateAccount() {
           </Anchor>
 
           <Button onClick={signup} radius="md">
-            {t("continue")}
+            {t("continue_")}
           </Button>
         </Flex>
 

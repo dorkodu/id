@@ -77,7 +77,7 @@ function ChangeEmail() {
               </Anchor>
 
               <Button onClick={initiateEmailChange} radius="md">
-                {t("continue")}
+                {t("continue_")}
               </Button>
             </Flex>
 
