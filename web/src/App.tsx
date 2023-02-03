@@ -1,5 +1,5 @@
 import { css, Global } from "@emotion/react";
-import { ColorSchemeProvider, Loader, MantineProvider } from "@mantine/core";
+import { ColorSchemeProvider, LoadingOverlay, MantineProvider } from "@mantine/core";
 import { Suspense, useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import { useAppStore } from "./stores/appStore";
@@ -24,13 +24,6 @@ const global = css`
   }
 `;
 
-const center = css`
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%,-50%);
-`;
-
 function App() {
   const loading = useAppStore((state) => state.getLoading());
   const queryAuth = useUserStore((state) => state.queryAuth);
@@ -44,7 +37,8 @@ function App() {
       <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
         <MantineProvider theme={{ ...theme, colorScheme }} withNormalizeCSS withGlobalStyles>
           <Suspense>
-            {loading ? <Loader css={center} variant="dots" color="green" /> : <Outlet />}
+            <LoadingOverlay visible={loading} overlayBlur={2} css={css`position: fixed;`} />
+            <Outlet />
           </Suspense>
         </MantineProvider>
       </ColorSchemeProvider>
