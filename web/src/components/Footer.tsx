@@ -1,4 +1,4 @@
-import { Anchor, Divider, Flex, NativeSelect, Text } from "@mantine/core";
+import { Anchor, Divider, Flex, NativeSelect, Space, Text } from "@mantine/core";
 import { IconWorld } from "@tabler/icons";
 import i18n from "../lib/i18n";
 import { widthLimit } from "../styles/css";
@@ -24,28 +24,31 @@ function Footer() {
   ));
 
   return (
-    <Flex direction="column" align="center" gap="xs">
-      <Divider css={widthLimit} />
+    <Flex direction="column">
+      <Flex direction="column" align="center" gap="xs">
+        <Divider css={widthLimit} />
 
-      <Flex gap="xs">{items}</Flex>
+        <Flex gap="xs">{items}</Flex>
 
-      <Text color="dimmed" weight={450}>
-        <b>Dorkodu</b> &copy; {new Date().getFullYear()}
-      </Text>
+        <Text color="dimmed" weight={450}>
+          <b>Dorkodu</b> &copy; {new Date().getFullYear()}
+        </Text>
 
-      <NativeSelect
-        radius="md"
-        variant="default"
-        icon={<IconWorld />}
-        value={i18n.language}
-        onChange={(ev) => changeLocale(ev.currentTarget.value)}
-        data={[
-          { value: 'en', label: 'English' },
-          { value: 'tr', label: 'Türkçe' },
-        ]}
-      />
+        <NativeSelect
+          radius="md"
+          variant="default"
+          icon={<IconWorld />}
+          value={i18n.language}
+          onChange={(ev) => changeLocale(ev.currentTarget.value)}
+          data={[
+            { value: 'en', label: 'English' },
+            { value: 'tr', label: 'Türkçe' },
+          ]}
+        />
 
-      <ColorToggleSegmented />
+        <ColorToggleSegmented />
+      </Flex>
+      <Space h="xs" />
     </Flex>
   )
 }
