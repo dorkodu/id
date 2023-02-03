@@ -128,7 +128,7 @@ function Login() {
         {state.status === "verify" &&
           <Alert
             icon={<IconInfoCircle size={24} />}
-            title="Info"
+            title={t("info.text")}
             color="blue"
             variant="light"
           >
@@ -139,7 +139,7 @@ function Login() {
         {state.status === "error" &&
           <Alert
             icon={<IconAlertCircle size={24} />}
-            title="Error"
+            title={t("error.text")}
             color="red"
             variant="light"
           >
@@ -171,7 +171,7 @@ function Login() {
         {state.status === "ok" &&
           <Alert
             icon={<IconCircleCheck size={24} />}
-            title="Success"
+            title={t("success.text")}
             color="green"
             variant="light"
           >
@@ -182,7 +182,7 @@ function Login() {
         {state.status === "error" &&
           <Alert
             icon={<IconAlertCircle size={24} />}
-            title="Error"
+            title={t("error.text")}
             color="red"
             variant="light"
           >

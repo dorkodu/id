@@ -1,5 +1,6 @@
 {
   "success": {
+    "text": "Başarı",
     "emailVerified": "E-posta doğrulandı. Bu sekmeyi kapatabilir ve hesabınızı oluşturmaya devam edebilirsiniz.",
     "emailReverted": "E-posta geri alındı.",
     "locationVerified": "Konum doğrulandı. Bu sekmeyi kapatabilir ve oturum açmaya devam edebilirsiniz.",
@@ -8,6 +9,7 @@
   },
 
   "error": {
+    "text": "Hata",
     "default": "Bir hata oluştu.",
     "usernameUsed": "Kullanıcı adı zaten kullanımda.",
     "emailUsed": "E-posta zaten kullanımda.",
@@ -16,6 +18,7 @@
   },
 
   "info": {
+    "text": "Bilgi",
     "verifyEmail": "Posta gönderildi. E-postanızı doğrulamak için lütfen gelen kutusunu veya spam klasörünü kontrol edin.",
     "newLocation": "Yeni bir konum algılandı. Lütfen konumunuzu doğrulamak için gelen kutusunu veya spam klasörünü kontrol edin ve ardından tekrar deneyin.",
     "changeEmail": "Posta gönderildi. E-postanızı değiştirmek için lütfen gelen kutusunu veya spam klasörünü kontrol edin.",

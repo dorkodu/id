@@ -72,7 +72,7 @@ function RevertChangeEmail() {
             {state.status === true &&
               <Alert
                 icon={<IconCircleCheck size={24} />}
-                title="Success"
+                title={t("success.text")}
                 color="green"
                 variant="light"
               >
@@ -83,7 +83,7 @@ function RevertChangeEmail() {
             {state.status === false &&
               <Alert
                 icon={<IconAlertCircle size={24} />}
-                title="Error"
+                title={t("error.text")}
                 color="red"
                 variant="light"
               >

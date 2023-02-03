@@ -1,5 +1,6 @@
 {
   "success": {
+    "text": "Success",
     "emailVerified": "Email is verified. You can close this tab and continue to create your account.",
     "emailReverted": "Email is reverted.",
     "locationVerified": "Location is verified. You can close this tab and continue to log in.",
@@ -8,6 +9,7 @@
   },
 
   "error": {
+    "text": "Error",
     "default": "An error occured.",
     "usernameUsed": "Username is already in use.",
     "emailUsed": "Email is already in use.",
@@ -16,6 +18,7 @@
   },
 
   "info": {
+    "text": "Info",
     "verifyEmail": "Mail is sent. Please check inbox or spam folder to verify your email.",
     "newLocation": "A new location is detected. Please check inbox or spam folder to verify your location, then try again.",
     "changeEmail": "Mail is sent. Please check inbox or spam folder to change your email.",

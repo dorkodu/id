@@ -87,7 +87,7 @@ function ConfirmChangePassword() {
             {state.status === true &&
               <Alert
                 icon={<IconCircleCheck size={24} />}
-                title="Success"
+                title={t("success.text")}
                 color="green"
                 variant="light"
               >
@@ -98,7 +98,7 @@ function ConfirmChangePassword() {
             {state.status === false &&
               <Alert
                 icon={<IconAlertCircle size={24} />}
-                title="Info"
+                title={t("error.text")}
                 color="red"
                 variant="light"
               >

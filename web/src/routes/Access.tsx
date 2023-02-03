@@ -91,7 +91,7 @@ function Access() {
             {state.status === false &&
               <Alert
                 icon={<IconAlertCircle size={24} />}
-                title="Error"
+                title={t("error.text")}
                 color="red"
                 variant="light"
               >
@@ -109,7 +109,7 @@ function Access() {
                 </Anchor>
                 <Alert
                   icon={<IconAlertCircle size={24} />}
-                  title="Error"
+                  title={t("error.text")}
                   color="red"
                   variant="light"
                 >

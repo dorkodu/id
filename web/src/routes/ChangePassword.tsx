@@ -102,7 +102,7 @@ function ChangePassword() {
             {state.status === true &&
               <Alert
                 icon={<IconInfoCircle size={24} />}
-                title="Info"
+                title={t("info.text")}
                 color="blue"
                 variant="light"
               >
@@ -113,7 +113,7 @@ function ChangePassword() {
             {state.status === false &&
               <Alert
                 icon={<IconAlertCircle size={24} />}
-                title="Info"
+                title={t("error.text")}
                 color="red"
                 variant="light"
               >
