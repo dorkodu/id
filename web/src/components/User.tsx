@@ -31,6 +31,7 @@ import { useUserStore } from "../stores/userStore";
 import { useReducer } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { wrapContent } from "../styles/css";
 
 const useStyles = createStyles((theme) => ({
   icon: {
@@ -162,7 +163,7 @@ function User({ user }: Props) {
             </Flex>
 
             <Flex align="center" gap="md">
-              <Text size="sm" color="dimmed">{user.bio}</Text>
+              <Text size="sm" color="dimmed" css={wrapContent}>{user.bio}</Text>
             </Flex>
 
             <Flex align="center" gap="md">
