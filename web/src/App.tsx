@@ -1,5 +1,6 @@
 import { css, Global } from "@emotion/react";
-import { ColorSchemeProvider, LoadingOverlay, MantineProvider } from "@mantine/core";
+import { ColorScheme, ColorSchemeProvider, LoadingOverlay, MantineProvider } from "@mantine/core";
+import { useLocalStorage } from "@mantine/hooks";
 import { Suspense, useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import { useAppStore } from "./stores/appStore";
@@ -26,8 +27,17 @@ function App() {
   const queryAuth = useUserStore((state) => state.queryAuth);
   useEffect(() => { queryAuth() }, []);
 
-  const colorScheme = useAppStore((state) => state.colorScheme);
-  const toggleColorScheme = useAppStore((state) => state.toggleColorScheme);
+  //const colorScheme = useAppStore((state) => state.colorScheme);
+  //const toggleColorScheme = useAppStore((state) => state.toggleColorScheme);
+
+  const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
+    key: 'theme',
+    defaultValue: 'light',
+    getInitialValueInEffect: true,
+  });
+
+  const toggleColorScheme = (value?: ColorScheme) =>
+    setColorScheme(value || (colorScheme === 'dark' ? 'light' : 'dark'));
 
   return (
     <>

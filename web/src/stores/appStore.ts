@@ -1,4 +1,3 @@
-import { ColorScheme } from "@mantine/core";
 import create from "zustand";
 import { immer } from "zustand/middleware/immer";
 import { changeDateLanguage } from "../lib/date";
@@ -10,8 +9,6 @@ interface State {
     locale: boolean;
   };
 
-  colorScheme: ColorScheme;
-
   redirect: string | undefined;
 }
 
@@ -19,8 +16,6 @@ interface Action {
   setAuthLoading: (loading: boolean) => void;
   setLocaleLoading: (loading: boolean) => void;
   changeLocale: (lang: string) => void;
-
-  toggleColorScheme: (value: ColorScheme) => void;
 
   setRedirect: (redirect: string | undefined) => void;
 }
@@ -30,8 +25,6 @@ const initialState: State = {
     auth: true,
     locale: true,
   },
-
-  colorScheme: "light",
 
   redirect: undefined,
 };
@@ -55,10 +48,6 @@ export const useAppStore = create(
       document.documentElement.lang = lang;
 
       set(state => { state.loading.locale = false })
-    },
-
-    toggleColorScheme(value) {
-      set((state) => { state.colorScheme = value });
     },
 
     setRedirect: (redirect) => {
