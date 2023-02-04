@@ -19,7 +19,10 @@ const global = css`
 `;
 
 function App() {
-  const loading = useAppStore((state) => state.getLoading());
+  // Loading auth and locale are different,
+  // on locale, it's fine to keep current view since it doesn't effect functionality
+  // on auth, it effects functionality so hide the view
+  const loading = useAppStore((state) => state.loading);
   const queryAuth = useUserStore((state) => state.queryAuth);
   useEffect(() => { queryAuth() }, []);
 
@@ -31,8 +34,12 @@ function App() {
       <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
         <MantineProvider theme={{ ...theme, colorScheme }} withNormalizeCSS withGlobalStyles>
           <Suspense>
-            <LoadingOverlay visible={loading} overlayBlur={2} css={css`position: fixed;`} />
-            <Outlet />
+            <LoadingOverlay
+              visible={loading.auth || loading.locale}
+              overlayBlur={2}
+              css={css`position: fixed;`}
+            />
+            {!loading.auth && <Outlet />}
           </Suspense>
         </MantineProvider>
       </ColorSchemeProvider>

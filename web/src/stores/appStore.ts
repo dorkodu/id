@@ -16,7 +16,6 @@ interface State {
 }
 
 interface Action {
-  getLoading: () => boolean;
   setAuthLoading: (loading: boolean) => void;
   setLocaleLoading: (loading: boolean) => void;
   changeLocale: (lang: string) => void;
@@ -38,12 +37,8 @@ const initialState: State = {
 };
 
 export const useAppStore = create(
-  immer<State & Action>((set, get) => ({
+  immer<State & Action>((set, _get) => ({
     ...initialState,
-
-    getLoading: () => {
-      return get().loading.auth || get().loading.locale;
-    },
 
     setAuthLoading: (loading) => {
       set((state) => { state.loading.auth = loading });
