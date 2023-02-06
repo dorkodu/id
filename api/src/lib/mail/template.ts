@@ -40,7 +40,7 @@ export namespace EmailTemplate {
         summary ?? "",
         `${Block.Card(`
           ${Block.Logo(
-          "https://id.dorkodu.com/dorkodu-id.svg",
+          "https://id.dorkodu.com/android-chrome-192x192.png",
           "Dorkodu ID"
         )}
           ${Block.Title(subject)}
