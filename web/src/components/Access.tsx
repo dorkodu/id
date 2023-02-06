@@ -39,7 +39,7 @@ function Access({ access }: Props) {
             <Text>{date(access.createdAt).format("lll")}</Text>
           </Flex>
 
-          <Menu shadow="md" radius="md">
+          <Menu shadow="md" radius="md" position="bottom-end">
             <Menu.Target>
               <ActionIcon color="dark"><IconDots /></ActionIcon>
             </Menu.Target>

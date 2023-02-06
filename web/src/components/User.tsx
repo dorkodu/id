@@ -115,7 +115,7 @@ function User({ user }: Props) {
             <Flex align="center" justify="space-between">
               <Text size="xl" weight={600}>{user.name}</Text>
 
-              <Menu shadow="md" radius="md">
+              <Menu shadow="md" radius="md" position="bottom-end">
                 <Menu.Target>
                   <ActionIcon color="dark"><IconDots /></ActionIcon>
                 </Menu.Target>
