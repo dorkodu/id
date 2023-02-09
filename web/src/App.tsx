@@ -16,6 +16,7 @@ const global = css`
   body {
     ${width}
     overflow-y: scroll;
+    overscroll-behavior: contain;
   }
 `;
 
