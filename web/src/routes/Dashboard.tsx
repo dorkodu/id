@@ -5,26 +5,19 @@ import { useUserStore } from "../stores/userStore";
 import { request, sage } from "../stores/api";
 import { array } from "../lib/array";
 
-import {
-  ActionIcon,
-  AppShell,
-  Button,
-  Card,
-  Flex,
-  Header,
-  SegmentedControl,
-} from "@mantine/core";
+import { ActionIcon, AppShell, Card, Flex, Header } from "@mantine/core";
 
 import User from "../components/User";
 
 import DorkoduIDKeyIcon from "@assets/dorkodu-id_key.svg";
 
-import { IconArrowLeft, IconMenu2 } from "@tabler/icons";
+import { IconArrowBigDownLine, IconArrowBigUpLine, IconArrowLeft, IconMenu2, IconRefresh } from "@tabler/icons";
 import { css } from "@emotion/react";
 import { Session } from "../components/Session";
 import Access from "../components/Access";
 import Footer from "../components/Footer";
 import { useTranslation } from "react-i18next";
+import CardPanel from "../components/cards/CardPanel";
 
 const width = css`
   max-width: 768px;
@@ -82,6 +75,12 @@ function Dashboard() {
     switch (state.show) {
       case "sessions": getSessions("older"); break;
       case "accesses": getAccesses("older"); break;
+    }
+  }
+
+  const changeShow = (value: string) => {
+    if (value === "sessions" || value === "accesses") {
+      setState(s => ({ ...s, show: value }));
     }
   }
 
@@ -152,24 +151,25 @@ function Dashboard() {
 
       <Session session={currentSession} />
 
-      <Card shadow="sm" p="lg" m="md" radius="md" withBorder>
-        <Flex direction="column" gap="md">
-          <SegmentedControl radius="md" fullWidth
-            value={state.show}
-            onChange={(show: typeof state.show) => setState({ ...state, show })}
-            data={[
+      <CardPanel
+        segments={[
+          {
+            value: state.show,
+            setValue: changeShow,
+            label: t("show"),
+            data: [
               { label: t("sessions"), value: "sessions" },
               { label: t("accesses"), value: "accesses" },
-            ]}
-          />
+            ]
+          }
+        ]}
 
-          <Button.Group>
-            <Button radius="md" fullWidth variant="default" onClick={refresh}>{t("refresh")}</Button>
-            <Button radius="md" fullWidth variant="default" onClick={loadNewer}>{t("loadNewer")}</Button>
-            <Button radius="md" fullWidth variant="default" onClick={loadOlder}>{t("loadOlder")}</Button>
-          </Button.Group>
-        </Flex>
-      </Card>
+        buttons={[
+          { onClick: refresh, text: <IconRefresh /> },
+          { onClick: loadOlder, text: <IconArrowBigDownLine /> },
+          { onClick: loadNewer, text: <IconArrowBigUpLine /> },
+        ]}
+      />
 
       {state.show === "sessions" && sessions.map((s) => <Session key={s.id} session={s} />)}
       {state.show === "accesses" && accesses.map((a) => <Access key={a.id} access={a} />)}
