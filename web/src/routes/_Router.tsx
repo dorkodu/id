@@ -2,19 +2,20 @@ import React from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
 import App from "../App";
+import { useWait } from "../components/hooks";
 import RequireAuth from "../components/RequireAuth";
 import Access from "./Access";
 
-const Welcome = React.lazy(() => import("./Welcome"));
-const Signup = React.lazy(() => import("./Signup"));
-const Login = React.lazy(() => import("./Login"));
-const ChangeEmail = React.lazy(() => import("./ChangeEmail"));
-const ConfirmChangeEmail = React.lazy(() => import("./ConfirmChangeEmail"));
-const RevertChangeEmail = React.lazy(() => import("./RevertChangeEmail"));
-const ConfirmChangePassword = React.lazy(() => import("./ConfirmChangePassword"));
-const ChangePassword = React.lazy(() => import("./ChangePassword"));
-const Dashboard = React.lazy(() => import("./Dashboard"));
-const NotFound = React.lazy(() => import("./NotFound"));
+const Welcome = React.lazy(useWait(() => import("./Welcome")));
+const Signup = React.lazy(useWait(() => import("./Signup")));
+const Login = React.lazy(useWait(() => import("./Login")));
+const ChangeEmail = React.lazy(useWait(() => import("./ChangeEmail")));
+const ConfirmChangeEmail = React.lazy(useWait(() => import("./ConfirmChangeEmail")));
+const RevertChangeEmail = React.lazy(useWait(() => import("./RevertChangeEmail")));
+const ConfirmChangePassword = React.lazy(useWait(() => import("./ConfirmChangePassword")));
+const ChangePassword = React.lazy(useWait(() => import("./ChangePassword")));
+const Dashboard = React.lazy(useWait(() => import("./Dashboard")));
+const NotFound = React.lazy(useWait(() => import("./NotFound")));
 
 function Router() {
   return (

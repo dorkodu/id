@@ -1,8 +1,10 @@
 import { css, Global } from "@emotion/react";
-import { ColorScheme, ColorSchemeProvider, LoadingOverlay, MantineProvider } from "@mantine/core";
+import { ColorScheme, ColorSchemeProvider, MantineProvider } from "@mantine/core";
 import { useLocalStorage } from "@mantine/hooks";
 import { Suspense, useEffect } from "react";
 import { Outlet } from "react-router-dom";
+import CenterLoader from "./components/cards/CenterLoader";
+import OverlayLoader from "./components/cards/OverlayLoader";
 import { useAppStore } from "./stores/appStore";
 import { useUserStore } from "./stores/userStore";
 import theme from "./styles/theme";
@@ -26,10 +28,6 @@ function App() {
   // on auth, it effects functionality so hide the view
   const loading = useAppStore((state) => state.loading);
   const queryAuth = useUserStore((state) => state.queryAuth);
-  useEffect(() => { queryAuth() }, []);
-
-  //const colorScheme = useAppStore((state) => state.colorScheme);
-  //const toggleColorScheme = useAppStore((state) => state.toggleColorScheme);
 
   const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
     key: "theme",
@@ -53,16 +51,14 @@ function App() {
     setColorScheme(scheme);
   }
 
+  useEffect(() => { queryAuth() }, []);
+
   return (
     <>
       <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
         <MantineProvider theme={{ ...theme, colorScheme }} withNormalizeCSS withGlobalStyles>
-          <Suspense>
-            <LoadingOverlay
-              visible={loading.auth || loading.locale}
-              overlayBlur={2}
-              css={css`position: fixed;`}
-            />
+          <Suspense fallback={<CenterLoader />}>
+            {(loading.auth || loading.locale) && <OverlayLoader full={true} />}
             {!loading.auth && <Outlet />}
           </Suspense>
         </MantineProvider>
