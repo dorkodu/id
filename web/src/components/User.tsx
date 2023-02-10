@@ -9,7 +9,6 @@ import {
   Flex,
   Menu,
   ActionIcon,
-  Grid,
   Modal,
   TextInput,
   Textarea,
@@ -105,79 +104,74 @@ function User({ user }: Props) {
 
   return (
     <Card shadow="sm" p="lg" m="md" radius="md" withBorder css={css`overflow: visible;`}>
-      <Grid gutter="md">
-        <Grid.Col span="content">
+      <Flex direction="column">
+        <Flex justify="space-between" mb="xs">
           <Avatar src={UserAvatar} size={100} radius="md" />
-        </Grid.Col>
 
-        <Grid.Col span="auto">
-          <Flex direction="column">
-            <Flex align="center" justify="space-between">
-              <Text size="xl" weight={600}>{user.name}</Text>
+          <Flex direction="row" align="flex-start">
+            <Menu shadow="md" radius="md" position="bottom-end">
+              <Menu.Target>
+                <ActionIcon color="dark"><IconDots /></ActionIcon>
+              </Menu.Target>
 
-              <Menu shadow="md" radius="md" position="bottom-end">
-                <Menu.Target>
-                  <ActionIcon color="dark"><IconDots /></ActionIcon>
-                </Menu.Target>
+              <Menu.Dropdown>
+                <Menu.Item
+                  icon={<IconUser size={14} />}
+                  onClick={startEdit}
+                >
+                  {t("editProfile")}
+                </Menu.Item>
 
-                <Menu.Dropdown>
-                  <Menu.Item
-                    icon={<IconUser size={14} />}
-                    onClick={startEdit}
-                  >
-                    {t("editProfile")}
-                  </Menu.Item>
+                <Menu.Divider />
 
-                  <Menu.Divider />
+                <Menu.Item
+                  icon={<IconAt size={14} />}
+                  onClick={changeEmail}
+                >
+                  {t("changeEmail")}
+                </Menu.Item>
 
-                  <Menu.Item
-                    icon={<IconAt size={14} />}
-                    onClick={changeEmail}
-                  >
-                    {t("changeEmail")}
-                  </Menu.Item>
+                <Menu.Item
+                  icon={<IconAsterisk size={14} />}
+                  onClick={changePassword}
+                >
+                  {t("changePassword")}
+                </Menu.Item>
 
-                  <Menu.Item
-                    icon={<IconAsterisk size={14} />}
-                    onClick={changePassword}
-                  >
-                    {t("changePassword")}
-                  </Menu.Item>
+                <Menu.Divider />
 
-                  <Menu.Divider />
-
-                  <Menu.Item
-                    icon={<IconLogout size={14} />}
-                    onClick={queryLogout}
-                  >
-                    {t("logout")}
-                  </Menu.Item>
-                </Menu.Dropdown>
-              </Menu>
-            </Flex>
-
-
-            <Flex>
-              <Text style={{ color: tokens.color.gray(50), fontWeight: 750 }}>@</Text>
-              <Text size="md" weight={500}>{user.username}</Text>
-            </Flex>
-
-            <Flex align="center" gap="md">
-              <Text size="sm" color="dimmed" css={wrapContent}>{user.bio}</Text>
-            </Flex>
-
-            <Flex align="center" gap="md">
-              <IconMailOpened className={styles.icon} />
-              <Text size="sm" color="dimmed">{user.email}</Text>
-            </Flex>
-
-            <Flex align="center" gap="md">
-              <IconCalendar className={styles.icon} />
-              <Text size="sm" color="dimmed">{date(user.joinedAt).format("ll")}</Text>
-            </Flex>
+                <Menu.Item
+                  icon={<IconLogout size={14} />}
+                  onClick={queryLogout}
+                >
+                  {t("logout")}
+                </Menu.Item>
+              </Menu.Dropdown>
+            </Menu>
           </Flex>
-        </Grid.Col>
-      </Grid>
+        </Flex>
+
+        <Text size="xl" weight={600} css={wrapContent}>{user.name}</Text>
+
+        <Flex>
+          <Text style={{ color: tokens.color.gray(50), fontWeight: 750 }}>@</Text>
+          <Text size="md" weight={500} css={wrapContent}>{user.username}</Text>
+        </Flex>
+
+        <Flex align="center" gap="md">
+          <Text size="sm" color="dimmed" css={wrapContent}>{user.bio}</Text>
+        </Flex>
+
+        <Flex align="center" gap="md">
+          <IconMailOpened className={styles.icon} />
+          <Text size="sm" color="dimmed">{user.email}</Text>
+        </Flex>
+
+        <Flex align="center" gap="md">
+          <IconCalendar className={styles.icon} />
+          <Text size="sm" color="dimmed">{date(user.joinedAt).format("ll")}</Text>
+        </Flex>
+      </Flex>
 
       <Modal
         opened={state.editing}
@@ -222,6 +216,7 @@ function User({ user }: Props) {
           </Flex>
         </Flex>
       </Modal>
+
     </Card>
   )
 }
