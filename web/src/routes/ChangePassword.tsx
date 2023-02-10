@@ -1,7 +1,7 @@
 import { useReducer } from "react";
 import { useUserStore } from "../stores/userStore";
 
-import { Title, Text, TextInput, Button, Anchor, Alert, Card, Flex, LoadingOverlay } from "@mantine/core";
+import { Title, Text, TextInput, Button, Anchor, Alert, Card, Flex } from "@mantine/core";
 import { IconAlertCircle, IconArrowLeft, IconInfoCircle } from "@tabler/icons";
 
 import Header from "../components/Header";
@@ -9,6 +9,8 @@ import Footer from "../components/Footer";
 import { useNavigate } from "react-router-dom";
 import { widthLimit } from "../styles/css";
 import { useTranslation } from "react-i18next";
+import { useWait } from "../components/hooks";
+import OverlayLoader from "../components/cards/OverlayLoader";
 
 interface State {
   loading: boolean;
@@ -47,8 +49,8 @@ function ChangePassword() {
   const initiateChangePassword = async () => {
     if (state.loading) return;
 
-    setState({ ...state, loading: true, status: undefined });
-    const status = await queryInitiatePasswordChange(state.username, state.email);
+    setState({ ...state, loading: true });
+    const status = await useWait(() => queryInitiatePasswordChange(state.username, state.email))();
     setState({ ...state, loading: false, status: status });
   };
 
@@ -65,7 +67,7 @@ function ChangePassword() {
 
       <Flex justify="center">
         <Card shadow="sm" p="lg" m="md" radius="md" withBorder css={widthLimit}>
-          <LoadingOverlay visible={state.loading} overlayBlur={2} />
+          {state.loading && <OverlayLoader />}
 
           <Flex direction="column" gap="md">
             <TextInput

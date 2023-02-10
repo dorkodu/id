@@ -1,4 +1,4 @@
-import { Alert, Anchor, Button, Card, Flex, LoadingOverlay, PasswordInput, Text, Title } from "@mantine/core";
+import { Alert, Anchor, Button, Card, Flex, PasswordInput, Text, Title } from "@mantine/core";
 import { IconAlertCircle, IconArrowLeft, IconAsterisk, IconCircleCheck, IconEye, IconEyeOff } from "@tabler/icons";
 import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -7,6 +7,8 @@ import Footer from "../components/Footer";
 import { useUserStore } from "../stores/userStore";
 import { widthLimit } from "../styles/css";
 import { useTranslation } from "react-i18next";
+import OverlayLoader from "../components/cards/OverlayLoader";
+import { useWait } from "../components/hooks";
 
 interface State {
   loading: boolean;
@@ -34,8 +36,8 @@ function ConfirmChangePassword() {
   const confirmChangePassword = async () => {
     if (state.loading) return;
 
-    setState({ ...state, loading: true, status: undefined });
-    const status = await queryConfirmPasswordChange(state.password, state.token);
+    setState({ ...state, loading: true });
+    const status = await useWait(() => queryConfirmPasswordChange(state.password, state.token))();
     setState({ ...state, loading: false, status: status });
   }
 
@@ -52,7 +54,7 @@ function ConfirmChangePassword() {
 
       <Flex justify="center">
         <Card shadow="sm" p="lg" m="md" radius="md" withBorder css={widthLimit}>
-          <LoadingOverlay visible={state.loading} overlayBlur={2} />
+          {state.loading && <OverlayLoader />}
 
           <Flex direction="column" gap="md">
             <PasswordInput

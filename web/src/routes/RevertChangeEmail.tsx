@@ -1,4 +1,4 @@
-import { Alert, Anchor, Card, Flex, Loader, Text, Title } from "@mantine/core";
+import { Alert, Anchor, Card, Flex, Text, Title } from "@mantine/core";
 import { IconAlertCircle, IconArrowLeft, IconCircleCheck } from "@tabler/icons";
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -7,6 +7,7 @@ import Footer from "../components/Footer";
 import { useUserStore } from "../stores/userStore";
 import { widthLimit } from "../styles/css";
 import { useTranslation } from "react-i18next";
+import Loader from "../components/cards/Loader";
 
 interface State {
   loading: boolean;
@@ -33,7 +34,7 @@ function RevertChangeEmail() {
   const revertEmailChange = async () => {
     if (state.loading) return;
 
-    setState({ ...state, loading: true, status: undefined });
+    setState({ ...state, loading: true });
     const status = await queryRevertEmailChange(state.token);
     setState({ ...state, loading: false, status: status });
   }
@@ -54,11 +55,7 @@ function RevertChangeEmail() {
       <Flex justify="center">
         <Card shadow="sm" p="lg" m="md" radius="md" withBorder css={widthLimit}>
           <Flex direction="column" gap="md">
-            {state.loading &&
-              <Flex justify="center">
-                <Loader variant="dots" color="green" />
-              </Flex>
-            }
+            {state.loading && <Flex justify="center"><Loader /></Flex>}
 
             {!state.loading &&
               <Anchor size={15} onClick={goBack}>

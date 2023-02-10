@@ -18,6 +18,10 @@ import Access from "../components/Access";
 import Footer from "../components/Footer";
 import { useTranslation } from "react-i18next";
 import CardPanel from "../components/cards/CardPanel";
+import InfiniteScroll from "../components/InfiniteScroll";
+import { useWait } from "../components/hooks";
+import CardLoader from "../components/cards/CardLoader";
+import CardAlert from "../components/cards/CardAlert";
 
 const width = css`
   max-width: 768px;
@@ -25,11 +29,33 @@ const width = css`
 `;
 
 interface State {
+  user: {
+    loading: boolean;
+    status: boolean | undefined;
+  }
+
+  session: {
+    loading: boolean;
+    status: boolean | undefined;
+  }
+
+  access: {
+    loading: boolean;
+    status: boolean | undefined;
+  }
+
+  loader: "top" | "bottom" | "mid" | undefined;
   show: "sessions" | "accesses";
 }
 
 function Dashboard() {
-  const [state, setState] = useState<State>({ show: "sessions" });
+  const [state, setState] = useState<State>({
+    user: { loading: false, status: undefined },
+    session: { loading: false, status: undefined },
+    access: { loading: false, status: undefined },
+    loader: "mid",
+    show: "sessions"
+  });
 
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -49,32 +75,56 @@ function Dashboard() {
 
   const getSessions = async (type: "older" | "newer", refresh?: boolean) => {
     if (!user) return;
-    await queryGetSessions(type, refresh);
-  };
+    if (state.session.loading) return;
+
+    setState(s => ({
+      ...s,
+      session: { ...s.session, loading: true, status: undefined },
+      loader: refresh ? "mid" : type === "newer" ? "top" : "bottom",
+    }));
+    const status = await useWait(() => queryGetSessions(type, refresh))();
+    setState(s => ({
+      ...s,
+      session: { ...s.session, loading: false, status: status },
+      loader: undefined
+    }));
+  }
 
   const getAccesses = async (type: "older" | "newer", refresh?: boolean) => {
     if (!user) return;
-    await queryGetAccesses(type, refresh);
-  };
+    if (state.access.loading) return;
 
-  const refresh = () => {
+    setState(s => ({
+      ...s,
+      access: { ...s.access, loading: true, status: undefined },
+      loader: refresh ? "mid" : type === "newer" ? "top" : "bottom",
+    }));
+    const status = await useWait(() => queryGetAccesses(type, refresh))();
+    setState(s => ({
+      ...s,
+      access: { ...s.access, loading: false, status: status },
+      loader: undefined
+    }));
+  }
+
+  const refresh = async () => {
     switch (state.show) {
-      case "sessions": getSessions("newer", true); break;
-      case "accesses": getAccesses("newer", true); break;
+      case "sessions": await getSessions("newer", true); break;
+      case "accesses": await getAccesses("newer", true); break;
     }
   }
 
-  const loadNewer = () => {
+  const loadNewer = async () => {
     switch (state.show) {
-      case "sessions": getSessions("newer"); break;
-      case "accesses": getAccesses("newer"); break;
+      case "sessions": await getSessions("newer"); break;
+      case "accesses": await getAccesses("newer"); break;
     }
   }
 
-  const loadOlder = () => {
+  const loadOlder = async () => {
     switch (state.show) {
-      case "sessions": getSessions("older"); break;
-      case "accesses": getAccesses("older"); break;
+      case "sessions": await getSessions("older"); break;
+      case "accesses": await getAccesses("older"); break;
     }
   }
 
@@ -84,11 +134,17 @@ function Dashboard() {
     }
   }
 
-  const routeMenu = () => {/*navigate("/menu")*/ };
+  const routeMenu = () => { /*navigate("/menu")*/ };
   const goBack = () => navigate(-1);
 
   useEffect(() => {
     (async () => {
+      setState(s => ({
+        ...s,
+        user: { ...s.user, loading: true, status: undefined },
+        loader: "mid",
+      }));
+
       const sessionAnchor = array.getAnchor(sessions, "id", "-1", "newer", true);
       const accessAnchor = array.getAnchor(accesses, "id", "-1", "newer", true);
 
@@ -110,13 +166,26 @@ function Dashboard() {
             { ctx: "ctx", wait: "a" }
           ),
         },
-        (query) => request(query)
+        (query) => useWait(() => request(query))()
+      );
+
+      const status = (
+        !(!res?.a.data || res.a.error) &&
+        !(!res?.b.data || res.b.error) &&
+        !(!res?.c.data || res.c.error) &&
+        !(!res?.d.data || res.d.error)
       );
 
       setUser(res?.a.data);
       setCurrentSession(res?.b.data);
       setSessions(res?.c.data, true);
       setAccesses(res?.d.data, true);
+
+      setState(s => ({
+        ...s,
+        user: { ...s.user, loading: false, status: status },
+        loader: undefined,
+      }));
     })();
   }, []);
 
@@ -138,45 +207,62 @@ function Dashboard() {
           </Flex>
         </Card>
       </Header>
-    );
-  }
-
-  if (!user || !currentSession) {
-    return (<></>)
+    )
   }
 
   return (
     <AppShell padding={0} header={<DashboardHeader />}>
-      <User user={user} />
-
-      <Session session={currentSession} />
-
-      <CardPanel
-        segments={[
-          {
-            value: state.show,
-            setValue: changeShow,
-            label: t("show"),
-            data: [
-              { label: t("sessions"), value: "sessions" },
-              { label: t("accesses"), value: "accesses" },
-            ]
+      {(!user || !currentSession || state.user.loading) &&
+        <>
+          {state.user.loading && <CardLoader />}
+          {state.user.status === false &&
+            <CardAlert
+              title={t("error.text")}
+              content={t("error.default")}
+              type="error"
+            />
           }
-        ]}
+        </>
+      }
 
-        buttons={[
-          { onClick: refresh, text: <IconRefresh /> },
-          { onClick: loadOlder, text: <IconArrowBigDownLine /> },
-          { onClick: loadNewer, text: <IconArrowBigUpLine /> },
-        ]}
-      />
+      {!(!user || !currentSession || state.user.loading) &&
+        <>
+          <User user={user} />
 
-      {state.show === "sessions" && sessions.map((s) => <Session key={s.id} session={s} />)}
-      {state.show === "accesses" && accesses.map((a) => <Access key={a.id} access={a} />)}
+          <Session session={currentSession} />
 
-      <Footer />
+          <CardPanel
+            segments={[
+              {
+                value: state.show,
+                setValue: changeShow,
+                label: t("show"),
+                data: [
+                  { label: t("sessions"), value: "sessions" },
+                  { label: t("accesses"), value: "accesses" },
+                ]
+              }
+            ]}
+
+            buttons={[
+              { onClick: refresh, text: <IconRefresh /> },
+              { onClick: loadOlder, text: <IconArrowBigDownLine /> },
+              { onClick: loadNewer, text: <IconArrowBigUpLine /> },
+            ]}
+          />
+
+          <InfiniteScroll
+            onBottom={loadOlder}
+            loaders={{ top: state.loader === "top", bottom: state.loader === "bottom", mid: state.loader === "mid", }}
+          >
+            {state.show === "sessions" && sessions.map((s) => <Session key={s.id} session={s} />)}
+            {state.show === "accesses" && accesses.map((a) => <Access key={a.id} access={a} />)}
+          </InfiniteScroll>
+          <Footer />
+        </>
+      }
     </AppShell>
-  );
-};
+  )
+}
 
 export default Dashboard

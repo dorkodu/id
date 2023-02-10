@@ -35,11 +35,11 @@ interface Action {
   queryAuth: () => Promise<boolean>;
 
   querySignup: (username: string, email: string) => Promise<"ok" | "error" | "username" | "email" | "both">;
-  queryVerifySignup: (token: string) => Promise<boolean>;
+  queryVerifySignup: (token: string | null) => Promise<boolean>;
   queryConfirmSignup: (username: string, email: string, password: string) => Promise<boolean>;
 
   queryLogin: (info: string, password: string) => Promise<"ok" | "error" | "verify">;
-  queryVerifyLogin: (token: string) => Promise<boolean>;
+  queryVerifyLogin: (token: string | null) => Promise<boolean>;
 
   queryLogout: () => Promise<boolean>;
 
@@ -52,10 +52,10 @@ interface Action {
   queryConfirmPasswordChange: (newPassword: string, token: string) => Promise<boolean>;
 
   queryGetCurrentSession: () => Promise<void>;
-  queryGetSessions: (type: "newer" | "older", refresh?: boolean) => Promise<void>;
+  queryGetSessions: (type: "newer" | "older", refresh?: boolean) => Promise<boolean>;
   queryTerminateSession: (sessionId: string) => Promise<void>;
 
-  queryGetAccesses: (type: "newer" | "older", refresh?: boolean) => Promise<void>;
+  queryGetAccesses: (type: "newer" | "older", refresh?: boolean) => Promise<boolean>;
   queryGrantAccess: (service: string) => Promise<string | undefined>;
   queryRevokeAccess: (accessId: string) => Promise<void>;
 }
@@ -153,6 +153,8 @@ export const useUserStore = create(
     },
 
     queryVerifySignup: async (token) => {
+      if (token === null) return false;
+
       const res = await sage.get(
         { a: sage.query("verifySignup", { token }) },
         (query) => request(query)
@@ -200,6 +202,8 @@ export const useUserStore = create(
     },
 
     queryVerifyLogin: async (token) => {
+      if (token === null) return false;
+
       const res = await sage.get(
         { a: sage.query("verifyLogin", { token }) },
         (query) => request(query)
@@ -326,8 +330,9 @@ export const useUserStore = create(
         (query) => request(query)
       );
 
-      if (!res?.a.data || res.a.error) return;
-      get().setSessions(res.a.data, refresh);
+      const status = !(!res?.a.data || res.a.error);
+      if (res?.a.data) get().setSessions(res.a.data, refresh);
+      return status;
     },
 
     queryTerminateSession: async (sessionId) => {
@@ -361,8 +366,9 @@ export const useUserStore = create(
         (query) => request(query)
       );
 
-      if (!res?.a.data || res.a.error) return;
-      get().setAccesses(res.a.data, refresh);
+      const status = !(!res?.a.data || res.a.error);
+      if (res?.a.data) get().setAccesses(res.a.data, refresh);
+      return status;
     },
 
     queryGrantAccess: async (service) => {

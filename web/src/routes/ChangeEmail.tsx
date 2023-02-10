@@ -1,4 +1,4 @@
-import { Alert, Anchor, Button, Card, Flex, LoadingOverlay, Text, TextInput, Title } from "@mantine/core";
+import { Alert, Anchor, Button, Card, Flex, Text, TextInput, Title } from "@mantine/core";
 import { IconAlertCircle, IconArrowLeft, IconAt, IconInfoCircle } from "@tabler/icons";
 import { useReducer } from "react";
 import { useNavigate } from "react-router-dom";
@@ -7,6 +7,8 @@ import Footer from "../components/Footer";
 import { useUserStore } from "../stores/userStore";
 import { widthLimit } from "../styles/css";
 import { useTranslation } from "react-i18next";
+import { useWait } from "../components/hooks";
+import OverlayLoader from "../components/cards/OverlayLoader";
 
 interface State {
   loading: boolean;
@@ -34,8 +36,8 @@ function ChangeEmail() {
   const initiateEmailChange = async () => {
     if (state.loading) return;
 
-    setState({ ...state, loading: true, status: undefined });
-    const status = await queryInitiateEmailChange(state.email);
+    setState({ ...state, loading: true });
+    const status = await useWait(() => queryInitiateEmailChange(state.email))();
     setState({ ...state, loading: false, status: status });
   }
 
@@ -52,7 +54,7 @@ function ChangeEmail() {
 
       <Flex justify="center">
         <Card shadow="sm" p="lg" m="md" radius="md" withBorder css={widthLimit}>
-          <LoadingOverlay visible={state.loading} overlayBlur={2} />
+          {state.loading && <OverlayLoader />}
 
           <Flex direction="column" gap="md">
             <TextInput

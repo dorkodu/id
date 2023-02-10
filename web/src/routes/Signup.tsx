@@ -4,8 +4,6 @@ import {
   Button,
   Card,
   Flex,
-  Loader,
-  LoadingOverlay,
   PasswordInput,
   Text,
   TextInput,
@@ -31,6 +29,8 @@ import { useUserStore } from "../stores/userStore";
 import { widthLimit } from "../styles/css";
 import { Trans, useTranslation } from "react-i18next";
 import { useAppStore } from "../stores/appStore";
+import { useWait } from "../components/hooks";
+import OverlayLoader from "../components/cards/OverlayLoader";
 
 interface State {
   loading: boolean;
@@ -80,8 +80,8 @@ function CreateAccount() {
   const signup = async () => {
     if (state.loading) return;
 
-    setState({ ...state, loading: true, status: undefined });
-    const status = await querySignup(state.username, state.email);
+    setState({ ...state, loading: true });
+    const status = await useWait(() => querySignup(state.username, state.email))();
     setState({
       ...state,
       loading: false,
@@ -92,18 +92,17 @@ function CreateAccount() {
 
   const verifySignup = async () => {
     if (state.loading) return;
-    if (state.token === null) return;
 
-    setState({ ...state, loading: true, status: undefined });
-    const status = await queryVerifySignup(state.token);
+    setState({ ...state, loading: true });
+    const status = await useWait(() => queryVerifySignup(state.token))();
     setState({ ...state, loading: false, status: status ? "ok" : "error" });
   }
 
   const confirmSignup = async () => {
     if (state.loading) return;
 
-    setState({ ...state, loading: true, status: undefined });
-    const status = await queryConfirmSignup(state.username, state.email, state.password);
+    setState({ ...state, loading: true });
+    const status = await useWait(() => queryConfirmSignup(state.username, state.email, state.password))();
     setState({ ...state, loading: false, status: status ? "ok" : "error" });
 
     if (!status) return;
@@ -176,12 +175,6 @@ function CreateAccount() {
   const verifySignupStage = () => {
     return (
       <>
-        {state.loading &&
-          <Flex justify="center">
-            <Loader variant="dots" color="green" />
-          </Flex>
-        }
-
         {!state.loading &&
           <Anchor size={15} onClick={gotoDashboard}>
             <Flex align="center" gap="xs">
@@ -286,7 +279,7 @@ function CreateAccount() {
 
       <Flex justify="center">
         <Card shadow="sm" p="lg" m="md" radius="md" withBorder css={widthLimit}>
-          <LoadingOverlay visible={state.loading} overlayBlur={2} />
+          {state.loading && <OverlayLoader />}
 
           <Flex direction="column" gap="md">
             {/*Use Component() instead of <Component /> to avoid state-loss*/}

@@ -4,8 +4,6 @@ import {
   Button,
   Card,
   Flex,
-  Loader,
-  LoadingOverlay,
   PasswordInput,
   Text,
   TextInput,
@@ -20,6 +18,8 @@ import { useUserStore } from "../stores/userStore";
 import { widthLimit } from "../styles/css";
 import { useTranslation } from "react-i18next";
 import { useAppStore } from "../stores/appStore";
+import OverlayLoader from "../components/cards/OverlayLoader";
+import { useWait } from "../components/hooks";
 
 interface State {
   loading: boolean;
@@ -63,8 +63,8 @@ function Login() {
   const login = async () => {
     if (state.loading) return;
 
-    setState({ ...state, loading: true, status: undefined });
-    const status = await queryLogin(state.info, state.password);
+    setState({ ...state, loading: true });
+    const status = await useWait(() => queryLogin(state.info, state.password))();
     setState({ ...state, loading: false, status: status });
 
     if (status !== "ok") return;
@@ -76,10 +76,9 @@ function Login() {
 
   const verifyLogin = async () => {
     if (state.loading) return;
-    if (state.token === null) return;
 
-    setState({ ...state, loading: true, status: undefined });
-    const status = await queryVerifyLogin(state.token);
+    setState({ ...state, loading: true });
+    const status = await useWait(() => queryVerifyLogin(state.token))();
     setState({ ...state, loading: false, status: status ? "ok" : "error" });
   }
 
@@ -153,12 +152,6 @@ function Login() {
   const verifyLoginStage = () => {
     return (
       <>
-        {state.loading &&
-          <Flex justify="center">
-            <Loader variant="dots" color="green" />
-          </Flex>
-        }
-
         {!state.loading &&
           <Anchor size={15} onClick={goBack}>
             <Flex align="center" gap="xs">
@@ -208,7 +201,7 @@ function Login() {
 
       <Flex justify="center">
         <Card shadow="sm" p="lg" m="md" radius="md" withBorder css={widthLimit}>
-          <LoadingOverlay visible={state.loading} overlayBlur={2} />
+          {state.loading && <OverlayLoader />}
 
           <Flex direction="column" gap="md">
             {/*Use Component() instead of <Component /> to avoid state-loss*/}

@@ -1,10 +1,12 @@
-import { Alert, Anchor, Button, Card, Flex, LoadingOverlay, Text, Title } from "@mantine/core";
+import { Alert, Anchor, Button, Card, Flex, Text, Title } from "@mantine/core";
 import { IconAlertCircle, IconArrowLeft } from "@tabler/icons";
 import { useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import OverlayLoader from "../components/cards/OverlayLoader";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
+import { useWait } from "../components/hooks";
 import { useAppStore } from "../stores/appStore";
 import { useUserStore } from "../stores/userStore";
 import { widthLimit } from "../styles/css";
@@ -37,8 +39,8 @@ function Access() {
   const accept = async () => {
     if (state.loading) return;
 
-    setState({ ...state, loading: true, status: undefined });
-    const code = await queryGrantAccess(state.service);
+    setState({ ...state, loading: true });
+    const code = await useWait(() => queryGrantAccess(state.service))();
     setState({ ...state, loading: false, status: !!code });
 
     if (!code) return;
@@ -66,7 +68,7 @@ function Access() {
 
       <Flex justify="center">
         <Card shadow="sm" p="lg" m="md" radius="md" withBorder css={widthLimit}>
-          <LoadingOverlay visible={state.loading} overlayBlur={2} />
+          {state.loading && <OverlayLoader />}
 
           <Flex direction="column" gap="md">
             {state.service && authorized &&
