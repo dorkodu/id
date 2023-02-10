@@ -1,4 +1,5 @@
 import {
+  Alert,
   Anchor,
   Button,
   Card,
@@ -10,7 +11,7 @@ import {
   TextInput,
   Title,
 } from "@mantine/core";
-import { IconArrowLeft, IconArrowRight, IconEye, IconEyeOff } from "@tabler/icons";
+import { IconAlertCircle, IconArrowLeft, IconArrowRight, IconCircleCheck, IconEye, IconEyeOff, IconInfoCircle } from "@tabler/icons";
 import { useEffect, useReducer } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Header from "../components/Header";
@@ -19,7 +20,6 @@ import { useUserStore } from "../stores/userStore";
 import { widthLimit } from "../styles/css";
 import { useTranslation } from "react-i18next";
 import { useAppStore } from "../stores/appStore";
-import CardAlert from "../components/cards/CardAlert";
 
 interface State {
   loading: boolean;
@@ -126,19 +126,25 @@ function Login() {
         </Flex>
 
         {state.status === "verify" &&
-          <CardAlert
+          <Alert
+            icon={<IconInfoCircle size={24} />}
             title={t("info.text")}
-            content={t("info.newLocation")}
-            type="info"
-          />
+            color="blue"
+            variant="light"
+          >
+            {t("info.newLocation")}
+          </Alert>
         }
 
         {state.status === "error" &&
-          <CardAlert
+          <Alert
+            icon={<IconAlertCircle size={24} />}
             title={t("error.text")}
-            content={t("error.default")}
-            type="error"
-          />
+            color="red"
+            variant="light"
+          >
+            {t("error.default")}
+          </Alert>
         }
       </>
     )
@@ -163,19 +169,25 @@ function Login() {
         }
 
         {state.status === "ok" &&
-          <CardAlert
+          <Alert
+            icon={<IconCircleCheck size={24} />}
             title={t("success.text")}
-            content={t("success.locationVerified")}
-            type="success"
-          />
+            color="green"
+            variant="light"
+          >
+            {t("success.locationVerified")}
+          </Alert>
         }
 
         {state.status === "error" &&
-          <CardAlert
+          <Alert
+            icon={<IconAlertCircle size={24} />}
             title={t("error.text")}
-            content={t("error.default")}
-            type="error"
-          />
+            color="red"
+            variant="light"
+          >
+            {t("error.default")}
+          </Alert>
         }
       </>
     )

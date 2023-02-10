@@ -1,5 +1,5 @@
-import { Anchor, Card, Flex, Loader, Text, Title } from "@mantine/core";
-import { IconArrowLeft } from "@tabler/icons";
+import { Alert, Anchor, Card, Flex, Loader, Text, Title } from "@mantine/core";
+import { IconAlertCircle, IconArrowLeft, IconCircleCheck } from "@tabler/icons";
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Header from "../components/Header";
@@ -7,7 +7,6 @@ import Footer from "../components/Footer";
 import { useUserStore } from "../stores/userStore";
 import { widthLimit } from "../styles/css";
 import { useTranslation } from "react-i18next";
-import CardAlert from "../components/cards/CardAlert";
 
 interface State {
   loading: boolean;
@@ -71,19 +70,25 @@ function RevertChangeEmail() {
             }
 
             {state.status === true &&
-              <CardAlert
+              <Alert
+                icon={<IconCircleCheck size={24} />}
                 title={t("success.text")}
-                content={t("success.emailReverted")}
-                type="success"
-              />
+                color="green"
+                variant="light"
+              >
+                {t("success.emailReverted")}
+              </Alert>
             }
 
             {state.status === false &&
-              <CardAlert
+              <Alert
+                icon={<IconAlertCircle size={24} />}
                 title={t("error.text")}
-                content={t("error.default")}
-                type="error"
-              />
+                color="red"
+                variant="light"
+              >
+                {t("error.default")}
+              </Alert>
             }
           </Flex>
         </Card>

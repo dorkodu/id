@@ -1,9 +1,8 @@
-import { Anchor, Button, Card, Flex, LoadingOverlay, Text, Title } from "@mantine/core";
-import { IconArrowLeft } from "@tabler/icons";
+import { Alert, Anchor, Button, Card, Flex, LoadingOverlay, Text, Title } from "@mantine/core";
+import { IconAlertCircle, IconArrowLeft } from "@tabler/icons";
 import { useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
-import CardAlert from "../components/cards/CardAlert";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 import { useAppStore } from "../stores/appStore";
@@ -90,11 +89,14 @@ function Access() {
             }
 
             {state.status === false &&
-              <CardAlert
+              <Alert
+                icon={<IconAlertCircle size={24} />}
                 title={t("error.text")}
-                content={t("error.default")}
-                type="error"
-              />
+                color="red"
+                variant="light"
+              >
+                {t("error.default")}
+              </Alert>
             }
 
             {!state.service &&
@@ -105,11 +107,14 @@ function Access() {
                     <Text>{t("goBack")}</Text>
                   </Flex>
                 </Anchor>
-                <CardAlert
+                <Alert
+                  icon={<IconAlertCircle size={24} />}
                   title={t("error.text")}
-                  content={t("error.accessServiceNotFound")}
-                  type="error"
-                />
+                  color="red"
+                  variant="light"
+                >
+                  {t("error.accessServiceNotFound")}
+                </Alert>
               </>
             }
           </Flex>

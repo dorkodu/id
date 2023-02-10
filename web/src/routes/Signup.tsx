@@ -17,8 +17,10 @@ import {
   IconArrowRight,
   IconAsterisk,
   IconAt,
+  IconCircleCheck,
   IconEye,
   IconEyeOff,
+  IconInfoCircle,
   IconUser,
 } from "@tabler/icons";
 import { useEffect, useReducer } from "react";
@@ -29,7 +31,6 @@ import { useUserStore } from "../stores/userStore";
 import { widthLimit } from "../styles/css";
 import { Trans, useTranslation } from "react-i18next";
 import { useAppStore } from "../stores/appStore";
-import CardAlert from "../components/cards/CardAlert";
 
 interface State {
   loading: boolean;
@@ -191,19 +192,25 @@ function CreateAccount() {
         }
 
         {state.status === "ok" &&
-          <CardAlert
+          <Alert
+            icon={<IconCircleCheck size={24} />}
             title={t("success.text")}
-            content={t("success.emailVerified")}
-            type="success"
-          />
+            color="green"
+            variant="light"
+          >
+            {t("success.emailVerified")}
+          </Alert>
         }
 
         {state.status === "error" &&
-          <CardAlert
+          <Alert
+            icon={<IconAlertCircle size={24} />}
             title={t("error.text")}
-            content={t("error.default")}
-            type="error"
-          />
+            color="red"
+            variant="light"
+          >
+            {t("error.default")}
+          </Alert>
         }
       </>
     )
@@ -242,19 +249,25 @@ function CreateAccount() {
         </Flex>
 
         {state.status === "ok" &&
-          <CardAlert
+          <Alert
+            icon={<IconInfoCircle size={24} />}
             title={t("info.text")}
-            content={t("info.verifyEmail")}
-            type="info"
-          />
+            color="blue"
+            variant="light"
+          >
+            {t("info.verifyEmail")}
+          </Alert>
         }
 
         {state.status === "error" &&
-          <CardAlert
+          <Alert
+            icon={<IconAlertCircle size={24} />}
             title={t("error.text")}
-            content={t("error.default")}
-            type="error"
-          />
+            color="red"
+            variant="light"
+          >
+            {t("error.default")}
+          </Alert>
         }
       </>
     )
