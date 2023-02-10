@@ -1,5 +1,5 @@
-import { Alert, Anchor, Button, Card, Flex, LoadingOverlay, PasswordInput, Text, Title } from "@mantine/core";
-import { IconAlertCircle, IconArrowLeft, IconAsterisk, IconCircleCheck, IconEye, IconEyeOff } from "@tabler/icons";
+import { Anchor, Button, Card, Flex, LoadingOverlay, PasswordInput, Text, Title } from "@mantine/core";
+import { IconArrowLeft, IconAsterisk, IconEye, IconEyeOff } from "@tabler/icons";
 import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Header from "../components/Header";
@@ -7,6 +7,7 @@ import Footer from "../components/Footer";
 import { useUserStore } from "../stores/userStore";
 import { widthLimit } from "../styles/css";
 import { useTranslation } from "react-i18next";
+import CardAlert from "../components/cards/CardAlert";
 
 interface State {
   loading: boolean;
@@ -85,25 +86,19 @@ function ConfirmChangePassword() {
             </Flex>
 
             {state.status === true &&
-              <Alert
-                icon={<IconCircleCheck size={24} />}
+              <CardAlert
                 title={t("success.text")}
-                color="green"
-                variant="light"
-              >
-                {t("success.passwordChanged")}
-              </Alert>
+                content={t("success.passwordChanged")}
+                type="success"
+              />
             }
 
             {state.status === false &&
-              <Alert
-                icon={<IconAlertCircle size={24} />}
+              <CardAlert
                 title={t("error.text")}
-                color="red"
-                variant="light"
-              >
-                {t("error.default")}
-              </Alert>
+                content={t("error.default")}
+                type="error"
+              />
             }
           </Flex>
         </Card>

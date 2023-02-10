@@ -1,5 +1,5 @@
-import { Alert, Anchor, Button, Card, Flex, LoadingOverlay, Text, TextInput, Title } from "@mantine/core";
-import { IconAlertCircle, IconArrowLeft, IconAt, IconInfoCircle } from "@tabler/icons";
+import { Anchor, Button, Card, Flex, LoadingOverlay, Text, TextInput, Title } from "@mantine/core";
+import { IconArrowLeft, IconAt } from "@tabler/icons";
 import { useReducer } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
@@ -7,6 +7,7 @@ import Footer from "../components/Footer";
 import { useUserStore } from "../stores/userStore";
 import { widthLimit } from "../styles/css";
 import { useTranslation } from "react-i18next";
+import CardAlert from "../components/cards/CardAlert";
 
 interface State {
   loading: boolean;
@@ -82,25 +83,19 @@ function ChangeEmail() {
             </Flex>
 
             {state.status === true &&
-              <Alert
-                icon={<IconInfoCircle size={24} />}
+              <CardAlert
                 title={t("info.text")}
-                color="blue"
-                variant="light"
-              >
-                {t("info.changeEmail")}
-              </Alert>
+                content={t("info.changeEmail")}
+                type="info"
+              />
             }
 
             {state.status === false &&
-              <Alert
-                icon={<IconAlertCircle size={24} />}
+              <CardAlert
                 title={t("error.text")}
-                color="red"
-                variant="light"
-              >
-                {t("error.default")}
-              </Alert>
+                content={t("error.default")}
+                type="error"
+              />
             }
           </Flex>
         </Card>

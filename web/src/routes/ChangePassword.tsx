@@ -1,14 +1,15 @@
 import { useReducer } from "react";
 import { useUserStore } from "../stores/userStore";
 
-import { Title, Text, TextInput, Button, Anchor, Alert, Card, Flex, LoadingOverlay } from "@mantine/core";
-import { IconAlertCircle, IconArrowLeft, IconInfoCircle } from "@tabler/icons";
+import { Title, Text, TextInput, Button, Anchor, Card, Flex, LoadingOverlay } from "@mantine/core";
+import { IconArrowLeft } from "@tabler/icons";
 
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { useNavigate } from "react-router-dom";
 import { widthLimit } from "../styles/css";
 import { useTranslation } from "react-i18next";
+import CardAlert from "../components/cards/CardAlert";
 
 interface State {
   loading: boolean;
@@ -100,25 +101,19 @@ function ChangePassword() {
             </Flex>
 
             {state.status === true &&
-              <Alert
-                icon={<IconInfoCircle size={24} />}
+              <CardAlert
                 title={t("info.text")}
-                color="blue"
-                variant="light"
-              >
-                {t("info.changePassword")}
-              </Alert>
+                content={t("info.changePassword")}
+                type="info"
+              />
             }
 
             {state.status === false &&
-              <Alert
-                icon={<IconAlertCircle size={24} />}
+              <CardAlert
                 title={t("error.text")}
-                color="red"
-                variant="light"
-              >
-                {t("error.default")}
-              </Alert>
+                content={t("error.default")}
+                type="error"
+              />
             }
           </Flex>
         </Card>
