@@ -6,14 +6,9 @@ export const signupSchema = z.object({
   email: sharedSchemas.email,
 }).strict();
 
-export const verifySignupSchema = z.object({
-  token: sharedSchemas.token,
-}).strict();
-
 export const confirmSignupSchema = z.object({
-  username: sharedSchemas.username,
-  email: sharedSchemas.email,
   password: sharedSchemas.password,
+  token: sharedSchemas.token,
 }).strict();
 
 export const loginSchema = z.object({

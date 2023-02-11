@@ -7,7 +7,6 @@ import {
   loginSchema,
   signupSchema,
   verifyLoginSchema,
-  verifySignupSchema,
 } from "../schemas/auth";
 import { SchemaContext } from "./_schema";
 import sage from "@dorkodu/sage-server";
@@ -46,7 +45,7 @@ const auth = sage.resource(
 const signup = sage.resource(
   {} as SchemaContext,
   {} as z.infer<typeof signupSchema>,
-  async (arg, ctx): Promise<{ data?: {}; error?: ErrorCode }> => {
+  async (arg, _ctx): Promise<{ data?: {}; error?: ErrorCode }> => {
     const parsed = signupSchema.safeParse(arg);
     if (!parsed.success) return { error: ErrorCode.Default };
 
@@ -77,7 +76,7 @@ const signup = sage.resource(
     // Create data necessary (sent_at & expires_at are set after email is sent)
     const tkn = token.create();
     const row = {
-      id: snowflake.id("email_verify_signup"),
+      id: snowflake.id("email_confirm_signup"),
       username: username,
       email: email,
       selector: tkn.selector,
@@ -85,7 +84,6 @@ const signup = sage.resource(
       issued_at: date.utc(),
       sent_at: -1,
       expires_at: -1,
-      verified: false,
     };
 
     (async () => {
@@ -95,44 +93,8 @@ const signup = sage.resource(
       // Set sent_at to now, expires_at to 10 minutes & insert to the database
       row.sent_at = date.utc();
       row.expires_at = date.minute(10);
-      await pg`INSERT INTO email_verify_signup ${pg(row)}`;
+      await pg`INSERT INTO email_confirm_signup ${pg(row)}`;
     })();
-
-    // Attach a temporary cookie for signup confirmation
-    token.attach(ctx.res, { value: tkn.full, expiresAt: date.minute(10) }, "temp");
-
-    return { data: {} };
-  }
-);
-
-const verifySignup = sage.resource(
-  {} as SchemaContext,
-  {} as z.infer<typeof verifySignupSchema>,
-  async (arg, _ctx): Promise<{ data?: {}; error?: ErrorCode }> => {
-    const parsed = verifySignupSchema.safeParse(arg);
-    if (!parsed.success) return { error: ErrorCode.Default };
-
-    const rawToken = parsed.data.token;
-    const parsedToken = rawToken ? token.parse(rawToken) : undefined;
-    if (!parsedToken) return { error: ErrorCode.Default };
-
-    const [result0]: [
-      { id: string; validator: Buffer; sentAt: string; expiresAt: string }?
-    ] = await pg`
-      SELECT id, validator, sent_at, expires_at FROM email_verify_signup
-      WHERE selector=${parsedToken.selector}
-    `;
-    if (!result0) return { error: ErrorCode.Default };
-    if (!token.check(result0, parsedToken.validator))
-      return { error: ErrorCode.Default };
-    if (util.intParse(result0.sentAt, -1) === -1)
-      return { error: ErrorCode.Default };
-
-    const result1 = await pg`
-      UPDATE email_verify_signup SET verified=TRUE
-      WHERE id=${result0.id}
-    `;
-    if (result1.count === 0) return { error: ErrorCode.Default };
 
     return { data: {} };
   }
@@ -145,10 +107,9 @@ const confirmSignup = sage.resource(
     const parsed = confirmSignupSchema.safeParse(arg);
     if (!parsed.success) return { error: ErrorCode.Default };
 
-    const { username, email, password } = parsed.data;
+    const { password, token: tkn } = parsed.data;
 
-    const rawToken = token.get(ctx.req, "temp");
-    const parsedToken = rawToken ? token.parse(rawToken) : undefined;
+    const parsedToken = token.parse(tkn);
     if (!parsedToken) return { error: ErrorCode.Default };
 
     const [result0]: [
@@ -158,16 +119,13 @@ const confirmSignup = sage.resource(
         validator: Buffer;
         sentAt: string;
         expiresAt: string;
-        verified: boolean;
       }?
     ] = await pg`
-      SELECT username, email, validator, sent_at, expires_at, verified FROM email_verify_signup
+      SELECT username, email, validator, sent_at, expires_at
+      FROM email_confirm_signup
       WHERE selector=${parsedToken.selector}
     `;
     if (!result0) return { error: ErrorCode.Default };
-    if (!result0.verified) return { error: ErrorCode.Default };
-    if (result0.username !== username) return { error: ErrorCode.Default };
-    if (result0.email !== email) return { error: ErrorCode.Default };
     if (util.intParse(result0.sentAt, -1) === -1)
       return { error: ErrorCode.Default };
     if (!token.check(result0, parsedToken.validator))
@@ -175,12 +133,12 @@ const confirmSignup = sage.resource(
 
     const row = {
       id: snowflake.id("users"),
-      name: username,
+      name: result0.username,
       bio: "",
-      username: username,
-      username_ci: username.toLowerCase(),
-      email: email,
-      email_ci: email.toLowerCase(),
+      username: result0.username,
+      username_ci: result0.username.toLowerCase(),
+      email: result0.email,
+      email_ci: result0.email.toLowerCase(),
       password: await crypto.encryptPassword(password),
       joined_at: date.utc(),
     };
@@ -190,7 +148,6 @@ const confirmSignup = sage.resource(
 
     if (!(await queryCreateSession(ctx.req, ctx.res, row.id)))
       return { error: ErrorCode.Default };
-    token.detach(ctx.res, "temp");
 
     return { data: {} };
   }
@@ -388,7 +345,6 @@ export default {
   auth,
 
   signup,
-  verifySignup,
   confirmSignup,
 
   login,

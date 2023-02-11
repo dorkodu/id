@@ -19,7 +19,7 @@
 
   "info": {
     "text": "Bilgi",
-    "verifyEmail": "Posta gönderildi. E-postanızı doğrulamak için lütfen gelen kutusunu veya spam klasörünü kontrol edin.",
+    "confirmSignup": "Posta gönderildi. Hesabınızı oluşturmak için lütfen gelen kutusunu veya spam klasörünü kontrol edin. Bu sekmeyi kapatabilirsiniz.",
     "newLocation": "Yeni bir konum algılandı. Lütfen konumunuzu doğrulamak için gelen kutusunu veya spam klasörünü kontrol edin ve ardından tekrar deneyin.",
     "changeEmail": "Posta gönderildi. E-postanızı değiştirmek için lütfen gelen kutusunu veya spam klasörünü kontrol edin.",
     "changePassword": "Posta gönderildi. Lütfen şifrenizi değiştirmek için gelen kutusunu veya spam klasörünü kontrol edin."

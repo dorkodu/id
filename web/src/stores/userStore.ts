@@ -35,8 +35,7 @@ interface Action {
   queryAuth: () => Promise<boolean>;
 
   querySignup: (username: string, email: string) => Promise<"ok" | "error" | "username" | "email" | "both">;
-  queryVerifySignup: (token: string | null) => Promise<boolean>;
-  queryConfirmSignup: (username: string, email: string, password: string) => Promise<boolean>;
+  queryConfirmSignup: (password: string, token: string | null) => Promise<boolean>;
 
   queryLogin: (info: string, password: string) => Promise<"ok" | "error" | "verify">;
   queryVerifyLogin: (token: string | null) => Promise<boolean>;
@@ -152,21 +151,11 @@ export const useUserStore = create(
       return "ok";
     },
 
-    queryVerifySignup: async (token) => {
+    queryConfirmSignup: async (password, token) => {
       if (token === null) return false;
 
       const res = await sage.get(
-        { a: sage.query("verifySignup", { token }) },
-        (query) => request(query)
-      );
-
-      if (!res?.a.data || res.a.error) return false;
-      return true;
-    },
-
-    queryConfirmSignup: async (username, email, password) => {
-      const res = await sage.get(
-        { a: sage.query("confirmSignup", { username, email, password }) },
+        { a: sage.query("confirmSignup", { password, token }) },
         (query) => request(query)
       );
 
