@@ -36,12 +36,12 @@ function sendVerifyLogin(
   });
 }
 
-function sendVerifySignup(email: string, token: string): Promise<boolean> {
+function sendConfirmSignup(email: string, token: string): Promise<boolean> {
   const link = `${url}/create-account?token=${token}`;
 
   return new Promise((resolve) => {
     transporter.sendMail(
-      EmailTemplate.VerifySignup({ address: email, link }),
+      EmailTemplate.ConfirmSignup({ address: email, link }),
 
       async (err, info) => {
         const sent =
@@ -105,7 +105,7 @@ function sendConfirmPasswordChange(
 
 export const mailer = {
   sendVerifyLogin,
-  sendVerifySignup,
+  sendConfirmSignup,
 
   sendConfirmEmailChange,
   sendRevertEmailChange,

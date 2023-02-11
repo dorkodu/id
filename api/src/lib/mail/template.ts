@@ -97,7 +97,7 @@ export namespace EmailTemplate {
       `,
       });
 
-  export const VerifySignup: EmailBlueprint<{
+  export const ConfirmSignup: EmailBlueprint<{
     address: string;
     link: string;
   }> = ({ address, link }) =>
