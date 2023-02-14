@@ -177,6 +177,7 @@ function User({ user }: Props) {
         opened={state.editing}
         onClose={() => stopEdit(false)}
         title={t("editProfile")}
+        lockScroll={false}
       >
         <Flex direction="column" gap="md">
           <TextInput
