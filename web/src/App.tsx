@@ -8,7 +8,6 @@ import OverlayLoader from "./components/cards/OverlayLoader";
 import { useAppStore } from "./stores/appStore";
 import { useUserStore } from "./stores/userStore";
 import theme from "./styles/theme";
-import { useRegisterSW } from 'virtual:pwa-register/react';
 
 const width = css`
   max-width: 768px;
@@ -29,16 +28,6 @@ function App() {
   // on auth, it effects functionality so hide the view
   const loading = useAppStore((state) => state.loading);
   const queryAuth = useUserStore((state) => state.queryAuth);
-
-  const {
-    offlineReady: [_offlineReady, _setOfflineReady],
-    needRefresh: [_needRefresh, _setNeedRefresh],
-    updateServiceWorker: _updateServiceWorker
-  } = useRegisterSW({
-    immediate: true
-  });
-  console.log("offline ready " + _offlineReady)
-  console.log("need refresh " + _needRefresh)
 
   const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
     key: "theme",
