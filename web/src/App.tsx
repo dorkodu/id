@@ -32,7 +32,9 @@ function App() {
   const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
     key: "theme",
     defaultValue: "light",
-    getInitialValueInEffect: true,
+    getInitialValueInEffect: false,
+    serialize: (value) => value,
+    deserialize: (value) => value as ColorScheme,
   });
 
   const toggleColorScheme = (value?: ColorScheme) => {
