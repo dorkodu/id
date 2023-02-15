@@ -149,5 +149,6 @@
   "accept": "Accept",
   "confirm": "Confirm",
   "terminateSession": "Terminate Session",
-  "revokeAccess": "Revoke Access"
+  "revokeAccess": "Revoke Access",
+  "updating": "Updating the app!"
 }

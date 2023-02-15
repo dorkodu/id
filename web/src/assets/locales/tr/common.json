@@ -149,5 +149,6 @@
   "accept": "Onayla",
   "confirm": "Onayla",
   "terminateSession": "Oturumu Sonlandır",
-  "revokeAccess": "Erişimi İptal Et"
+  "revokeAccess": "Erişimi İptal Et",
+  "updating": "Uygulama güncelleniyor!"
 }
