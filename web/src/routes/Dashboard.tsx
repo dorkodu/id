@@ -50,7 +50,7 @@ interface State {
 
 function Dashboard() {
   const [state, setState] = useState<State>({
-    user: { loading: false, status: undefined },
+    user: { loading: true, status: undefined },
     session: { loading: false, status: undefined },
     access: { loading: false, status: undefined },
     loader: "mid",
