@@ -158,9 +158,7 @@ function User({ user }: Props) {
 
         <Flex>
           <Text style={{ color: tokens.color.gray(50), fontWeight: 750 }}>@</Text>
-          <Text size="md" weight={500} css={wrapContent}>
-            <TextParser text={user.username} types={[]} />
-          </Text>
+          <Text size="md" weight={500} css={wrapContent}>{user.username}</Text>
         </Flex>
 
         <Flex align="center" gap="md">
