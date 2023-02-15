@@ -31,6 +31,7 @@ import { useReducer } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { wrapContent } from "../styles/css";
+import TextParser from "./TextParser";
 
 const useStyles = createStyles((theme) => ({
   icon: {
@@ -159,7 +160,9 @@ function User({ user }: Props) {
         </Flex>
 
         <Flex align="center" gap="md">
-          <Text size="sm" color="dimmed" css={wrapContent}>{user.bio}</Text>
+          <Text size="sm" color="dimmed" css={wrapContent}>
+            <TextParser text={user.bio} />
+          </Text>
         </Flex>
 
         <Flex align="center" gap="md">
