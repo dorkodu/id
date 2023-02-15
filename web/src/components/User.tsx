@@ -31,7 +31,7 @@ import { useReducer } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { wrapContent } from "../styles/css";
-import TextParser from "./TextParser";
+import TextParser, { PieceType } from "./TextParser";
 
 const useStyles = createStyles((theme) => ({
   icon: {
@@ -153,7 +153,7 @@ function User({ user }: Props) {
         </Flex>
 
         <Text size="xl" weight={600} css={wrapContent}>
-          <TextParser text={user.name} types={[]} />
+          <TextParser text={user.name} types={[PieceType.Emoji]} />
         </Text>
 
         <Flex>
