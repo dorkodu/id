@@ -32,6 +32,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { wrapContent } from "../styles/css";
 import TextParser, { PieceType } from "./TextParser";
+import OverlayLoader from "./cards/OverlayLoader";
 
 const useStyles = createStyles((theme) => ({
   icon: {
@@ -81,11 +82,13 @@ function User({ user }: Props) {
   const changePassword = () => navigate("/change-password");
 
   const editProfile = async () => {
-    if (state.loading) return;
+    if (state.loading) return false;
 
     setState({ ...state, loading: true, status: undefined });
     const status = await queryEditProfile(state.name, state.username, state.bio);
     setState({ ...state, loading: false, status: status });
+
+    return status;
   }
 
   const startEdit = () => {
@@ -99,8 +102,10 @@ function User({ user }: Props) {
   }
 
   const stopEdit = async (saveChanges: boolean) => {
-    if (saveChanges) await editProfile();
-    setState({ ...state, editing: false });
+    let status = false;
+    if (saveChanges) status = !(await editProfile());
+
+    setState({ ...state, editing: status });
   }
 
   return (
@@ -184,6 +189,8 @@ function User({ user }: Props) {
         title={t("editProfile")}
         lockScroll={false}
       >
+        {state.loading && <OverlayLoader />}
+
         <Flex direction="column" gap="md">
           <TextInput
             radius="md"
