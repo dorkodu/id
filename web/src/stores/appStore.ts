@@ -10,7 +10,6 @@ interface State {
   };
 
   redirect: string | undefined;
-  needRefresh: boolean;
 }
 
 interface Action {
@@ -19,7 +18,6 @@ interface Action {
   changeLocale: (lang: string) => void;
 
   setRedirect: (redirect: string | undefined) => void;
-  setNeedRefresh: (status: boolean) => void;
 }
 
 const initialState: State = {
@@ -29,7 +27,6 @@ const initialState: State = {
   },
 
   redirect: undefined,
-  needRefresh: false,
 };
 
 export const useAppStore = create(
@@ -55,10 +52,6 @@ export const useAppStore = create(
 
     setRedirect: (redirect) => {
       set(state => { state.redirect = redirect });
-    },
-
-    setNeedRefresh: (status) => {
-      set(state => { state.needRefresh = status });
     },
   }))
 );
