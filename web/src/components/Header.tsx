@@ -12,6 +12,7 @@ function Header() {
     <Flex justify="center" >
       <img
         src={DorkoduIDKeyIcon}
+        alt="Dorkodu ID"
         width={100}
         height={100}
         onClick={gotoWelcome}

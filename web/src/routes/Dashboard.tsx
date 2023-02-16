@@ -201,7 +201,7 @@ function Dashboard() {
               <IconArrowLeft />
             </ActionIcon>
 
-            <img src={DorkoduIDKeyIcon} width={28} height={28} />
+            <img src={DorkoduIDKeyIcon} width={28} height={28} alt="Dorkodu ID" />
 
             <ActionIcon onClick={routeMenu}><IconMenu2 /></ActionIcon>
           </Flex>
