@@ -9,7 +9,7 @@ import { ActionIcon, AppShell, Card, Flex, Header } from "@mantine/core";
 
 import User from "../components/User";
 
-import DorkoduIDKeyIcon from "@assets/dorkodu-id_key.svg";
+import DorkoduIDKeyIcon from "@assets/id.svg";
 
 import { IconArrowBigDownLine, IconArrowBigUpLine, IconArrowLeft, IconMenu2, IconRefresh } from "@tabler/icons";
 import { css } from "@emotion/react";
