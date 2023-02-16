@@ -8,8 +8,14 @@ import OverlayLoader from "./components/cards/OverlayLoader";
 import { useAppStore } from "./stores/appStore";
 import { useUserStore } from "./stores/userStore";
 import theme from "./styles/theme";
-import { useRegisterSW } from 'virtual:pwa-register/react';
+import { registerSW } from 'virtual:pwa-register';
 import UpdateSW from "./components/modals/UpdateSW";
+
+const updateSW = registerSW({
+  onNeedRefresh: () => {
+    useAppStore.getState().setNeedRefresh(true);
+  }
+})
 
 const width = css`
   max-width: 768px;
@@ -30,12 +36,7 @@ function App() {
   // on auth, it effects functionality so hide the view
   const loading = useAppStore((state) => state.loading);
   const queryAuth = useUserStore((state) => state.queryAuth);
-
-  const {
-    offlineReady: [_offlineReady, _setOfflineReady],
-    needRefresh: [needRefresh, _setNeedRefresh],
-    updateServiceWorker,
-  } = useRegisterSW();
+  const needRefresh = useAppStore((state) => state.needRefresh);
 
   const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
     key: "theme",
@@ -63,7 +64,7 @@ function App() {
           <Suspense fallback={<CenterLoader />}>
             {(loading.auth || loading.locale) && <OverlayLoader full={true} />}
             {!loading.auth && <Outlet />}
-            {needRefresh && <UpdateSW updateSW={updateServiceWorker} />}
+            {needRefresh && <UpdateSW updateSW={updateSW} />}
           </Suspense>
         </MantineProvider>
       </ColorSchemeProvider>
