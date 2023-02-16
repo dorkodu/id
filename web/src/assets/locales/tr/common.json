@@ -68,12 +68,12 @@
     },
 
     "changePassword": {
-      "title": "Şifre değiştir",
-      "description": "Want to change your password? No worries."
+      "title": "Şifreni Değiştir",
+      "description": "Şifreni değiştirmek mi istiyorsun? Endişelenme."
     },
 
     "confirmPasswordChange": {
-      "title": "Confirm Password Change",
+      "title": "Şifre Değişimini Onayla",
       "description": "Şifreni değiştirmek mi istiyorsun? Endişelenme."
     },
 
