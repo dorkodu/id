@@ -27,7 +27,7 @@ import {
 import { date } from "../lib/date";
 import UserAvatar from "@assets/avatar.webp";
 import { useUserStore } from "../stores/userStore";
-import { useReducer } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { wrapContent } from "../styles/css";
@@ -61,10 +61,7 @@ interface Props {
 function User({ user }: Props) {
   const { classes: styles } = useStyles();
 
-  const [state, setState] = useReducer((prev: State, next: State) => {
-    const newState = { ...prev, ...next };
-    return newState
-  }, {
+  const [state, setState] = useState<State>({
     name: "",
     username: "",
     bio: "",
