@@ -56,6 +56,7 @@ export const schema = sage.schema(
 
     /* external */
     getAccessToken: external.getAccessToken,
+    expireAccessToken: external.expireAccessToken,
     checkAccess: external.checkAccess,
     getUserData: external.getUserData,
   }

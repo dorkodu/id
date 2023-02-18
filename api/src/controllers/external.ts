@@ -1,4 +1,4 @@
-import { checkAccessSchema, getAccessTokenSchema, getUserDataSchema } from "../schemas/external";
+import { checkAccessSchema, expireAccessTokenSchema, getAccessTokenSchema, getUserDataSchema } from "../schemas/external";
 import sage from "@dorkodu/sage-server";
 import { SchemaContext } from "./_schema";
 import { z } from "zod";
@@ -29,9 +29,31 @@ const getAccessToken = sage.resource(
     const accessToken = await access.queryCreateAccessToken(userId, userAgent, ip, service);
     if (!accessToken) return { error: ErrorCode.Default };
 
-    await access.queryExpireAccessCode(result0.id, result0.userId);
+    if (!(await access.queryExpireAccessCode(result0.id, result0.userId)))
+      return { error: ErrorCode.Default };
 
     return { data: { token: accessToken } };
+  }
+)
+
+const expireAccessToken = sage.resource(
+  {} as SchemaContext,
+  {} as z.infer<typeof expireAccessTokenSchema>,
+  async (arg, _ctx): Promise<{ data?: {}, error?: ErrorCode }> => {
+    const parsed = expireAccessTokenSchema.safeParse(arg);
+    if (!parsed.success) return { error: ErrorCode.Default };
+
+    const parsedToken = token.parse(parsed.data.token);
+    if (!parsedToken) return { error: ErrorCode.Default };
+
+    const result0 = await access.queryGetAccessToken(parsed.data.token);
+    if (!result0) return { error: ErrorCode.Default };
+    if (!token.check(result0, parsedToken.validator)) return { error: ErrorCode.Default };
+
+    if (!(await access.queryExpireAccessToken(result0.id, result0.userId)))
+      return { error: ErrorCode.Default };
+
+    return { data: {} };
   }
 )
 
@@ -83,6 +105,7 @@ async function validateAccessToken(accessToken: string) {
 
 export default {
   getAccessToken,
+  expireAccessToken,
   checkAccess,
   getUserData,
 }

@@ -36,7 +36,6 @@ const getAccesses = sage.resource(
       ORDER BY id ${anchor === "-1" ? pg`DESC` : type === "newer" ? pg`ASC` : pg`DESC`}
       LIMIT 10
     `;
-    if (result.length === 0) return { error: ErrorCode.Default };
 
     const res: IAccessParsed[] = [];
     result.forEach(session => {
@@ -80,7 +79,8 @@ const revokeAccess = sage.resource(
     const info = await auth.getAuthInfo(ctx);
     if (!info) return { error: ErrorCode.Default };
 
-    await queryExpireAccessToken(parsed.data.accessId, info.userId);
+    if (!(await queryExpireAccessToken(parsed.data.accessId, info.userId)))
+      return { error: ErrorCode.Default };
 
     return { data: {} };
   }
@@ -107,7 +107,13 @@ async function queryCreateAccessToken(userId: string, userAgent: string, ip: str
 }
 
 async function queryExpireAccessToken(tokenId: string, userId: string) {
-  await pg`UPDATE access_tokens SET expires_at=${date.utc()} WHERE id=${tokenId} AND user_id=${userId}`;
+  const result = await pg`
+    UPDATE access_tokens
+    SET expires_at=${date.utc()}
+    WHERE id=${tokenId} AND user_id=${userId}
+  `;
+
+  return result.count !== 0;
 }
 
 async function queryGetAccessToken(tkn: string) {
@@ -149,7 +155,13 @@ async function queryCreateAccessCode(userId: string, userAgent: string, ip: stri
 }
 
 async function queryExpireAccessCode(tokenId: string, userId: string) {
-  await pg`UPDATE access_codes SET expires_at=${date.utc()} WHERE id=${tokenId} AND user_id=${userId}`;
+  const result = await pg`
+    UPDATE access_codes
+    SET expires_at=${date.utc()}
+    WHERE id=${tokenId} AND user_id=${userId}
+  `;
+  
+  return result.count !== 0;
 }
 
 async function queryGetAccessCode(code: string) {
@@ -181,7 +193,7 @@ export default {
   queryCreateAccessToken,
   queryExpireAccessToken,
   queryGetAccessToken,
-  
+
   queryCreateAccessCode,
   queryExpireAccessCode,
   queryGetAccessCode,

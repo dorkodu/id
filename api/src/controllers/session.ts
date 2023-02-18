@@ -42,7 +42,6 @@ const getSessions = sage.resource(
       ORDER BY id ${anchor === "-1" ? pg`DESC` : type === "newer" ? pg`ASC` : pg`DESC`}
       LIMIT 10
     `;
-    if (result.length === 0) return { error: ErrorCode.Default };
 
     const res: ISessionParsed[] = [];
     result.forEach(session => {
