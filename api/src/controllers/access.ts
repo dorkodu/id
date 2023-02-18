@@ -148,6 +148,10 @@ async function queryCreateAccessCode(userId: string, userAgent: string, ip: stri
   return tkn.full;
 }
 
+async function queryExpireAccessCode(tokenId: string, userId: string) {
+  await pg`UPDATE access_codes SET expires_at=${date.utc()} WHERE id=${tokenId} AND user_id=${userId}`;
+}
+
 async function queryGetAccessCode(code: string) {
   const rawToken = code;
   const parsedToken = token.parse(rawToken);
@@ -179,5 +183,6 @@ export default {
   queryGetAccessToken,
   
   queryCreateAccessCode,
+  queryExpireAccessCode,
   queryGetAccessCode,
 }
