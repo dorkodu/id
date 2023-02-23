@@ -10,6 +10,7 @@ import { useUserStore } from "./stores/userStore";
 import theme from "./styles/theme";
 import UpdateSW from "./components/modals/UpdateSW";
 import { useRegisterSW } from "virtual:pwa-register/react";
+import { ScrollRestoration } from "react-router-dom"
 
 const width = css`
   max-width: 768px;
@@ -76,7 +77,9 @@ function App() {
           </Suspense>
         </MantineProvider>
       </ColorSchemeProvider>
+
       <Global styles={global} />
+      <ScrollRestoration />
     </>
   );
 }
