@@ -60,6 +60,13 @@ function ChangePassword() {
           {state.loading && <OverlayLoader />}
 
           <Flex direction="column" gap="md">
+            <Anchor size={15} onClick={goBack}>
+              <Flex align="center" gap="xs">
+                <IconArrowLeft size={16} stroke={2.5} />
+                <Text>{t("goBack")}</Text>
+              </Flex>
+            </Anchor>
+
             <TextInput
               label={t("username")}
               placeholder={t("enterUsername")}
@@ -78,18 +85,9 @@ function ChangePassword() {
               required
             />
 
-            <Flex align="center" justify="space-between">
-              <Anchor size={15} onClick={goBack}>
-                <Flex align="center" gap="xs">
-                  <IconArrowLeft size={16} stroke={2.5} />
-                  <Text>{t("goBack")}</Text>
-                </Flex>
-              </Anchor>
-
-              <Button onClick={initiateChangePassword} radius="md">
-                {t("continue_")}
-              </Button>
-            </Flex>
+            <Button onClick={initiateChangePassword} radius="md">
+              {t("continue_")}
+            </Button>
 
             {state.status === true &&
               <Alert
