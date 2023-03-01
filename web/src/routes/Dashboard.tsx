@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 
 import { useUserStore } from "../stores/userStore";
 import { request, sage } from "../stores/api";
-import { array } from "../lib/array";
 
 import { ActionIcon, AppShell, Card, Flex, Header } from "@mantine/core";
 
@@ -45,10 +44,10 @@ function Dashboard() {
 
   const user = useUserStore((state) => state.user);
   const currentSession = useUserStore((state) => state.currentSession);
-  const sessions = useUserStore((state) => state.session.sorted);
-  const accesses = useUserStore((state) => state.access.sorted);
+  const sessions = useUserStore((_state) => _state.getSessions(state.sessionOrder));
+  const accesses = useUserStore((_state) => _state.getAccesses(state.accessOrder));
 
-  const [userProps, setUserProps] = useFeedProps();
+  const [dashboardProps, setDashboardProps] = useFeedProps();
   const [sessionFeedProps, setSessionFeedProps] = useFeedProps();
   const [accessFeedProps, setAccessFeedProps] = useFeedProps();
 
@@ -56,34 +55,18 @@ function Dashboard() {
     if (!user) return;
     if (sessionFeedProps.loader) return;
 
-    setState(s => ({
-      ...s,
-      session: { ...s.session, loading: true, status: undefined },
-      loader: refresh ? "mid" : type === "newer" ? "top" : "bottom",
-    }));
+    setSessionFeedProps(s => ({ ...s, loader: refresh ? "top" : "bottom", status: undefined }));
     const status = await useWait(() => queryGetSessions(type, refresh))();
-    setState(s => ({
-      ...s,
-      session: { ...s.session, loading: false, status: status },
-      loader: undefined
-    }));
+    setSessionFeedProps(s => ({ ...s, loader: undefined, status: status }));
   }
 
   const getAccesses = async (type: "older" | "newer", refresh?: boolean) => {
     if (!user) return;
     if (accessFeedProps.loader) return;
 
-    setState(s => ({
-      ...s,
-      access: { ...s.access, loading: true, status: undefined },
-      loader: refresh ? "mid" : type === "newer" ? "top" : "bottom",
-    }));
+    setAccessFeedProps(s => ({ ...s, loader: refresh ? "top" : "bottom", status: undefined }));
     const status = await useWait(() => queryGetAccesses(type, refresh))();
-    setState(s => ({
-      ...s,
-      access: { ...s.access, loading: false, status: status },
-      loader: undefined
-    }));
+    setAccessFeedProps(s => ({ ...s, loader: undefined, status: status }));
   }
 
 
@@ -156,15 +139,15 @@ function Dashboard() {
   const goBack = () => navigate(-1);
 
   useEffect(() => {
-    (async () => {
-      setState(s => ({
-        ...s,
-        user: { ...s.user, loading: true, status: undefined },
-        loader: "mid",
-      }));
+    getFeed(state.feed).length === 0 && fetcher(state.feed, false);
+  }, [state.feed, state.sessionOrder, state.accessOrder]);
 
-      const sessionAnchor = array.getAnchor(sessions, "id", "-1", "newer", true);
-      const accessAnchor = array.getAnchor(accesses, "id", "-1", "newer", true);
+  useEffect(() => {
+    (async () => {
+      setDashboardProps(s => ({ ...s, loader: "top", status: undefined }));
+
+      const sessionAnchor = useUserStore.getState().getSessionsAnchor("newer", true);
+      const accessAnchor = useUserStore.getState().getAccessesAnchor("newer", true);
 
       const res = await sage.get(
         {
@@ -199,11 +182,7 @@ function Dashboard() {
       setSessions(res?.c.data, true);
       setAccesses(res?.d.data, true);
 
-      setState(s => ({
-        ...s,
-        user: { ...s.user, loading: false, status: status },
-        loader: undefined,
-      }));
+      setDashboardProps(s => ({ ...s, loader: undefined, status: status }));
     })();
   }, []);
 
@@ -230,10 +209,10 @@ function Dashboard() {
 
   return (
     <AppShell padding={0} header={<DashboardHeader />}>
-      {(!user || !currentSession || userProps.loader) &&
+      {(!user || !currentSession || dashboardProps.loader) &&
         <>
-          {userProps.loader && <CardLoader />}
-          {userProps.status === false &&
+          {dashboardProps.loader && <CardLoader />}
+          {dashboardProps.status === false &&
             <CardAlert
               title={t("error.text")}
               content={t("error.default")}
@@ -243,7 +222,7 @@ function Dashboard() {
         </>
       }
 
-      {!(!user || !currentSession || userProps.loader) &&
+      {!(!user || !currentSession || dashboardProps.loader) &&
         <>
           <User user={user} />
 

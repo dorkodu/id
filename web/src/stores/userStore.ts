@@ -23,11 +23,11 @@ interface Action {
   setCurrentSession: (session: ISession | undefined) => void;
 
   getSessions: (type: "newer" | "older") => ISession[];
-  setSessions: (sessions: ISession[]) => void;
+  setSessions: (sessions?: ISession[], refresh?: boolean) => void;
   getSessionsAnchor: (type: "newer" | "older", refresh?: boolean) => string;
 
   getAccesses: (type: "newer" | "older") => IAccess[];
-  setAccesses: (accesses: IAccess[]) => void;
+  setAccesses: (accesses?: IAccess[], refresh?: boolean) => void;
   getAccessesAnchor: (type: "newer" | "older", refresh?: boolean) => string;
 
   queryAuth: () => Promise<boolean>;
@@ -96,8 +96,11 @@ export const useUserStore = create(
       return array.sort(out, "createdAt", type === "newer" ? ((a, b) => b - a) : ((a, b) => a - b));
     },
 
-    setSessions: (sessions) => {
+    setSessions: (sessions, refresh) => {
       set(state => {
+        if (refresh) state.session.entities = {};
+        if (!sessions) return;
+
         sessions.forEach((session) => {
           state.session.entities[session.id] = session;
         })
@@ -123,8 +126,11 @@ export const useUserStore = create(
       return array.sort(out, "createdAt", type === "newer" ? ((a, b) => b - a) : ((a, b) => a - b));
     },
 
-    setAccesses: (accesses) => {
+    setAccesses: (accesses, refresh) => {
       set(state => {
+        if (refresh) state.access.entities = {};
+        if (!accesses) return;
+
         accesses.forEach((access) => {
           state.access.entities[access.id] = access;
         })
@@ -323,13 +329,7 @@ export const useUserStore = create(
     },
 
     queryGetSessions: async (type, refresh) => {
-      const anchor = array.getAnchor(
-        get().session.sorted,
-        "id",
-        "-1",
-        type,
-        refresh
-      );
+      const anchor = get().getSessionsAnchor(type, refresh);
 
       const res = await sage.get(
         { a: sage.query("getSessions", { anchor, type }) },
@@ -337,7 +337,10 @@ export const useUserStore = create(
       );
 
       const status = !(!res?.a.data || res.a.error);
-      if (res?.a.data) get().setSessions(res.a.data, refresh);
+      const sessions = res?.a.data;
+
+      if (sessions) get().setSessions(sessions, refresh);
+
       return status;
     },
 
@@ -347,25 +350,18 @@ export const useUserStore = create(
         (query) => request(query)
       );
 
-      if (!res?.a.data || res.a.error) return;
-      set((state) => {
-        state.session.sorted = state.session.sorted.filter(
-          (session) => session.id !== sessionId
-        );
-        delete state.session.entities[sessionId];
-      });
+      const status = !(!res?.a.data || res.a.error);
 
-      if (get().currentSession?.id === sessionId) set(initialState);
+      if (status) {
+        set((state) => { delete state.session.entities[sessionId] });
+
+        // If terminated session is current session, reset state
+        if (get().currentSession?.id === sessionId) set(initialState);
+      }
     },
 
     queryGetAccesses: async (type, refresh) => {
-      const anchor = array.getAnchor(
-        get().access.sorted,
-        "id",
-        "-1",
-        type,
-        refresh
-      );
+      const anchor = get().getAccessesAnchor(type, refresh);
 
       const res = await sage.get(
         { a: sage.query("getAccesses", { anchor, type }) },
@@ -373,7 +369,10 @@ export const useUserStore = create(
       );
 
       const status = !(!res?.a.data || res.a.error);
-      if (res?.a.data) get().setAccesses(res.a.data, refresh);
+      const accesses = res?.a.data;
+
+      if (accesses) get().setAccesses(accesses, refresh);
+
       return status;
     },
 
@@ -393,13 +392,11 @@ export const useUserStore = create(
         (query) => request(query)
       );
 
-      if (!res?.a.data || res.a.error) return;
-      set((state) => {
-        state.access.sorted = state.access.sorted.filter(
-          (access) => access.id !== accessId
-        );
-        delete state.access.entities[accessId];
-      });
+      const status = !(!res?.a.data || res.a.error);
+
+      if (status) {
+        set((state) => { delete state.access.entities[accessId] });
+      }
     },
   }))
 );
