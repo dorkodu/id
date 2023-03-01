@@ -10,7 +10,7 @@ import {
   Title,
 } from "@mantine/core";
 import { IconAlertCircle, IconArrowLeft, IconArrowRight, IconCircleCheck, IconEye, IconEyeOff, IconInfoCircle } from "@tabler/icons";
-import { useEffect, useReducer } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
@@ -35,20 +35,13 @@ interface State {
 function Login() {
   const [searchParams] = useSearchParams();
 
-  const [state, setState] = useReducer((prev: State, next: State) => {
-    const newState = { ...prev, ...next };
-
-    if (newState.info.length > 320)
-      newState.info = newState.info.substring(0, 320);
-
-    return newState;
-  }, {
+  const [state, setState] = useState<State>({
     loading: false,
     status: undefined,
     info: "",
     password: "",
     token: searchParams.get("token"),
-    stage: searchParams.get("token") ? "verify" : "login"
+    stage: searchParams.get("token") ? "verify" : "login",
   });
 
   const { t } = useTranslation();

@@ -1,6 +1,6 @@
 import { Alert, Anchor, Button, Card, Flex, Text, TextInput, Title } from "@mantine/core";
 import { IconAlertCircle, IconArrowLeft, IconAt, IconInfoCircle } from "@tabler/icons";
-import { useReducer } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
@@ -18,14 +18,7 @@ interface State {
 }
 
 function ChangeEmail() {
-  const [state, setState] = useReducer((prev: State, next: State) => {
-    const newState = { ...prev, ...next };
-
-    if (newState.email.length > 320)
-      newState.email = newState.email.substring(0, 320);
-
-    return newState;
-  }, { loading: false, status: undefined, email: "" });
+  const [state, setState] = useState<State>({ loading: false, status: undefined, email: "" });
 
   const { t } = useTranslation();
   const navigate = useNavigate();

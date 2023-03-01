@@ -1,4 +1,4 @@
-import { useReducer } from "react";
+import { useState } from "react";
 import { useUserStore } from "../stores/userStore";
 
 import { Title, Text, TextInput, Button, Anchor, Alert, Card, Flex } from "@mantine/core";
@@ -27,21 +27,11 @@ function ChangePassword() {
   const navigate = useNavigate();
   const queryInitiatePasswordChange = useUserStore((state) => state.queryInitiatePasswordChange);
 
-  const [state, setState] = useReducer((prev: State, next: State) => {
-    const newState = { ...prev, ...next };
-
-    if (newState.username.length > 16)
-      newState.username = newState.username.substring(0, 16);
-
-    if (newState.email.length > 320)
-      newState.email = newState.email.substring(0, 320);
-
-    return newState;
-  }, {
+  const [state, setState] = useState<State>({
     loading: false,
     status: undefined,
     username: user?.username ?? "",
-    email: user?.email ?? ""
+    email: user?.email ?? "",
   });
 
   const goBack = () => navigate(-1);
