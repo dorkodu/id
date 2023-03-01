@@ -13,24 +13,22 @@ interface State {
   user: IUser | undefined;
 
   currentSession: ISession | undefined;
-  session: {
-    // TODO: Add more sorting options
-    sorted: ISession[];
-    entities: { [key: string]: ISession };
-  };
-
-  access: {
-    // TODO: Add more sorting options
-    sorted: IAccess[];
-    entities: { [key: string]: IAccess };
-  };
+  session: { entities: { [key: string]: ISession } }
+  access: { entities: { [key: string]: IAccess } }
 }
 
 interface Action {
-  setUser: (data: IUser | undefined) => void;
-  setCurrentSession: (data: ISession | undefined) => void;
-  setSessions: (data: ISession[] | undefined, refresh?: boolean) => void;
-  setAccesses: (data: IAccess[] | undefined, refresh?: boolean) => void;
+  setUser: (user: IUser | undefined) => void;
+
+  setCurrentSession: (session: ISession | undefined) => void;
+
+  getSessions: (type: "newer" | "older") => ISession[];
+  setSessions: (sessions: ISession[]) => void;
+  getSessionsAnchor: (type: "newer" | "older", refresh?: boolean) => string;
+
+  getAccesses: (type: "newer" | "older") => IAccess[];
+  setAccesses: (accesses: IAccess[]) => void;
+  getAccessesAnchor: (type: "newer" | "older", refresh?: boolean) => string;
 
   queryAuth: () => Promise<boolean>;
 
@@ -63,8 +61,8 @@ const initialState: State = {
   authorized: false,
   user: undefined,
   currentSession: undefined,
-  session: { sorted: [], entities: {} },
-  access: { sorted: [], entities: {} },
+  session: { entities: {} },
+  access: { entities: {} },
 };
 
 export const useUserStore = create(
@@ -83,41 +81,60 @@ export const useUserStore = create(
       });
     },
 
-    setSessions: (data, refresh) => {
-      if (!data) return;
-      set((state) => {
-        if (refresh) state.session = { sorted: [], entities: {} };
-        data.forEach(
-          (session) => void (state.session.entities[session.id] = session)
-        );
 
-        state.session.sorted = array.sort(
-          Object.keys(state.session.entities).map(
-            (id) => state.session.entities[id]
-          ) as ISession[],
-          "createdAt",
-          (a, b) => b - a
-        );
-      });
+    getSessions: (type) => {
+      const object = get().session.entities;
+      if (!object) return [];
+
+      const out: ISession[] = [];
+      const keys = Object.keys(object);
+      keys.forEach(key => {
+        const session = get().session.entities[key];
+        if (session) out.push(session);
+      })
+
+      return array.sort(out, "createdAt", type === "newer" ? ((a, b) => b - a) : ((a, b) => a - b));
     },
 
-    setAccesses: (data, refresh) => {
-      if (!data) return;
-      set((state) => {
-        if (refresh) state.access = { sorted: [], entities: {} };
-        data.forEach(
-          (access) => void (state.access.entities[access.id] = access)
-        );
-
-        state.access.sorted = array.sort(
-          Object.keys(state.access.entities).map(
-            (id) => state.access.entities[id]
-          ) as IAccess[],
-          "createdAt",
-          (a, b) => b - a
-        );
-      });
+    setSessions: (sessions) => {
+      set(state => {
+        sessions.forEach((session) => {
+          state.session.entities[session.id] = session;
+        })
+      })
     },
+
+    getSessionsAnchor: (type, refresh) => {
+      return array.getAnchor(get().getSessions("newer"), "id", "-1", type, refresh);
+    },
+
+
+    getAccesses: (type) => {
+      const object = get().access.entities;
+      if (!object) return [];
+
+      const out: IAccess[] = [];
+      const keys = Object.keys(object);
+      keys.forEach(key => {
+        const access = get().access.entities[key];
+        if (access) out.push(access);
+      })
+
+      return array.sort(out, "createdAt", type === "newer" ? ((a, b) => b - a) : ((a, b) => a - b));
+    },
+
+    setAccesses: (accesses) => {
+      set(state => {
+        accesses.forEach((access) => {
+          state.access.entities[access.id] = access;
+        })
+      })
+    },
+
+    getAccessesAnchor: (type, refresh) => {
+      return array.getAnchor(get().getAccesses("newer"), "id", "-1", type, refresh);
+    },
+
 
     queryAuth: async () => {
       const res = await sage.get(

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useUserStore } from "../stores/userStore";
@@ -11,7 +11,7 @@ import User from "../components/User";
 
 import DorkoduIDKeyIcon from "@assets/id.svg";
 
-import { IconArrowBigDownLine, IconArrowBigUpLine, IconArrowLeft, IconMenu2, IconRefresh } from "@tabler/icons";
+import { IconArrowLeft, IconMenu2 } from "@tabler/icons";
 import { css } from "@emotion/react";
 import { Session } from "../components/Session";
 import Access from "../components/Access";
@@ -19,43 +19,18 @@ import Footer from "../components/Footer";
 import { useTranslation } from "react-i18next";
 import CardPanel from "../components/cards/CardPanel";
 import InfiniteScroll from "../components/InfiniteScroll";
-import { useWait } from "../components/hooks";
+import { useFeedProps, useWait } from "../components/hooks";
 import CardLoader from "../components/cards/CardLoader";
 import CardAlert from "../components/cards/CardAlert";
+import { useAppStore } from "../stores/appStore";
 
 const width = css`
   max-width: 768px;
   margin: 0 auto;
 `;
 
-interface State {
-  user: {
-    loading: boolean;
-    status: boolean | undefined;
-  }
-
-  session: {
-    loading: boolean;
-    status: boolean | undefined;
-  }
-
-  access: {
-    loading: boolean;
-    status: boolean | undefined;
-  }
-
-  loader: "top" | "bottom" | "mid" | undefined;
-  show: "sessions" | "accesses";
-}
-
 function Dashboard() {
-  const [state, setState] = useState<State>({
-    user: { loading: true, status: undefined },
-    session: { loading: false, status: undefined },
-    access: { loading: false, status: undefined },
-    loader: "mid",
-    show: "sessions"
-  });
+  const state = useAppStore(state => state.options.dashboard);
 
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -73,9 +48,13 @@ function Dashboard() {
   const sessions = useUserStore((state) => state.session.sorted);
   const accesses = useUserStore((state) => state.access.sorted);
 
+  const [userProps, setUserProps] = useFeedProps();
+  const [sessionFeedProps, setSessionFeedProps] = useFeedProps();
+  const [accessFeedProps, setAccessFeedProps] = useFeedProps();
+
   const getSessions = async (type: "older" | "newer", refresh?: boolean) => {
     if (!user) return;
-    if (state.session.loading) return;
+    if (sessionFeedProps.loader) return;
 
     setState(s => ({
       ...s,
@@ -92,7 +71,7 @@ function Dashboard() {
 
   const getAccesses = async (type: "older" | "newer", refresh?: boolean) => {
     if (!user) return;
-    if (state.access.loading) return;
+    if (accessFeedProps.loader) return;
 
     setState(s => ({
       ...s,
@@ -107,32 +86,71 @@ function Dashboard() {
     }));
   }
 
-  const refresh = async () => {
-    switch (state.show) {
-      case "sessions": await getSessions("newer", true); break;
-      case "accesses": await getAccesses("newer", true); break;
+
+  const fetcher = async (feed: typeof state.feed, refresh?: boolean) => {
+    switch (feed) {
+      case "sessions": await getSessions(state.sessionOrder, refresh); break;
+      case "accesses": await getAccesses(state.accessOrder, refresh); break;
     }
   }
 
-  const loadNewer = async () => {
-    switch (state.show) {
-      case "sessions": await getSessions("newer"); break;
-      case "accesses": await getAccesses("newer"); break;
+
+  const getFeed = (feed: typeof state.feed) => {
+    switch (feed) {
+      case "sessions": return sessions;
+      case "accesses": return accesses;
     }
   }
 
-  const loadOlder = async () => {
-    switch (state.show) {
-      case "sessions": await getSessions("older"); break;
-      case "accesses": await getAccesses("older"); break;
-    }
-  }
-
-  const changeShow = (value: string) => {
+  const changeFeed = (value: string) => {
     if (value === "sessions" || value === "accesses") {
-      setState(s => ({ ...s, show: value }));
+      useAppStore.setState(s => { s.options.dashboard.feed = value });
     }
   }
+
+
+  const getOrder = () => {
+    switch (state.feed) {
+      case "sessions": return state.sessionOrder;
+      case "accesses": return state.accessOrder;
+    }
+  }
+
+  const changeOrder = (value: string) => {
+    /**
+     * Can't change feed order if the current feed is loading.
+     * It fixes a bug which occurs when user changed order very fast,
+     * for ex. changes newer -> older -> newer, then the feed will show,
+     * older posts in newer order, which not the desired outcome.
+     */
+    if (getLoader(state.feed)) return;
+
+    if (value === "newer" || value === "older") {
+      useAppStore.setState(s => {
+        switch (state.feed) {
+          case "sessions": s.options.dashboard.sessionOrder = value; break;
+          case "accesses": s.options.dashboard.accessOrder = value; break;
+        }
+      });
+
+      // Clear feed when changing the order
+      useUserStore.setState(_state => {
+        switch (state.feed) {
+          case "sessions": _state.session.entities = {}; break;
+          case "accesses": _state.access.entities = {}; break;
+        }
+      });
+    }
+  }
+
+
+  const getLoader = (feed: typeof state.feed) => {
+    switch (feed) {
+      case "sessions": return sessionFeedProps.loader;
+      case "accesses": return accessFeedProps.loader;
+    }
+  }
+
 
   const routeMenu = () => { /*navigate("/menu")*/ };
   const goBack = () => navigate(-1);
@@ -212,10 +230,10 @@ function Dashboard() {
 
   return (
     <AppShell padding={0} header={<DashboardHeader />}>
-      {(!user || !currentSession || state.user.loading) &&
+      {(!user || !currentSession || userProps.loader) &&
         <>
-          {state.user.loading && <CardLoader />}
-          {state.user.status === false &&
+          {userProps.loader && <CardLoader />}
+          {userProps.status === false &&
             <CardAlert
               title={t("error.text")}
               content={t("error.default")}
@@ -225,7 +243,7 @@ function Dashboard() {
         </>
       }
 
-      {!(!user || !currentSession || state.user.loading) &&
+      {!(!user || !currentSession || userProps.loader) &&
         <>
           <User user={user} />
 
@@ -234,29 +252,32 @@ function Dashboard() {
           <CardPanel
             segments={[
               {
-                value: state.show,
-                setValue: changeShow,
+                value: state.feed,
+                setValue: changeFeed,
                 label: t("show"),
                 data: [
                   { label: t("sessions"), value: "sessions" },
                   { label: t("accesses"), value: "accesses" },
                 ]
-              }
-            ]}
-
-            buttons={[
-              { onClick: refresh, text: <IconRefresh /> },
-              { onClick: loadOlder, text: <IconArrowBigDownLine /> },
-              { onClick: loadNewer, text: <IconArrowBigUpLine /> },
+              },
+              {
+                value: getOrder(),
+                setValue: changeOrder,
+                label: t("order"),
+                data: [
+                  { label: t("newer"), value: "newer" },
+                  { label: t("older"), value: "older" },
+                ]
+              },
             ]}
           />
 
           <InfiniteScroll
-            onBottom={loadOlder}
-            loaders={{ top: state.loader === "top", bottom: state.loader === "bottom", mid: state.loader === "mid", }}
+            onBottom={() => fetcher(state.feed, false)}
+            loader={getLoader(state.feed)}
           >
-            {state.show === "sessions" && sessions.map((s) => <Session key={s.id} session={s} />)}
-            {state.show === "accesses" && accesses.map((a) => <Access key={a.id} access={a} />)}
+            {state.feed === "sessions" && sessions.map((s) => <Session key={s.id} session={s} />)}
+            {state.feed === "accesses" && accesses.map((a) => <Access key={a.id} access={a} />)}
           </InfiniteScroll>
           <Footer />
         </>

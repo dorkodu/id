@@ -10,6 +10,14 @@ interface State {
   };
 
   redirect: string | undefined;
+
+  options: {
+    dashboard: {
+      feed: "sessions" | "accesses";
+      sessionOrder: "newer" | "older";
+      accessOrder: "newer" | "older";
+    }
+  }
 }
 
 interface Action {
@@ -27,6 +35,14 @@ const initialState: State = {
   },
 
   redirect: undefined,
+
+  options: {
+    dashboard: {
+      feed: "sessions",
+      sessionOrder: "newer",
+      accessOrder: "newer",
+    }
+  }
 };
 
 export const useAppStore = create(

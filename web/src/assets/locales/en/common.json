@@ -108,6 +108,10 @@
     "passwordLength": "Minimum 8 characters."
   },
 
+  "order": "Order",
+  "newer": "Newer",
+  "older": "Older",
+
   "refresh": "Refresh",
   "loadNewer": "Load Newer",
   "loadOlder": "Load Older",

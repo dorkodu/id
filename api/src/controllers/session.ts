@@ -38,8 +38,8 @@ const getSessions = sage.resource(
     const result = await pg`
       SELECT id, created_at, expires_at, user_agent, ip FROM sessions
       WHERE user_id=${info.userId} AND expires_at>${date.utc()}
-      ${anchor === "-1" ? pg`` : type === "newer" ? pg`AND id>${anchor}` : pg`AND id<${anchor}`}
-      ORDER BY id ${anchor === "-1" ? pg`DESC` : type === "newer" ? pg`ASC` : pg`DESC`}
+      ${anchor === "-1" ? pg`` : type === "newer" ? pg`AND id<${anchor}` : pg`AND id>${anchor}`}
+      ORDER BY id ${type === "newer" ? pg`DESC` : pg`ASC`}
       LIMIT 10
     `;
 

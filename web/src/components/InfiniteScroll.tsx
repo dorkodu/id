@@ -7,14 +7,10 @@ interface Props {
   onTop?: () => Promise<any>;
   onBottom?: () => Promise<any>;
 
-  loaders: {
-    top: boolean;
-    bottom: boolean;
-    mid: boolean;
-  }
+  loader: "top" | "bottom" | undefined;
 }
 
-function InfiniteScroll({ children, onTop, onBottom, loaders }: Props) {
+function InfiniteScroll({ children, onTop, onBottom, loader }: Props) {
   const previousHeightEqual = () => previousHeight.current === document.body.offsetHeight;
   const scrolledTop = () => window.scrollY <= 0;
   const scrolledBottom = () => window.innerHeight + window.scrollY + 1 >= document.body.offsetHeight;
@@ -47,13 +43,13 @@ function InfiniteScroll({ children, onTop, onBottom, loaders }: Props) {
   useEffect(() => {
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
-  }, [])
+  }, [onTop, onBottom])
 
   return (
     <>
-      {loaders.top && <CardLoader />}
-      {loaders.mid ? <CardLoader /> : <>{children}</>}
-      {loaders.bottom && <CardLoader />}
+      {loader === "top" && <CardLoader />}
+      {children}
+      {loader === "bottom" && <CardLoader />}
     </>
   )
 }

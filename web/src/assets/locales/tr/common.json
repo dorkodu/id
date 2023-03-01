@@ -108,6 +108,10 @@
     "passwordLength": "Minimum 8 karakter."
   },
 
+  "order": "Sıralama",
+  "newer": "En Yeni",
+  "older": "En Eski",
+
   "refresh": "Yenile",
   "loadNewer": "Yenileri Yükle",
   "loadOlder": "Eskileri Yükle",
