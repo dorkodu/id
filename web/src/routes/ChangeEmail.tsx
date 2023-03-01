@@ -1,6 +1,6 @@
 import { Alert, Anchor, Button, Card, Flex, Text, TextInput, Title } from "@mantine/core";
 import { IconAlertCircle, IconArrowLeft, IconAt, IconInfoCircle } from "@tabler/icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
@@ -9,6 +9,8 @@ import { widthLimit } from "../styles/css";
 import { useTranslation } from "react-i18next";
 import { useWait } from "../components/hooks";
 import OverlayLoader from "../components/cards/OverlayLoader";
+import InputRequirements, { getRequirement, getRequirementError } from "../components/popovers/InputRequirements";
+import { useFocusWithin } from "@mantine/hooks";
 
 interface State {
   loading: boolean;
@@ -34,6 +36,11 @@ function ChangeEmail() {
     setState({ ...state, loading: false, status: status });
   }
 
+  // Necessary stuff for input validation & error messages
+  const [inputReady, setInputReady] = useState(false);
+  const { ref, focused } = useFocusWithin();
+  useEffect(() => { setInputReady(focused || inputReady) }, [focused]);
+
   return (
     <Flex direction="column" gap="md">
       <Header />
@@ -50,31 +57,35 @@ function ChangeEmail() {
           {state.loading && <OverlayLoader />}
 
           <Flex direction="column" gap="md">
-            <TextInput
-              label={t("newEmail")}
-              placeholder={t("enterNewEmail")}
-              description={t("emailDescription")}
-              defaultValue={state.email}
-              onChange={(ev) => { setState({ ...state, email: ev.target.value }) }}
-              radius="md"
-              variant="filled"
-              required
-              icon={<IconAt size={16} />}
-              type={"email"}
-            />
+            <Anchor size={15} onClick={goBack}>
+              <Flex align="center" gap="xs">
+                <IconArrowLeft size={16} stroke={2.5} />
+                <Text>{t("goBack")}</Text>
+              </Flex>
+            </Anchor>
 
-            <Flex align="center" justify="space-between">
-              <Anchor size={15} onClick={goBack}>
-                <Flex align="center" gap="xs">
-                  <IconArrowLeft size={16} stroke={2.5} />
-                  <Text>{t("goBack")}</Text>
-                </Flex>
-              </Anchor>
+            <InputRequirements
+              value={state.email}
+              requirements={getRequirement(t, "email")}
+            >
+              <TextInput
+                label={t("newEmail")}
+                placeholder={t("enterNewEmail")}
+                defaultValue={state.email}
+                onChange={(ev) => { setState({ ...state, email: ev.target.value }) }}
+                radius="md"
+                variant="filled"
+                required
+                icon={<IconAt size={16} />}
+                type={"email"}
+                error={inputReady && !focused && getRequirementError(t, "email", state.email)}
+                ref={ref}
+              />
+            </InputRequirements>
 
-              <Button onClick={initiateEmailChange} radius="md">
-                {t("continue_")}
-              </Button>
-            </Flex>
+            <Button onClick={initiateEmailChange} radius="md">
+              {t("continue_")}
+            </Button>
 
             {state.status === true &&
               <Alert

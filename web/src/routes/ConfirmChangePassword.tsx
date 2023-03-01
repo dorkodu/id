@@ -1,6 +1,6 @@
 import { Alert, Anchor, Button, Card, Flex, PasswordInput, Text, Title } from "@mantine/core";
 import { IconAlertCircle, IconArrowLeft, IconAsterisk, IconCircleCheck, IconEye, IconEyeOff } from "@tabler/icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
@@ -9,6 +9,8 @@ import { widthLimit } from "../styles/css";
 import { useTranslation } from "react-i18next";
 import OverlayLoader from "../components/cards/OverlayLoader";
 import { useWait } from "../components/hooks";
+import { useFocusWithin } from "@mantine/hooks";
+import InputRequirements, { getRequirement, getRequirementError } from "../components/popovers/InputRequirements";
 
 interface State {
   loading: boolean;
@@ -41,6 +43,11 @@ function ConfirmChangePassword() {
     setState({ ...state, loading: false, status: status });
   }
 
+  // Necessary stuff for input validation & error messages
+  const [inputReady, setInputReady] = useState(false);
+  const { ref, focused } = useFocusWithin();
+  useEffect(() => { setInputReady(focused || inputReady) }, [focused]);
+
   return (
     <Flex direction="column" gap="md">
       <Header />
@@ -57,34 +64,38 @@ function ConfirmChangePassword() {
           {state.loading && <OverlayLoader />}
 
           <Flex direction="column" gap="md">
-            <PasswordInput
-              label={t("newPassword")}
-              placeholder={t("enterNewPassword")}
-              description={t("passwordDescription")}
-              defaultValue={state.password}
-              onChange={(ev) => { setState({ ...state, password: ev.target.value }) }}
-              visibilityToggleIcon={({ reveal, size }) =>
-                reveal ?
-                  <IconEyeOff size={size} stroke={2.5} /> :
-                  <IconEye size={size} stroke={2.5} />
-              }
-              variant="filled"
-              aria-required
-              icon={<IconAsterisk size={16} />}
-            />
+            <Anchor size={15} onClick={goBack}>
+              <Flex align="center" gap="xs">
+                <IconArrowLeft size={16} stroke={2.5} />
+                <Text>{t("goBack")}</Text>
+              </Flex>
+            </Anchor>
 
-            <Flex align="center" justify="space-between">
-              <Anchor size={15} onClick={goBack}>
-                <Flex align="center" gap="xs">
-                  <IconArrowLeft size={16} stroke={2.5} />
-                  <Text>{t("goBack")}</Text>
-                </Flex>
-              </Anchor>
+            <InputRequirements
+              value={state.password}
+              requirements={getRequirement(t, "password")}
+            >
+              <PasswordInput
+                label={t("newPassword")}
+                placeholder={t("enterNewPassword")}
+                defaultValue={state.password}
+                onChange={(ev) => { setState({ ...state, password: ev.target.value }) }}
+                visibilityToggleIcon={({ reveal, size }) =>
+                  reveal ?
+                    <IconEyeOff size={size} stroke={2.5} /> :
+                    <IconEye size={size} stroke={2.5} />
+                }
+                variant="filled"
+                aria-required
+                icon={<IconAsterisk size={16} />}
+                error={inputReady && !focused && getRequirementError(t, "password", state.password)}
+                ref={ref}
+              />
+            </InputRequirements>
 
-              <Button onClick={confirmChangePassword} radius="md">
-                {t("changePassword")}
-              </Button>
-            </Flex>
+            <Button onClick={confirmChangePassword} radius="md">
+              {t("changePassword")}
+            </Button>
 
             {state.status === true &&
               <Alert

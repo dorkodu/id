@@ -97,6 +97,17 @@
     "work": "Work"
   },
 
+  "requirements": {
+    "usernameLength": "Use 1-16 characters.",
+    "usernameChars": "Use letters (a-z or A-Z), digits (0-9), dot (.), and underscore (_).",
+    "usernameAvoid": "Avoid consecutive and at start/end dots/underscores.",
+
+    "emailLength": "Less than 320 characters.",
+    "emailEmpty": "Can not be empty.",
+
+    "passwordLength": "Minimum 8 characters."
+  },
+
   "refresh": "Refresh",
   "loadNewer": "Load Newer",
   "loadOlder": "Load Older",
@@ -122,13 +133,11 @@
 
   "email": "Email",
   "enterEmail": "Enter Email",
-  "emailDescription": "Enter a valid email address.",
   "newEmail": "New Email",
   "enterNewEmail": "Enter New Email",
 
   "password": "Password",
   "enterPassword": "Enter Password",
-  "passwordDescription": "Minimum 8 characters required.",
   "newPassword": "New Password",
   "enterNewPassword": "Enter New Password",
 

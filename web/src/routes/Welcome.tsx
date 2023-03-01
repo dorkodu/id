@@ -51,7 +51,7 @@ function Welcome() {
       </Flex>
 
       <Flex justify="center">
-        <Flex direction="column" gap="md">
+        <Flex direction="column" gap="md" css={widthLimit}>
           {authorized &&
             <Button
               variant="filled"

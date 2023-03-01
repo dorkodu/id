@@ -78,15 +78,13 @@ function Access() {
                   <Trans t={t} i18nKey="route.access.serviceRequirements" />
                 </Text>
 
-                <Flex align="center" justify="space-between">
-                  <Button onClick={reject} variant="default">
-                    {t("reject")}
-                  </Button>
+                <Button onClick={accept}>
+                  {t("accept")}
+                </Button>
 
-                  <Button onClick={accept}>
-                    {t("accept")}
-                  </Button>
-                </Flex>
+                <Button onClick={reject} variant="default">
+                  {t("reject")}
+                </Button>
               </>
             }
 

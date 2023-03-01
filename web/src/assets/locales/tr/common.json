@@ -97,6 +97,17 @@
     "work": "Çalışmalar"
   },
 
+  "requirements": {
+    "usernameLength": "1-16 karakter kullanın",
+    "usernameChars": "Harf (a-z veya A-Z), rakam (0-9), nokta (.) ve alt çizgi (_) kullanın.",
+    "usernameAvoid": "Başta, sonda ve yan yana nokta (.) ve alt çizgi (_) kullanmayın.",
+
+    "emailLength": "320 karaterden az.",
+    "emailEmpty": "Boş olmamalı.",
+
+    "passwordLength": "Minimum 8 karakter."
+  },
+
   "refresh": "Yenile",
   "loadNewer": "Yenileri Yükle",
   "loadOlder": "Eskileri Yükle",
@@ -122,13 +133,11 @@
 
   "email": "E-posta",
   "enterEmail": "E-posta Girin",
-  "emailDescription": "Geçerli bir e-posta adresi girin.",
   "newEmail": "Yeni E-posta",
   "enterNewEmail": "Yeni E-posta Girin",
 
   "password": "Parola",
   "enterPassword": "Parola Girin",
-  "passwordDescription": "Minimum 8 karakter gereklidir.",
   "newPassword": "Yeni Parola",
   "enterNewPassword": "Yeni Parola Girin",
 

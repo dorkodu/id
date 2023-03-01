@@ -78,6 +78,13 @@ function Login() {
   const loginStage = () => {
     return (
       <>
+        <Anchor size={15} onClick={goBack}>
+          <Flex align="center" gap="xs">
+            <IconArrowLeft size={16} stroke={2.5} />
+            <Text>{t("goBack")}</Text>
+          </Flex>
+        </Anchor>
+
         <TextInput
           variant="filled"
           type="text"
@@ -104,18 +111,9 @@ function Login() {
           required
         />
 
-        <Flex align="center" justify="space-between">
-          <Anchor size={15} onClick={goBack}>
-            <Flex align="center" gap="xs">
-              <IconArrowLeft size={16} stroke={2.5} />
-              <Text>{t("goBack")}</Text>
-            </Flex>
-          </Anchor>
-
-          <Button onClick={login} radius="md">
-            {t("login")}
-          </Button>
-        </Flex>
+        <Button onClick={login} radius="md">
+          {t("login")}
+        </Button>
 
         {state.status === "verify" &&
           <Alert

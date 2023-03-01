@@ -20,7 +20,7 @@ import {
   IconInfoCircle,
   IconUser,
 } from "@tabler/icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
@@ -30,6 +30,8 @@ import { Trans, useTranslation } from "react-i18next";
 import { useAppStore } from "../stores/appStore";
 import { useWait } from "../components/hooks";
 import OverlayLoader from "../components/cards/OverlayLoader";
+import InputRequirements, { getRequirement, getRequirementError } from "../components/popovers/InputRequirements";
+import { useFocusWithin } from "@mantine/hooks";
 
 interface State {
   loading: boolean;
@@ -64,6 +66,20 @@ function CreateAccount() {
   const gotoLogin = () => navigate("/login");
   const goBack = () => navigate("/welcome");
 
+  // Necessary stuff for input validation & error messages
+  const [inputReady, setInputReady] = useState({ username: false, email: false, password: false });
+  const { ref: usernameRef, focused: usernameFocused } = useFocusWithin();
+  const { ref: emailRef, focused: emailFocused } = useFocusWithin();
+  const { ref: passwordRef, focused: passwordFocused } = useFocusWithin();
+  useEffect(() => {
+    setInputReady(s => ({
+      ...s,
+      username: usernameFocused || s.username,
+      email: emailFocused || s.email,
+      password: passwordFocused || s.password,
+    }))
+  }, [usernameFocused, emailFocused, passwordFocused]);
+
   const signup = async () => {
     if (state.loading) return;
 
@@ -91,43 +107,53 @@ function CreateAccount() {
       <>
         {state.status !== "ok" &&
           <>
-            <TextInput
-              variant="filled"
-              label={t("username")}
-              description={t("usernameDescription")}
-              icon={<IconUser size={16} />}
-              placeholder={t("enterUsername")}
-              defaultValue={state.username}
-              onChange={(ev) => { setState({ ...state, username: ev.target.value }) }}
-              disabled={state.stage === "confirm"}
-              required
-            />
+            <Anchor size={15} onClick={goBack}>
+              <Flex align="center" gap="xs">
+                <IconArrowLeft size={16} stroke={2.5} />
+                <Text>{t("goBack")}</Text>
+              </Flex>
+            </Anchor>
 
-            <TextInput
-              variant="filled"
-              type="email"
-              label={t("email")}
-              description={t("emailDescription")}
-              icon={<IconAt size={16} />}
-              placeholder={t("enterEmail")}
-              defaultValue={state.email}
-              onChange={(ev) => { setState({ ...state, email: ev.target.value }) }}
-              disabled={state.stage === "confirm"}
-              required
-            />
+            <InputRequirements
+              value={state.username}
+              requirements={getRequirement(t, "username")}
+            >
+              <TextInput
+                variant="filled"
+                label={t("username")}
+                icon={<IconUser size={16} />}
+                placeholder={t("enterUsername")}
+                defaultValue={state.username}
+                onChange={(ev) => { setState({ ...state, username: ev.target.value }) }}
+                disabled={state.stage === "confirm"}
+                required
+                error={inputReady.username && !usernameFocused && getRequirementError(t, "username", state.username)}
+                ref={usernameRef}
+              />
+            </InputRequirements>
 
-            <Flex align="center" justify="space-between">
-              <Anchor size={15} onClick={goBack}>
-                <Flex align="center" gap="xs">
-                  <IconArrowLeft size={16} stroke={2.5} />
-                  <Text>{t("goBack")}</Text>
-                </Flex>
-              </Anchor>
+            <InputRequirements
+              value={state.email}
+              requirements={getRequirement(t, "email")}
+            >
+              <TextInput
+                variant="filled"
+                type="email"
+                label={t("email")}
+                icon={<IconAt size={16} />}
+                placeholder={t("enterEmail")}
+                defaultValue={state.email}
+                onChange={(ev) => { setState({ ...state, email: ev.target.value }) }}
+                disabled={state.stage === "confirm"}
+                required
+                error={inputReady.email && !emailFocused && getRequirementError(t, "email", state.email)}
+                ref={emailRef}
+              />
+            </InputRequirements>
 
-              <Button onClick={signup} radius="md">
-                {t("continue_")}
-              </Button>
-            </Flex>
+            <Button onClick={signup} radius="md">
+              {t("continue_")}
+            </Button>
           </>
         }
 
@@ -162,34 +188,38 @@ function CreateAccount() {
   const confirmSignupStage = () => {
     return (
       <>
-        <PasswordInput
-          variant="filled"
-          label={t("password")}
-          description={t("passwordDescription")}
-          icon={<IconAsterisk size={16} />}
-          placeholder={t("enterPassword")}
-          visibilityToggleIcon={({ reveal, size }) =>
-            reveal ?
-              <IconEyeOff size={size} stroke={2.5} /> :
-              <IconEye size={size} stroke={2.5} />
-          }
-          defaultValue={state.password}
-          onChange={(ev) => { setState({ ...state, password: ev.target.value }) }}
-          required
-        />
+        <Anchor size={15} onClick={goBack}>
+          <Flex align="center" gap="xs">
+            <IconArrowLeft size={16} stroke={2.5} />
+            <Text>{t("goBack")}</Text>
+          </Flex>
+        </Anchor>
 
-        <Flex align="center" justify="space-between">
-          <Anchor size={15} onClick={goBack}>
-            <Flex align="center" gap="xs">
-              <IconArrowLeft size={16} stroke={2.5} />
-              <Text>{t("goBack")}</Text>
-            </Flex>
-          </Anchor>
+        <InputRequirements
+          value={state.password}
+          requirements={getRequirement(t, "password")}
+        >
+          <PasswordInput
+            variant="filled"
+            label={t("password")}
+            icon={<IconAsterisk size={16} />}
+            placeholder={t("enterPassword")}
+            visibilityToggleIcon={({ reveal, size }) =>
+              reveal ?
+                <IconEyeOff size={size} stroke={2.5} /> :
+                <IconEye size={size} stroke={2.5} />
+            }
+            defaultValue={state.password}
+            onChange={(ev) => { setState({ ...state, password: ev.target.value }) }}
+            required
+            error={inputReady.password && !passwordFocused && getRequirementError(t, "password", state.password)}
+            ref={passwordRef}
+          />
+        </InputRequirements>
 
-          <Button onClick={confirmSignup} radius="md">
-            {t("finish")}
-          </Button>
-        </Flex>
+        <Button onClick={confirmSignup} radius="md">
+          {t("finish")}
+        </Button>
 
         {state.status === "error" &&
           <Alert
