@@ -11,6 +11,7 @@ import { widthLimit } from "../styles/css";
 import { useTranslation } from "react-i18next";
 import { useWait } from "../components/hooks";
 import OverlayLoader from "../components/cards/OverlayLoader";
+import { getHotkeyHandler } from "@mantine/hooks";
 
 interface State {
   loading: boolean;
@@ -74,6 +75,7 @@ function ChangePassword() {
               onChange={(ev) => { setState({ ...state, username: ev.target.value }) }}
               variant="filled"
               required
+              onKeyDown={getHotkeyHandler([["Enter", initiateChangePassword]])}
             />
 
             <TextInput
@@ -83,6 +85,7 @@ function ChangePassword() {
               onChange={(ev) => { setState({ ...state, email: ev.target.value }) }}
               variant="filled"
               required
+              onKeyDown={getHotkeyHandler([["Enter", initiateChangePassword]])}
             />
 
             <Button onClick={initiateChangePassword} radius="md">

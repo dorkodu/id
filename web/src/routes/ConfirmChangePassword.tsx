@@ -9,7 +9,7 @@ import { widthLimit } from "../styles/css";
 import { useTranslation } from "react-i18next";
 import OverlayLoader from "../components/cards/OverlayLoader";
 import { useWait } from "../components/hooks";
-import { useFocusWithin } from "@mantine/hooks";
+import { getHotkeyHandler, useFocusWithin } from "@mantine/hooks";
 import InputRequirements, { getRequirement, getRequirementError } from "../components/popovers/InputRequirements";
 
 interface State {
@@ -90,6 +90,7 @@ function ConfirmChangePassword() {
                 icon={<IconAsterisk size={16} />}
                 error={inputReady && !focused && getRequirementError(t, "password", state.password)}
                 ref={ref}
+                onKeyDown={getHotkeyHandler([["Enter", confirmChangePassword]])}
               />
             </InputRequirements>
 

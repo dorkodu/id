@@ -20,6 +20,7 @@ import { useTranslation } from "react-i18next";
 import { useAppStore } from "../stores/appStore";
 import OverlayLoader from "../components/cards/OverlayLoader";
 import { useWait } from "../components/hooks";
+import { getHotkeyHandler } from "@mantine/hooks";
 
 interface State {
   loading: boolean;
@@ -94,6 +95,7 @@ function Login() {
           onChange={(ev) => { setState({ ...state, info: ev.target.value }) }}
           withAsterisk={true}
           required
+          onKeyDown={getHotkeyHandler([["Enter", login]])}
         />
 
         <PasswordInput
@@ -109,6 +111,7 @@ function Login() {
           onChange={(ev) => { setState({ ...state, password: ev.target.value }) }}
           withAsterisk={true}
           required
+          onKeyDown={getHotkeyHandler([["Enter", login]])}
         />
 
         <Button onClick={login} radius="md">

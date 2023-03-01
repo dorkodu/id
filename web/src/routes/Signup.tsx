@@ -31,7 +31,7 @@ import { useAppStore } from "../stores/appStore";
 import { useWait } from "../components/hooks";
 import OverlayLoader from "../components/cards/OverlayLoader";
 import InputRequirements, { getRequirement, getRequirementError } from "../components/popovers/InputRequirements";
-import { useFocusWithin } from "@mantine/hooks";
+import { getHotkeyHandler, useFocusWithin } from "@mantine/hooks";
 
 interface State {
   loading: boolean;
@@ -129,6 +129,7 @@ function CreateAccount() {
                 required
                 error={inputReady.username && !usernameFocused && getRequirementError(t, "username", state.username)}
                 ref={usernameRef}
+                onKeyDown={getHotkeyHandler([["Enter", signup]])}
               />
             </InputRequirements>
 
@@ -148,6 +149,7 @@ function CreateAccount() {
                 required
                 error={inputReady.email && !emailFocused && getRequirementError(t, "email", state.email)}
                 ref={emailRef}
+                onKeyDown={getHotkeyHandler([["Enter", signup]])}
               />
             </InputRequirements>
 
@@ -214,6 +216,7 @@ function CreateAccount() {
             required
             error={inputReady.password && !passwordFocused && getRequirementError(t, "password", state.password)}
             ref={passwordRef}
+            onKeyDown={getHotkeyHandler([["Enter", confirmSignup]])}
           />
         </InputRequirements>
 

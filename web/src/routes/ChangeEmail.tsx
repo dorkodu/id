@@ -10,7 +10,7 @@ import { useTranslation } from "react-i18next";
 import { useWait } from "../components/hooks";
 import OverlayLoader from "../components/cards/OverlayLoader";
 import InputRequirements, { getRequirement, getRequirementError } from "../components/popovers/InputRequirements";
-import { useFocusWithin } from "@mantine/hooks";
+import { getHotkeyHandler, useFocusWithin } from "@mantine/hooks";
 
 interface State {
   loading: boolean;
@@ -80,6 +80,7 @@ function ChangeEmail() {
                 type={"email"}
                 error={inputReady && !focused && getRequirementError(t, "email", state.email)}
                 ref={ref}
+                onKeyDown={getHotkeyHandler([["Enter", initiateEmailChange]])}
               />
             </InputRequirements>
 
