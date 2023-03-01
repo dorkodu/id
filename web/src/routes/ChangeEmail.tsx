@@ -57,12 +57,14 @@ function ChangeEmail() {
           {state.loading && <OverlayLoader />}
 
           <Flex direction="column" gap="md">
-            <Anchor size={15} onClick={goBack}>
-              <Flex align="center" gap="xs">
-                <IconArrowLeft size={16} stroke={2.5} />
-                <Text>{t("goBack")}</Text>
-              </Flex>
-            </Anchor>
+            <Flex>
+              <Anchor size={15} onClick={goBack}>
+                <Flex align="center" gap="xs">
+                  <IconArrowLeft size={16} stroke={2.5} />
+                  <Text>{t("goBack")}</Text>
+                </Flex>
+              </Anchor>
+            </Flex>
 
             <InputRequirements
               value={state.email}

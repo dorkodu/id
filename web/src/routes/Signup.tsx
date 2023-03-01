@@ -107,12 +107,14 @@ function CreateAccount() {
       <>
         {state.status !== "ok" &&
           <>
-            <Anchor size={15} onClick={goBack}>
-              <Flex align="center" gap="xs">
-                <IconArrowLeft size={16} stroke={2.5} />
-                <Text>{t("goBack")}</Text>
-              </Flex>
-            </Anchor>
+            <Flex>
+              <Anchor size={15} onClick={goBack}>
+                <Flex align="center" gap="xs">
+                  <IconArrowLeft size={16} stroke={2.5} />
+                  <Text>{t("goBack")}</Text>
+                </Flex>
+              </Anchor>
+            </Flex>
 
             <InputRequirements
               value={state.username}
@@ -190,12 +192,14 @@ function CreateAccount() {
   const confirmSignupStage = () => {
     return (
       <>
-        <Anchor size={15} onClick={goBack}>
-          <Flex align="center" gap="xs">
-            <IconArrowLeft size={16} stroke={2.5} />
-            <Text>{t("goBack")}</Text>
-          </Flex>
-        </Anchor>
+        <Flex>
+          <Anchor size={15} onClick={goBack}>
+            <Flex align="center" gap="xs">
+              <IconArrowLeft size={16} stroke={2.5} />
+              <Text>{t("goBack")}</Text>
+            </Flex>
+          </Anchor>
+        </Flex>
 
         <InputRequirements
           value={state.password}

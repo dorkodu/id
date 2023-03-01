@@ -58,12 +58,14 @@ function RevertChangeEmail() {
             {state.loading && <Flex justify="center"><Loader /></Flex>}
 
             {!state.loading &&
-              <Anchor size={15} onClick={goBack}>
-                <Flex align="center" gap="xs">
-                  <IconArrowLeft size={16} stroke={2.5} />
-                  <Text>{t("goBack")}</Text>
-                </Flex>
-              </Anchor>
+              <Flex>
+                <Anchor size={15} onClick={goBack}>
+                  <Flex align="center" gap="xs">
+                    <IconArrowLeft size={16} stroke={2.5} />
+                    <Text>{t("goBack")}</Text>
+                  </Flex>
+                </Anchor>
+              </Flex>
             }
 
             {state.status === true &&

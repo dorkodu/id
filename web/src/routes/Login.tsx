@@ -79,12 +79,14 @@ function Login() {
   const loginStage = () => {
     return (
       <>
-        <Anchor size={15} onClick={goBack}>
-          <Flex align="center" gap="xs">
-            <IconArrowLeft size={16} stroke={2.5} />
-            <Text>{t("goBack")}</Text>
-          </Flex>
-        </Anchor>
+        <Flex>
+          <Anchor size={15} onClick={goBack}>
+            <Flex align="center" gap="xs">
+              <IconArrowLeft size={16} stroke={2.5} />
+              <Text>{t("goBack")}</Text>
+            </Flex>
+          </Anchor>
+        </Flex>
 
         <TextInput
           variant="filled"
@@ -147,12 +149,14 @@ function Login() {
     return (
       <>
         {!state.loading &&
-          <Anchor size={15} onClick={goBack}>
-            <Flex align="center" gap="xs">
-              <IconArrowLeft size={16} stroke={2.5} />
-              <Text>{t("goBack")}</Text>
-            </Flex>
-          </Anchor>
+          <Flex>
+            <Anchor size={15} onClick={goBack}>
+              <Flex align="center" gap="xs">
+                <IconArrowLeft size={16} stroke={2.5} />
+                <Text>{t("goBack")}</Text>
+              </Flex>
+            </Anchor>
+          </Flex>
         }
 
         {state.status === "ok" &&
