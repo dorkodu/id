@@ -28,7 +28,7 @@ function Footer() {
       <Flex direction="column" align="center" gap="xs">
         <Divider css={widthLimit} />
 
-        <Flex gap="xs">{items}</Flex>
+        <Flex gap="xs" justify="center" wrap="wrap">{items}</Flex>
 
         <Text color="dimmed" weight={450}>
           <b>Dorkodu</b> &copy; {new Date().getFullYear()}
