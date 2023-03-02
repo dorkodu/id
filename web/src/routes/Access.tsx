@@ -9,7 +9,7 @@ import Header from "../components/Header";
 import { useWait } from "../components/hooks";
 import { useAppStore } from "../stores/appStore";
 import { useUserStore } from "../stores/userStore";
-import { widthLimit } from "../styles/css";
+import { fullWidth, widthLimit } from "../styles/css";
 
 interface State {
   loading: boolean;
@@ -56,74 +56,76 @@ function Access() {
   if (!authorized) { return <></> }
 
   return (
-    <Flex direction="column" gap="md">
-      <Header />
+    <Flex mx="md">
+      <Flex direction="column" gap="md" css={widthLimit}>
+        <Header />
 
-      <Title order={2} align="center">
-        {t("route.access.title")}
-      </Title>
-      <Text color="dimmed" size="md" align="center" weight={500}>
-        {t("route.access.description")}
-      </Text>
+        <Title order={2} align="center">
+          {t("route.access.title")}
+        </Title>
+        <Text color="dimmed" size="md" align="center" weight={500}>
+          {t("route.access.description")}
+        </Text>
 
-      <Flex justify="center">
-        <Card shadow="sm" p="lg" m="md" radius="md" withBorder css={widthLimit}>
-          {state.loading && <OverlayLoader />}
+        <Flex justify="center">
+          <Card shadow="sm" p="lg" radius="md" withBorder css={fullWidth}>
+            {state.loading && <OverlayLoader />}
 
-          <Flex direction="column" gap="md">
-            {state.service && authorized &&
-              <>
-                <Title order={4} align="center">{state.service}</Title>
-                <Text>
-                  <Trans t={t} i18nKey="route.access.serviceRequirements" />
-                </Text>
+            <Flex direction="column" gap="md">
+              {state.service && authorized &&
+                <>
+                  <Title order={4} align="center">{state.service}</Title>
+                  <Text>
+                    <Trans t={t} i18nKey="route.access.serviceRequirements" />
+                  </Text>
 
-                <Button onClick={accept}>
-                  {t("accept")}
-                </Button>
+                  <Button onClick={accept}>
+                    {t("accept")}
+                  </Button>
 
-                <Button onClick={reject} variant="default">
-                  {t("reject")}
-                </Button>
-              </>
-            }
+                  <Button onClick={reject} variant="default">
+                    {t("reject")}
+                  </Button>
+                </>
+              }
 
-            {state.status === false &&
-              <Alert
-                icon={<IconAlertCircle size={24} />}
-                title={t("error.text")}
-                color="red"
-                variant="light"
-              >
-                {t("error.default")}
-              </Alert>
-            }
-
-            {!state.service &&
-              <>
-                <Flex>
-                  <Anchor size={15} onClick={goBack}>
-                    <Flex align="center" gap="xs">
-                      <IconArrowLeft size={16} stroke={2.5} />
-                      <Text>{t("goBack")}</Text>
-                    </Flex>
-                  </Anchor>
-                </Flex>
+              {state.status === false &&
                 <Alert
                   icon={<IconAlertCircle size={24} />}
                   title={t("error.text")}
                   color="red"
                   variant="light"
                 >
-                  {t("error.accessServiceNotFound")}
+                  {t("error.default")}
                 </Alert>
-              </>
-            }
-          </Flex>
-        </Card>
-      </Flex>
+              }
 
-      <Footer />
+              {!state.service &&
+                <>
+                  <Flex>
+                    <Anchor size={15} onClick={goBack}>
+                      <Flex align="center" gap="xs">
+                        <IconArrowLeft size={16} stroke={2.5} />
+                        <Text>{t("goBack")}</Text>
+                      </Flex>
+                    </Anchor>
+                  </Flex>
+                  <Alert
+                    icon={<IconAlertCircle size={24} />}
+                    title={t("error.text")}
+                    color="red"
+                    variant="light"
+                  >
+                    {t("error.accessServiceNotFound")}
+                  </Alert>
+                </>
+              }
+            </Flex>
+          </Card>
+        </Flex>
+
+        <Footer />
+      </Flex>
     </Flex>
   )
 }

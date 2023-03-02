@@ -7,7 +7,7 @@ import { IconAlertCircle, IconArrowLeft, IconInfoCircle } from "@tabler/icons";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { useNavigate } from "react-router-dom";
-import { widthLimit } from "../styles/css";
+import { fullWidth, widthLimit } from "../styles/css";
 import { useTranslation } from "react-i18next";
 import { useWait } from "../components/hooks";
 import OverlayLoader from "../components/cards/OverlayLoader";
@@ -46,80 +46,80 @@ function ChangePassword() {
   };
 
   return (
-    <Flex direction="column" gap="md">
-      <Header />
+    <Flex mx="md">
+      <Flex direction="column" gap="md" css={widthLimit}>
+        <Header />
 
-      <Title order={2} align="center">
-        {t("route.changePassword.title")}
-      </Title>
-      <Text color="dimmed" size="md" weight={500} align="center">
-        {t("route.changePassword.description")}
-      </Text>
+        <Title order={2} align="center">
+          {t("route.changePassword.title")}
+        </Title>
+        <Text color="dimmed" size="md" weight={500} align="center">
+          {t("route.changePassword.description")}
+        </Text>
 
-      <Flex justify="center">
-        <Card shadow="sm" p="lg" m="md" radius="md" withBorder css={widthLimit}>
-          {state.loading && <OverlayLoader />}
+        <Flex justify="center">
+          <Card shadow="sm" p="lg" radius="md" withBorder css={fullWidth}>
+            {state.loading && <OverlayLoader />}
 
-          <Flex direction="column" gap="md">
-            <Flex>
-              <Anchor size={15} onClick={goBack}>
-                <Flex align="center" gap="xs">
-                  <IconArrowLeft size={16} stroke={2.5} />
-                  <Text>{t("goBack")}</Text>
-                </Flex>
-              </Anchor>
+            <Flex direction="column" gap="md">
+              <Flex>
+                <Anchor size={15} onClick={goBack}>
+                  <Flex align="center" gap="xs">
+                    <IconArrowLeft size={16} stroke={2.5} />
+                    <Text>{t("goBack")}</Text>
+                  </Flex>
+                </Anchor>
+              </Flex>
+
+              <TextInput
+                label={t("username")}
+                placeholder={t("enterUsername")}
+                defaultValue={state.username}
+                onChange={(ev) => { setState({ ...state, username: ev.target.value }) }}
+                variant="filled"
+                onKeyDown={getHotkeyHandler([["Enter", initiateChangePassword]])}
+              />
+
+              <TextInput
+                label={t("email")}
+                placeholder={t("enterEmail")}
+                defaultValue={state.email}
+                onChange={(ev) => { setState({ ...state, email: ev.target.value }) }}
+                variant="filled"
+                onKeyDown={getHotkeyHandler([["Enter", initiateChangePassword]])}
+              />
+
+              <Button onClick={initiateChangePassword} radius="md">
+                {t("continue_")}
+              </Button>
+
+              {state.status === true &&
+                <Alert
+                  icon={<IconInfoCircle size={24} />}
+                  title={t("info.text")}
+                  color="blue"
+                  variant="light"
+                >
+                  {t("info.changePassword")}
+                </Alert>
+              }
+
+              {state.status === false &&
+                <Alert
+                  icon={<IconAlertCircle size={24} />}
+                  title={t("error.text")}
+                  color="red"
+                  variant="light"
+                >
+                  {t("error.default")}
+                </Alert>
+              }
             </Flex>
+          </Card>
+        </Flex>
 
-            <TextInput
-              label={t("username")}
-              placeholder={t("enterUsername")}
-              defaultValue={state.username}
-              onChange={(ev) => { setState({ ...state, username: ev.target.value }) }}
-              variant="filled"
-              required
-              onKeyDown={getHotkeyHandler([["Enter", initiateChangePassword]])}
-            />
-
-            <TextInput
-              label={t("email")}
-              placeholder={t("enterEmail")}
-              defaultValue={state.email}
-              onChange={(ev) => { setState({ ...state, email: ev.target.value }) }}
-              variant="filled"
-              required
-              onKeyDown={getHotkeyHandler([["Enter", initiateChangePassword]])}
-            />
-
-            <Button onClick={initiateChangePassword} radius="md">
-              {t("continue_")}
-            </Button>
-
-            {state.status === true &&
-              <Alert
-                icon={<IconInfoCircle size={24} />}
-                title={t("info.text")}
-                color="blue"
-                variant="light"
-              >
-                {t("info.changePassword")}
-              </Alert>
-            }
-
-            {state.status === false &&
-              <Alert
-                icon={<IconAlertCircle size={24} />}
-                title={t("error.text")}
-                color="red"
-                variant="light"
-              >
-                {t("error.default")}
-              </Alert>
-            }
-          </Flex>
-        </Card>
+        <Footer />
       </Flex>
-
-      <Footer />
     </Flex>
   )
 }

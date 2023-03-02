@@ -9,13 +9,13 @@ import {
   TextInput,
   Title,
 } from "@mantine/core";
-import { IconAlertCircle, IconArrowLeft, IconArrowRight, IconCircleCheck, IconInfoCircle } from "@tabler/icons";
+import { IconAlertCircle, IconArrowLeft, IconCircleCheck, IconInfoCircle } from "@tabler/icons";
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { useUserStore } from "../stores/userStore";
-import { widthLimit } from "../styles/css";
+import { fullWidth, widthLimit } from "../styles/css";
 import { useTranslation } from "react-i18next";
 import { useAppStore } from "../stores/appStore";
 import OverlayLoader from "../components/cards/OverlayLoader";
@@ -97,7 +97,6 @@ function Login() {
           defaultValue={state.info}
           onChange={(ev) => { setState({ ...state, info: ev.target.value }) }}
           withAsterisk={true}
-          required
           onKeyDown={getHotkeyHandler([["Enter", login]])}
         />
 
@@ -109,7 +108,6 @@ function Login() {
           defaultValue={state.password}
           onChange={(ev) => { setState({ ...state, password: ev.target.value }) }}
           withAsterisk={true}
-          required
           onKeyDown={getHotkeyHandler([["Enter", login]])}
         />
 
@@ -184,50 +182,43 @@ function Login() {
   useEffect(() => { state.stage === "verify" && verifyLogin() }, []);
 
   return (
-    <Flex direction="column" gap="md">
-      <Header />
+    <Flex mx="md">
+      <Flex direction="column" gap="md" css={widthLimit}>
+        <Header />
 
-      <Title order={2} align="center">
-        {t("route.login.title")}
-      </Title>
-      <Text color="dimmed" size="md" align="center" weight={500}>
-        {t("route.login.description")}
-      </Text>
+        <Title order={2} align="center">
+          {t("route.login.title")}
+        </Title>
+        <Text color="dimmed" size="md" align="center" weight={500}>
+          {t("route.login.description")}
+        </Text>
 
-      <Flex justify="center">
-        <Card shadow="sm" p="lg" m="md" radius="md" withBorder css={widthLimit}>
-          {state.loading && <OverlayLoader />}
+        <Flex justify="center">
+          <Card shadow="sm" p="lg" radius="md" withBorder css={fullWidth}>
+            {state.loading && <OverlayLoader />}
 
-          <Flex direction="column" gap="md">
-            {/*Use Component() instead of <Component /> to avoid state-loss*/}
-            {state.stage === "login" && loginStage()}
-            {state.stage === "verify" && verifyLoginStage()}
-          </Flex>
-        </Card>
-      </Flex>
+            <Flex direction="column" gap="md">
+              {/*Use Component() instead of <Component /> to avoid state-loss*/}
+              {state.stage === "login" && loginStage()}
+              {state.stage === "verify" && verifyLoginStage()}
+            </Flex>
+          </Card>
+        </Flex>
 
-      {state.stage !== "verify" &&
-        <>
-          <Flex direction="column" align="center" gap="md">
-            <Anchor color="blue" size={15} onClick={gotoChangePassword}>
+        {state.stage !== "verify" &&
+          <>
+            <Anchor color="blue" align="center" onClick={gotoSignup}>
+              {t("dontHaveAnAccount")}
+            </Anchor>
+
+            <Anchor color="blue" align="center" onClick={gotoChangePassword}>
               {t("forgotYourPassword")}
             </Anchor>
-          </Flex>
+          </>
+        }
 
-          <Flex direction="column" align="center">
-            <Text size={15}>{t("dontHaveAnAccount")}</Text>
-
-            <Anchor color="blue" size={15} onClick={gotoSignup}>
-              <Flex align="center" gap="xs">
-                <Text>{t("createAccount")}</Text>
-                <IconArrowRight size={16} stroke={2.5} />
-              </Flex>
-            </Anchor>
-          </Flex>
-        </>
-      }
-
-      <Footer />
+        <Footer />
+      </Flex>
     </Flex>
   )
 }

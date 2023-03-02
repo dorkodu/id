@@ -27,7 +27,7 @@
 
   "route": {
     "welcome": {
-      "title": "Your Digital Life, <br /> One Account.",
+      "title": "Your Digital Life, One Account.",
   
       "description": "Connect with ID, and get the most out of all the Dorkodu apps you use.",
       
@@ -81,7 +81,7 @@
       "title": "Access",
       "description": "One account, all Dorkodu apps.",
 
-      "serviceRequirements": "wants to use your: <br /> name, username, bio, email and join date."
+      "serviceRequirements": "wants to use your: name, username, bio, email and join date."
     },
 
     "404": {

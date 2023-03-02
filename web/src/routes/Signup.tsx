@@ -12,7 +12,6 @@ import {
 import {
   IconAlertCircle,
   IconArrowLeft,
-  IconArrowRight,
   IconAsterisk,
   IconAt,
   IconInfoCircle,
@@ -23,7 +22,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { useUserStore } from "../stores/userStore";
-import { widthLimit } from "../styles/css";
+import { fullWidth, widthLimit } from "../styles/css";
 import { Trans, useTranslation } from "react-i18next";
 import { useAppStore } from "../stores/appStore";
 import { useWait } from "../components/hooks";
@@ -127,7 +126,6 @@ function CreateAccount() {
                 defaultValue={state.username}
                 onChange={(ev) => { setState({ ...state, username: ev.target.value }) }}
                 disabled={state.stage === "confirm"}
-                required
                 error={inputReady.username && !usernameFocused && getRequirementError(t, "username", state.username)}
                 ref={usernameRef}
                 onKeyDown={getHotkeyHandler([["Enter", signup]])}
@@ -147,7 +145,6 @@ function CreateAccount() {
                 defaultValue={state.email}
                 onChange={(ev) => { setState({ ...state, email: ev.target.value }) }}
                 disabled={state.stage === "confirm"}
-                required
                 error={inputReady.email && !emailFocused && getRequirementError(t, "email", state.email)}
                 ref={emailRef}
                 onKeyDown={getHotkeyHandler([["Enter", signup]])}
@@ -212,7 +209,6 @@ function CreateAccount() {
             visibilityToggleIcon={VisibilityToggleIcon}
             defaultValue={state.password}
             onChange={(ev) => { setState({ ...state, password: ev.target.value }) }}
-            required
             error={inputReady.password && !passwordFocused && getRequirementError(t, "password", state.password)}
             ref={passwordRef}
             onKeyDown={getHotkeyHandler([["Enter", confirmSignup]])}
@@ -238,46 +234,39 @@ function CreateAccount() {
   }
 
   return (
-    <Flex direction="column" gap="md">
-      <Header />
+    <Flex mx="md">
+      <Flex direction="column" gap="md" css={widthLimit}>
+        <Header />
 
-      <Title order={1} size="h2" align="center">
-        {t("route.signup.title")}
-      </Title>
-      <Text color="dimmed" size="md" weight={500} align="center">
-        {t("route.signup.description")}
-      </Text>
+        <Title order={2} align="center">
+          {t("route.signup.title")}
+        </Title>
+        <Text color="dimmed" size="md" align="center" weight={500}>
+          {t("route.signup.description")}
+        </Text>
 
-      <Flex justify="center">
-        <Card shadow="sm" p="lg" m="md" radius="md" withBorder css={widthLimit}>
-          {state.loading && <OverlayLoader />}
+        <Flex justify="center">
+          <Card shadow="sm" p="lg" radius="md" withBorder css={fullWidth}>
+            {state.loading && <OverlayLoader />}
 
-          <Flex direction="column" gap="md">
-            {/*Use Component() instead of <Component /> to avoid state-loss*/}
-            {state.stage === "signup" && signupStage()}
-            {state.stage === "confirm" && confirmSignupStage()}
-          </Flex>
-        </Card>
-      </Flex>
+            <Flex direction="column" gap="md">
+              {/*Use Component() instead of <Component /> to avoid state-loss*/}
+              {state.stage === "signup" && signupStage()}
+              {state.stage === "confirm" && confirmSignupStage()}
+            </Flex>
+          </Card>
+        </Flex>
 
-      <Flex direction="column" align="center" gap="md">
-        <Text color="dimmed" size="sm" align="center" maw={320}>
+        <Text color="dimmed" size="sm" align="center">
           <Trans t={t} i18nKey="route.signup.notice" />
         </Text>
-      </Flex>
 
-      <Flex direction="column" align="center">
-        <Text>{t("alreadyHaveAnAccount")}</Text>
-
-        <Anchor color="blue" size={15} onClick={gotoLogin}>
-          <Flex align="center" gap="xs">
-            <Text>{t("login")}</Text>
-            <IconArrowRight size={16} stroke={2.5} />
-          </Flex>
+        <Anchor color="blue" align="center" onClick={gotoLogin}>
+          {t("alreadyHaveAnAccount")}
         </Anchor>
-      </Flex>
 
-      <Footer />
+        <Footer />
+      </Flex>
     </Flex>
   )
 }
