@@ -144,6 +144,8 @@ function Dashboard() {
 
   useEffect(() => {
     (async () => {
+      if (user && currentSession) return;
+      
       setDashboardProps(s => ({ ...s, loader: "top", status: undefined }));
 
       const sessionAnchor = useUserStore.getState().getSessionsAnchor("newer", true);
