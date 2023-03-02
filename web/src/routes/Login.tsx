@@ -9,7 +9,7 @@ import {
   TextInput,
   Title,
 } from "@mantine/core";
-import { IconAlertCircle, IconArrowLeft, IconArrowRight, IconCircleCheck, IconEye, IconEyeOff, IconInfoCircle } from "@tabler/icons";
+import { IconAlertCircle, IconArrowLeft, IconArrowRight, IconCircleCheck, IconInfoCircle } from "@tabler/icons";
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Header from "../components/Header";
@@ -21,6 +21,7 @@ import { useAppStore } from "../stores/appStore";
 import OverlayLoader from "../components/cards/OverlayLoader";
 import { useWait } from "../components/hooks";
 import { getHotkeyHandler } from "@mantine/hooks";
+import { VisibilityToggleIcon } from "../components/util";
 
 interface State {
   loading: boolean;
@@ -104,11 +105,7 @@ function Login() {
           variant="filled"
           label={t("password")}
           placeholder={t("enterPassword")}
-          visibilityToggleIcon={({ reveal, size }) =>
-            reveal ?
-              <IconEyeOff size={size} stroke={2.5} /> :
-              <IconEye size={size} stroke={2.5} />
-          }
+          visibilityToggleIcon={VisibilityToggleIcon}
           defaultValue={state.password}
           onChange={(ev) => { setState({ ...state, password: ev.target.value }) }}
           withAsterisk={true}

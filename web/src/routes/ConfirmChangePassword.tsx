@@ -1,5 +1,5 @@
 import { Alert, Anchor, Button, Card, Flex, PasswordInput, Text, Title } from "@mantine/core";
-import { IconAlertCircle, IconArrowLeft, IconAsterisk, IconCircleCheck, IconEye, IconEyeOff } from "@tabler/icons";
+import { IconAlertCircle, IconArrowLeft, IconAsterisk, IconCircleCheck } from "@tabler/icons";
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Header from "../components/Header";
@@ -11,6 +11,7 @@ import OverlayLoader from "../components/cards/OverlayLoader";
 import { useWait } from "../components/hooks";
 import { getHotkeyHandler, useFocusWithin } from "@mantine/hooks";
 import InputRequirements, { getRequirement, getRequirementError } from "../components/popovers/InputRequirements";
+import { VisibilityToggleIcon } from "../components/util";
 
 interface State {
   loading: boolean;
@@ -82,11 +83,7 @@ function ConfirmChangePassword() {
                 placeholder={t("enterNewPassword")}
                 defaultValue={state.password}
                 onChange={(ev) => { setState({ ...state, password: ev.target.value }) }}
-                visibilityToggleIcon={({ reveal, size }) =>
-                  reveal ?
-                    <IconEyeOff size={size} stroke={2.5} /> :
-                    <IconEye size={size} stroke={2.5} />
-                }
+                visibilityToggleIcon={VisibilityToggleIcon}
                 variant="filled"
                 aria-required
                 icon={<IconAsterisk size={16} />}
