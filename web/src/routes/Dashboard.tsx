@@ -19,7 +19,6 @@ import { useTranslation } from "react-i18next";
 import CardPanel from "../components/cards/CardPanel";
 import InfiniteScroll from "../components/InfiniteScroll";
 import { useFeedProps, useWait } from "../components/hooks";
-import CardLoader from "../components/cards/CardLoader";
 import CardAlert from "../components/cards/CardAlert";
 import { useAppStore } from "../stores/appStore";
 import { ISession } from "@api/types/session";
@@ -231,7 +230,6 @@ function Dashboard() {
       >
         {(!user || !currentSession || dashboardProps.loading) ?
           <>
-            {dashboardProps.loading && <CardLoader />}
             {dashboardProps.status === false &&
               <CardAlert
                 title={t("error.text")}
