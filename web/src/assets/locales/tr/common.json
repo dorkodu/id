@@ -120,6 +120,9 @@
   "sessions": "Oturumlar",
   "accesses": "Erişimler",
 
+  "pulldownToRefresh": "Yenilemek için aşağıya çekin",
+  "releaseToRefresh": "Yenilemek için bırakın",
+
   "name": "Ad",
   "nameDescription": "1-64 karakter kullanın.",
   "enterName": "Ad Girin",

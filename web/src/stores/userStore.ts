@@ -49,10 +49,10 @@ interface Action {
   queryConfirmPasswordChange: (newPassword: string, token: string) => Promise<boolean>;
 
   queryGetCurrentSession: () => Promise<void>;
-  queryGetSessions: (type: "newer" | "older", refresh?: boolean) => Promise<boolean>;
+  queryGetSessions: (type: "newer" | "older", refresh?: boolean) => Promise<{ status: boolean, length: number }>;
   queryTerminateSession: (sessionId: string) => Promise<void>;
 
-  queryGetAccesses: (type: "newer" | "older", refresh?: boolean) => Promise<boolean>;
+  queryGetAccesses: (type: "newer" | "older", refresh?: boolean) => Promise<{ status: boolean, length: number }>;
   queryGrantAccess: (service: string) => Promise<string | undefined>;
   queryRevokeAccess: (accessId: string) => Promise<void>;
 }
@@ -341,7 +341,7 @@ export const useUserStore = create(
 
       if (sessions) get().setSessions(sessions, refresh);
 
-      return status;
+      return { status, length: sessions?.length ?? 0 };
     },
 
     queryTerminateSession: async (sessionId) => {
@@ -373,7 +373,7 @@ export const useUserStore = create(
 
       if (accesses) get().setAccesses(accesses, refresh);
 
-      return status;
+      return { status, length: accesses?.length ?? 0 };
     },
 
     queryGrantAccess: async (service) => {

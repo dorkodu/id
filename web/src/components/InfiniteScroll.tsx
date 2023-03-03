@@ -1,56 +1,66 @@
-import { useEffect, useRef } from "react";
 import CardLoader from "./cards/CardLoader";
+import InfiniteScrollComponent from "react-infinite-scroll-component";
+import { Flex, Text } from "@mantine/core";
+import { css } from "@emotion/react";
+import { useTranslation } from "react-i18next";
+import { useEffect, useState } from "react";
 
 interface Props {
   children: React.ReactNode;
 
-  onTop?: () => Promise<any>;
-  onBottom?: () => Promise<any>;
+  refresh?: () => any;
+  next?: () => any;
 
-  loader: "top" | "bottom" | undefined;
+  length: number;
+  hasMore: boolean;
+
+  hideLoader?: boolean;
 }
 
-function InfiniteScroll({ children, onTop, onBottom, loader }: Props) {
-  const previousHeightEqual = () => previousHeight.current === document.body.offsetHeight;
-  const scrolledTop = () => window.scrollY <= 0;
-  const scrolledBottom = () => window.innerHeight + window.scrollY + 1 >= document.body.offsetHeight;
+function InfiniteScroll({ children, refresh, next, length, hasMore, hideLoader }: Props) {
+  const { t } = useTranslation();
 
-  const previousHeight = useRef(document.body.offsetHeight);
-  const overScrolled = useRef(false);
-  const loading = useRef(false);
+  const pulldownToRefresh = () => (
+    <Flex direction="row" justify="center" my="md">
+      <Text align="center" css={css`user-select: none;`}>
+        &#8595; {t("pulldownToRefresh")}
+      </Text>
+    </Flex>
+  )
 
-  const onScroll = async (): Promise<void> => {
-    if (!previousHeightEqual()) return void (previousHeight.current = document.body.offsetHeight);
-    overScrolled.current = scrolledTop() || scrolledBottom();
+  const releaseToRefresh = () => (
+    <Flex direction="row" justify="center" my="md">
+      <Text align="center" css={css`user-select: none;`}>
+        &#8593; {t("releaseToRefresh")}
+      </Text>
+    </Flex>
+  )
 
-    if (!overScrolled.current) return;
-    if (loading.current) return;
-
-    loading.current = true;
-    if (scrolledTop()) onTop && await onTop();
-    else if (scrolledBottom()) onBottom && await onBottom();
-    setTimeout(() => {
-      loading.current = false;
-
-      // Scroll 1px up to make it easier to scroll bottom
-      if (scrolledBottom()) {
-        window.scrollTo(0, window.scrollY - 1);
-        overScrolled.current = false;
-      }
-    }, 500);
-  }
+  const [scroll, setScroll] = useState(scrollY);
+  const onScroll = () => { setScroll(scrollY) }
 
   useEffect(() => {
-    window.addEventListener("scroll", onScroll);
+    window.addEventListener("scroll", onScroll)
     return () => window.removeEventListener("scroll", onScroll);
-  }, [onTop, onBottom])
+  }, []);
 
   return (
-    <>
-      {loader === "top" && <CardLoader />}
+    <InfiniteScrollComponent
+      next={next ?? (() => { })}
+      refreshFunction={refresh}
+
+      dataLength={length + (scroll <= 0 ? 1 : 0)}
+      hasMore={scroll <= 0 || hasMore}
+
+      loader={hideLoader ? null : <CardLoader />}
+
+      pullDownToRefresh
+      pullDownToRefreshThreshold={54}
+      pullDownToRefreshContent={pulldownToRefresh()}
+      releaseToRefreshContent={releaseToRefresh()}
+    >
       {children}
-      {loader === "bottom" && <CardLoader />}
-    </>
+    </InfiniteScrollComponent>
   )
 }
 

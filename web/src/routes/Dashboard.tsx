@@ -22,6 +22,8 @@ import { useFeedProps, useWait } from "../components/hooks";
 import CardLoader from "../components/cards/CardLoader";
 import CardAlert from "../components/cards/CardAlert";
 import { useAppStore } from "../stores/appStore";
+import { ISession } from "@api/types/session";
+import { IAccess } from "@api/types/access";
 
 const width = css`
   max-width: 768px;
@@ -51,29 +53,75 @@ function Dashboard() {
   const [sessionFeedProps, setSessionFeedProps] = useFeedProps();
   const [accessFeedProps, setAccessFeedProps] = useFeedProps();
 
-  const getSessions = async (type: "older" | "newer", refresh?: boolean) => {
+  const getSessions = async (type: "older" | "newer", refresh?: boolean, skipWaiting?: boolean) => {
     if (!user) return;
-    if (sessionFeedProps.loader) return;
+    if (!skipWaiting && sessionFeedProps.loading) return;
 
-    setSessionFeedProps(s => ({ ...s, loader: refresh ? "top" : "bottom", status: undefined }));
-    const status = await useWait(() => queryGetSessions(type, refresh))();
-    setSessionFeedProps(s => ({ ...s, loader: undefined, status: status }));
+    setSessionFeedProps(s => ({ ...s, loading: true, status: undefined }));
+    const res = await useWait(() => queryGetSessions(type, refresh))();
+    setSessionFeedProps(s => ({ ...s, loading: false, status: res.status, hasMore: res.length !== 0 }));
   }
 
-  const getAccesses = async (type: "older" | "newer", refresh?: boolean) => {
+  const getAccesses = async (type: "older" | "newer", refresh?: boolean, skipWaiting?: boolean) => {
     if (!user) return;
-    if (accessFeedProps.loader) return;
+    if (!skipWaiting && accessFeedProps.loading) return;
 
-    setAccessFeedProps(s => ({ ...s, loader: refresh ? "top" : "bottom", status: undefined }));
-    const status = await useWait(() => queryGetAccesses(type, refresh))();
-    setAccessFeedProps(s => ({ ...s, loader: undefined, status: status }));
+    setAccessFeedProps(s => ({ ...s, loading: true, status: undefined }));
+    const res = await useWait(() => queryGetAccesses(type, refresh))();
+    setAccessFeedProps(s => ({ ...s, loading: false, status: res.status, hasMore: res.length !== 0 }));
+  }
+
+  const fetchRoute = async () => {
+    setDashboardProps(s => ({ ...s, loading: true, status: undefined }));
+
+    const sessionAnchor = useUserStore.getState().getSessionsAnchor(state.sessionOrder, true);
+    const accessAnchor = useUserStore.getState().getAccessesAnchor(state.accessOrder, true);
+
+    const res = await sage.get(
+      {
+        a: sage.query("getUser", undefined, { ctx: "ctx" }),
+        b: sage.query("getCurrentSession", undefined, { ctx: "ctx", wait: "a", }),
+        c: (state.feed === "sessions" ?
+          sage.query(
+            "getSessions",
+            { anchor: sessionAnchor, type: state.sessionOrder },
+            { ctx: "ctx", wait: "a" }
+          ) :
+          sage.query(
+            "getAccesses",
+            { anchor: accessAnchor, type: state.accessOrder },
+            { ctx: "ctx", wait: "a" }
+          )
+        ),
+      },
+      (query) => useWait(() => request(query))()
+    );
+
+    const status = (
+      !(!res?.a.data || res.a.error) &&
+      !(!res?.b.data || res.b.error) &&
+      !(!res?.c.data || res.c.error)
+    );
+
+    const user = res?.a.data;
+    const currentSession = res?.b.data;
+    const sessionsOrAccesses = res?.c.data;
+
+    setUser(user);
+    setCurrentSession(currentSession);
+    setSessions(state.feed === "sessions" ? sessionsOrAccesses as ISession[] : [], true);
+    setAccesses(state.feed === "accesses" ? sessionsOrAccesses as IAccess[] : [], true);
+
+    setDashboardProps(s => ({ ...s, loading: false, status: status }));
+    setSessionFeedProps(s => ({ ...s, hasMore: true }));
+    setAccessFeedProps(s => ({ ...s, hasMore: true }));
   }
 
 
-  const fetcher = async (feed: typeof state.feed, refresh?: boolean) => {
+  const fetcher = async (feed: typeof state.feed, refresh?: boolean, skipWaiting?: boolean) => {
     switch (feed) {
-      case "sessions": await getSessions(state.sessionOrder, refresh); break;
-      case "accesses": await getAccesses(state.accessOrder, refresh); break;
+      case "sessions": await getSessions(state.sessionOrder, refresh, skipWaiting); break;
+      case "accesses": await getAccesses(state.accessOrder, refresh, skipWaiting); break;
     }
   }
 
@@ -106,7 +154,7 @@ function Dashboard() {
      * for ex. changes newer -> older -> newer, then the feed will show,
      * older posts in newer order, which not the desired outcome.
      */
-    if (getLoader(state.feed)) return;
+    if (getLoading(state.feed)) return;
 
     if (value === "newer" || value === "older") {
       useAppStore.setState(s => {
@@ -127,10 +175,17 @@ function Dashboard() {
   }
 
 
-  const getLoader = (feed: typeof state.feed) => {
+  const getLoading = (feed: typeof state.feed) => {
     switch (feed) {
-      case "sessions": return sessionFeedProps.loader;
-      case "accesses": return accessFeedProps.loader;
+      case "sessions": return sessionFeedProps.loading;
+      case "accesses": return accessFeedProps.loading;
+    }
+  }
+
+  const getHasMore = (feed: typeof state.feed) => {
+    switch (feed) {
+      case "sessions": return sessionFeedProps.hasMore;
+      case "accesses": return accessFeedProps.hasMore;
     }
   }
 
@@ -142,51 +197,7 @@ function Dashboard() {
     getFeed(state.feed).length === 0 && fetcher(state.feed, false);
   }, [state.feed, state.sessionOrder, state.accessOrder]);
 
-  useEffect(() => {
-    (async () => {
-      if (user && currentSession) return;
-      
-      setDashboardProps(s => ({ ...s, loader: "top", status: undefined }));
-
-      const sessionAnchor = useUserStore.getState().getSessionsAnchor("newer", true);
-      const accessAnchor = useUserStore.getState().getAccessesAnchor("newer", true);
-
-      const res = await sage.get(
-        {
-          a: sage.query("getUser", undefined, { ctx: "ctx" }),
-          b: sage.query("getCurrentSession",
-            undefined,
-            { ctx: "ctx", wait: "a", }
-          ),
-          c: sage.query(
-            "getSessions",
-            { anchor: sessionAnchor, type: "newer" },
-            { ctx: "ctx", wait: "a" }
-          ),
-          d: sage.query(
-            "getAccesses",
-            { anchor: accessAnchor, type: "newer" },
-            { ctx: "ctx", wait: "a" }
-          ),
-        },
-        (query) => useWait(() => request(query))()
-      );
-
-      const status = (
-        !(!res?.a.data || res.a.error) &&
-        !(!res?.b.data || res.b.error) &&
-        !(!res?.c.data || res.c.error) &&
-        !(!res?.d.data || res.d.error)
-      );
-
-      setUser(res?.a.data);
-      setCurrentSession(res?.b.data);
-      setSessions(res?.c.data, true);
-      setAccesses(res?.d.data, true);
-
-      setDashboardProps(s => ({ ...s, loader: undefined, status: status }));
-    })();
-  }, []);
+  useEffect(() => { (!user || !currentSession) && fetchRoute() }, []);
 
   const DashboardHeader = () => {
     return (
@@ -211,58 +222,64 @@ function Dashboard() {
 
   return (
     <AppShell padding={0} header={<DashboardHeader />}>
-      {(!user || !currentSession || dashboardProps.loader) &&
-        <>
-          {dashboardProps.loader && <CardLoader />}
-          {dashboardProps.status === false &&
-            <CardAlert
-              title={t("error.text")}
-              content={t("error.default")}
-              type="error"
+      <InfiniteScroll
+        refresh={fetchRoute}
+        next={() => fetcher(state.feed, false, true)}
+        length={getFeed(state.feed).length}
+        hasMore={getHasMore(state.feed)}
+        hideLoader={!user || !currentSession}
+      >
+        {(!user || !currentSession || dashboardProps.loading) ?
+          <>
+            {dashboardProps.loading && <CardLoader />}
+            {dashboardProps.status === false &&
+              <CardAlert
+                title={t("error.text")}
+                content={t("error.default")}
+                type="error"
+              />
+            }
+          </>
+
+          :
+
+          <>
+            <User user={user} />
+
+            <Session session={currentSession} />
+
+            <CardPanel
+              segments={[
+                {
+                  value: state.feed,
+                  setValue: changeFeed,
+                  label: t("show"),
+                  data: [
+                    { label: t("sessions"), value: "sessions" },
+                    { label: t("accesses"), value: "accesses" },
+                  ]
+                },
+                {
+                  value: getOrder(),
+                  setValue: changeOrder,
+                  label: t("order"),
+                  data: [
+                    { label: t("newer"), value: "newer" },
+                    { label: t("older"), value: "older" },
+                  ]
+                },
+              ]}
             />
-          }
-        </>
-      }
 
-      {!(!user || !currentSession || dashboardProps.loader) &&
-        <>
-          <User user={user} />
-
-          <Session session={currentSession} />
-
-          <CardPanel
-            segments={[
-              {
-                value: state.feed,
-                setValue: changeFeed,
-                label: t("show"),
-                data: [
-                  { label: t("sessions"), value: "sessions" },
-                  { label: t("accesses"), value: "accesses" },
-                ]
-              },
-              {
-                value: getOrder(),
-                setValue: changeOrder,
-                label: t("order"),
-                data: [
-                  { label: t("newer"), value: "newer" },
-                  { label: t("older"), value: "older" },
-                ]
-              },
-            ]}
-          />
-
-          <InfiniteScroll
-            onBottom={() => fetcher(state.feed, false)}
-            loader={getLoader(state.feed)}
-          >
             {state.feed === "sessions" && sessions.map((s) => <Session key={s.id} session={s} />)}
             {state.feed === "accesses" && accesses.map((a) => <Access key={a.id} access={a} />)}
-          </InfiniteScroll>
-          <Footer />
-        </>
-      }
+
+          </>
+        }
+      </InfiniteScroll>
+
+      {/* Don't display footer if the route is still loading or error*/}
+      {!(!user || !currentSession || dashboardProps.loading) && <Footer />}
     </AppShell>
   )
 }

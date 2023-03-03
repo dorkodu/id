@@ -119,6 +119,9 @@
   "show": "Show",
   "sessions": "Sessions",
   "accesses": "Accesses",
+
+  "pulldownToRefresh": "Pull down to refresh",
+  "releaseToRefresh": "Release to refresh",
   
   "name": "Name",
   "nameDescription": "Use 1-64 chars.",
