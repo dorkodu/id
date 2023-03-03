@@ -7,6 +7,7 @@ import type { IUser } from "@api/types/user";
 import type { ISession } from "@api/types/session";
 import type { IAccess } from "@api/types/access";
 import { ErrorCode } from "@api/types/error_codes";
+import { util } from "../lib/util";
 
 interface State {
   authorized: boolean;
@@ -93,7 +94,7 @@ export const useUserStore = create(
         if (session) out.push(session);
       })
 
-      return array.sort(out, "createdAt", type === "newer" ? ((a, b) => b - a) : ((a, b) => a - b));
+      return array.sort(out, "id", ((a, b) => util.compareId(a, b, type === "newer")));
     },
 
     setSessions: (sessions, refresh) => {
@@ -123,7 +124,7 @@ export const useUserStore = create(
         if (access) out.push(access);
       })
 
-      return array.sort(out, "createdAt", type === "newer" ? ((a, b) => b - a) : ((a, b) => a - b));
+      return array.sort(out, "id", ((a, b) => util.compareId(a, b, type === "newer")));
     },
 
     setAccesses: (accesses, refresh) => {
