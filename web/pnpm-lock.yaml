@@ -13,7 +13,7 @@ specifiers:
   '@types/react': ^18.0.22
   '@types/react-dom': ^18.0.7
   '@vitejs/plugin-react': ^2.2.0
-  dayjs: ^1.11.6
+  dayjs: ^1.11.7
   emoji-regex: ^10.2.1
   emotion-modern-normalize: ^1.0.0
   i18next: ^22.0.5
@@ -43,7 +43,7 @@ dependencies:
   '@mantine/form': 5.10.1_react@18.2.0
   '@mantine/hooks': 5.10.1_react@18.2.0
   '@tabler/icons': 1.119.0_biqbaboplfbrettd7655fr4n2y
-  dayjs: 1.11.6
+  dayjs: 1.11.7
   emoji-regex: 10.2.1
   emotion-modern-normalize: 1.0.0_wm6ohc3abj5yburmg6pjdgzp24
   i18next: 22.0.5
@@ -2143,8 +2143,8 @@ packages:
   /csstype/3.1.1:
     resolution: {integrity: sha512-DJR/VvkAvSZW9bTouZue2sSxDwdTN92uHjqeKVm+0dAqdfNykRzQ95tay8aXMBAAPpUiq4Qcug2L7neoRh2Egw==}
 
-  /dayjs/1.11.6:
-    resolution: {integrity: sha512-zZbY5giJAinCG+7AGaw0wIhNZ6J8AhWuSXKvuc1KAyMiRsvGQWqh4L+MomvhdAYjN+lqvVCMq1I41e3YHvXkyQ==}
+  /dayjs/1.11.7:
+    resolution: {integrity: sha512-+Yw9U6YO5TQohxLcIkrXBeY73WP3ejHWVvx8XCk3gxvQDCTEmS48ZrSZCKciI7Bhl/uCMyxYtE9UqRILmFphkQ==}
     dev: false
 
   /debug/4.3.4:
