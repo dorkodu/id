@@ -44,7 +44,7 @@ function Welcome() {
         <Title order={1} align="center">
           {t("route.welcome.title")}
         </Title>
-        <Text color="dimmed" size="lg" align="center" weight={600}>
+        <Text color="dimmed" size="md" align="center" weight={600}>
           {t("route.welcome.description")}
         </Text>
 

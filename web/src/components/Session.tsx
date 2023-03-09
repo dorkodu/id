@@ -30,7 +30,7 @@ export function Session({ session }: Props) {
   const terminateSession = () => queryTerminateSession(session.id);
 
   return (
-    <Card shadow="sm" p="lg" m="md" radius="md" withBorder>
+    <Card shadow="sm" p="md" m="md" radius="md" withBorder>
       <Flex direction="column" gap="xs">
         <Flex gap="xs" align="center">
           <Flex gap="xs" align="center" justify="space-betweens" css={fullWidth}>

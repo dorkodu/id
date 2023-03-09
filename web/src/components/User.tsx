@@ -106,7 +106,7 @@ function User({ user }: Props) {
   }
 
   return (
-    <Card shadow="sm" p="lg" m="md" radius="md" withBorder css={css`overflow: visible;`}>
+    <Card shadow="sm" p="md" m="md" radius="md" withBorder css={css`overflow: visible;`}>
       <Flex direction="column">
         <Flex justify="space-between" mb="xs">
           <Avatar src={UserAvatar} size={100} radius="md" />

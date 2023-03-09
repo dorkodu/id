@@ -54,7 +54,7 @@ function RevertChangeEmail() {
         </Text>
 
         <Flex justify="center">
-          <Card shadow="sm" p="lg" radius="md" withBorder css={widthLimit}>
+          <Card shadow="sm" p="md" radius="md" withBorder css={widthLimit}>
             <Flex direction="column" gap="md">
               {state.loading && <Flex justify="center"><Loader /></Flex>}
 

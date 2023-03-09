@@ -197,7 +197,7 @@ function Dashboard() {
   const DashboardHeader = () => {
     return (
       <Header css={width} px="md" pt="md" height={64} withBorder={false}>
-        <Card css={css`height:100%;`} shadow="sm" p="lg" radius="md" withBorder>
+        <Card css={css`height:100%;`} shadow="sm" p="md" radius="md" withBorder>
           <Flex css={css`height:100%;`} align="center" justify="space-between">
             <ActionIcon
               color="dark"

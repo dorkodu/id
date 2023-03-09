@@ -58,7 +58,7 @@ function ChangePassword() {
         </Text>
 
         <Flex justify="center">
-          <Card shadow="sm" p="lg" radius="md" withBorder css={fullWidth}>
+          <Card shadow="sm" p="md" radius="md" withBorder css={fullWidth}>
             {state.loading && <OverlayLoader />}
 
             <Flex direction="column" gap="md">

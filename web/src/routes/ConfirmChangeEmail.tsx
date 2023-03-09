@@ -55,7 +55,7 @@ function ConfirmChangeEmail() {
         </Text>
 
         <Flex justify="center">
-          <Card shadow="sm" p="lg" radius="md" withBorder css={fullWidth}>
+          <Card shadow="sm" p="md" radius="md" withBorder css={fullWidth}>
             <Flex direction="column" gap="md">
               {state.loading && <Flex justify="center"><Loader /></Flex>}
 
