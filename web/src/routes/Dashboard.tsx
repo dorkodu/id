@@ -53,7 +53,6 @@ function Dashboard() {
   const [accessFeedProps, setAccessFeedProps] = useFeedProps();
 
   const getSessions = async (type: "older" | "newer", refresh?: boolean, skipWaiting?: boolean) => {
-    if (!user) return;
     if (!skipWaiting && sessionFeedProps.loading) return;
 
     setSessionFeedProps(s => ({ ...s, loading: true, status: undefined }));
@@ -62,7 +61,6 @@ function Dashboard() {
   }
 
   const getAccesses = async (type: "older" | "newer", refresh?: boolean, skipWaiting?: boolean) => {
-    if (!user) return;
     if (!skipWaiting && accessFeedProps.loading) return;
 
     setAccessFeedProps(s => ({ ...s, loading: true, status: undefined }));
@@ -188,15 +186,13 @@ function Dashboard() {
     }
   }
 
-
   const routeMenu = () => { /*navigate("/menu")*/ };
   const goBack = () => navigate(-1);
 
   useEffect(() => {
-    getFeed(state.feed).length === 0 && fetcher(state.feed, false);
+    if (!user || !currentSession) fetchRoute()
+    else getFeed(state.feed).length === 0 && fetcher(state.feed, false);
   }, [state.feed, state.sessionOrder, state.accessOrder]);
-
-  useEffect(() => { (!user || !currentSession) && fetchRoute() }, []);
 
   const DashboardHeader = () => {
     return (
