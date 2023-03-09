@@ -119,6 +119,8 @@
   "show": "Show",
   "sessions": "Sessions",
   "accesses": "Accesses",
+
+  "currentSession": "Current Session",
   
   "name": "Name",
   "nameDescription": "Use 1-64 chars.",

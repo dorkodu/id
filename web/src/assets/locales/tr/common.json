@@ -120,6 +120,8 @@
   "sessions": "Oturumlar",
   "accesses": "Erişimler",
 
+  "currentSession": "Aktif Oturum",
+
   "name": "Ad",
   "nameDescription": "1-64 karakter kullanın.",
   "enterName": "Ad Girin",

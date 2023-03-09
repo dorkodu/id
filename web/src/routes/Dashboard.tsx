@@ -240,7 +240,7 @@ function Dashboard() {
           <>
             <User user={user} />
 
-            <Session session={currentSession} />
+            <Session session={currentSession} currentSession />
 
             <CardPanel
               segments={[
