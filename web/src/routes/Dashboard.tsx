@@ -222,7 +222,7 @@ function Dashboard() {
         next={() => fetcher(state.feed, false, true)}
         hasMore={getHasMore(state.feed)}
       >
-        {(!user || !currentSession || dashboardProps.loading) ?
+        {(!user || !currentSession) ?
           <>
             {dashboardProps.status === false &&
               <CardAlert
