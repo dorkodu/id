@@ -187,6 +187,7 @@ function Dashboard() {
   }
 
   const routeMenu = () => { /*navigate("/menu")*/ };
+  const gotoWelcome = () => navigate("/welcome");
   const goBack = () => navigate(-1);
 
   useEffect(() => {
@@ -206,7 +207,14 @@ function Dashboard() {
               <IconArrowLeft />
             </ActionIcon>
 
-            <img src={IDIcon} width={32} height={32} alt="Dorkodu ID" />
+            <ActionIcon size={32}>
+              <img
+                src={IDIcon} alt="Dorkodu ID"
+                width={32} height={32}
+                onClick={gotoWelcome}
+                draggable={false}
+              />
+            </ActionIcon>
 
             <ActionIcon onClick={routeMenu}><IconMenu2 /></ActionIcon>
           </Flex>
