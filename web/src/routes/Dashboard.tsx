@@ -1,20 +1,9 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-
 import { useUserStore } from "../stores/userStore";
 import { request, sage } from "../stores/api";
-
-import { ActionIcon, AppShell, Card, Flex, Header } from "@mantine/core";
-
 import User from "../components/User";
-
-import IDIcon from "@assets/id.svg";
-
-import { IconArrowLeft, IconMenu2 } from "@tabler/icons-react";
-import { css } from "@emotion/react";
 import { Session } from "../components/Session";
 import Access from "../components/Access";
-import Footer from "../components/Footer";
 import { useTranslation } from "react-i18next";
 import CardPanel from "../components/cards/CardPanel";
 import InfiniteScroll from "../components/InfiniteScroll";
@@ -24,16 +13,12 @@ import { useAppStore } from "../stores/appStore";
 import { ISession } from "@api/types/session";
 import { IAccess } from "@api/types/access";
 
-const width = css`
-  max-width: 768px;
-  margin: 0 auto;
-`;
+
 
 function Dashboard() {
   const state = useAppStore(state => state.options.dashboard);
 
   const { t } = useTranslation();
-  const navigate = useNavigate();
 
   const setUser = useUserStore((state) => state.setUser);
   const setCurrentSession = useUserStore((state) => state.setCurrentSession);
@@ -186,101 +171,64 @@ function Dashboard() {
     }
   }
 
-  const routeMenu = () => { /*navigate("/menu")*/ };
-  const gotoWelcome = () => navigate("/welcome");
-  const goBack = () => navigate(-1);
-
   useEffect(() => {
     if (!user || !currentSession) fetchRoute()
     else getFeed(state.feed).length === 0 && fetcher(state.feed, false);
   }, [state.feed, state.sessionOrder, state.accessOrder]);
 
-  const DashboardHeader = () => {
-    return (
-      <Header css={width} px="md" pt="md" height={64} withBorder={false}>
-        <Card css={css`height:100%;`} shadow="sm" p="md" radius="md" withBorder>
-          <Flex css={css`height:100%;`} align="center" justify="space-between">
-            <ActionIcon
-              color="dark"
-              onClick={goBack}
-              css={location.pathname !== "/dashboard" ? css`` : css`visibility: hidden;`}>
-              <IconArrowLeft />
-            </ActionIcon>
-
-            <ActionIcon size={32}>
-              <img
-                src={IDIcon} alt="Dorkodu ID"
-                width={32} height={32}
-                onClick={gotoWelcome}
-                draggable={false}
-              />
-            </ActionIcon>
-
-            <ActionIcon onClick={routeMenu}><IconMenu2 /></ActionIcon>
-          </Flex>
-        </Card>
-      </Header>
-    )
-  }
-
   return (
-    <AppShell padding={0} header={<DashboardHeader />}>
-      <InfiniteScroll
-        refresh={fetchRoute}
-        next={() => fetcher(state.feed, false, true)}
-        hasMore={getHasMore(state.feed)}
-      >
-        {(!user || !currentSession) ?
-          <>
-            {dashboardProps.status === false &&
-              <CardAlert
-                title={t("error.text")}
-                content={t("error.default")}
-                type="error"
-              />
-            }
-          </>
-
-          :
-
-          <>
-            <User user={user} />
-
-            <Session session={currentSession} currentSession />
-
-            <CardPanel
-              segments={[
-                {
-                  value: state.feed,
-                  setValue: changeFeed,
-                  label: t("show"),
-                  data: [
-                    { label: t("sessions"), value: "sessions" },
-                    { label: t("accesses"), value: "accesses" },
-                  ]
-                },
-                {
-                  value: getOrder(),
-                  setValue: changeOrder,
-                  label: t("order"),
-                  data: [
-                    { label: t("newer"), value: "newer" },
-                    { label: t("older"), value: "older" },
-                  ]
-                },
-              ]}
+    <InfiniteScroll
+      refresh={fetchRoute}
+      next={() => fetcher(state.feed, false, true)}
+      hasMore={getHasMore(state.feed)}
+    >
+      {(!user || !currentSession) ?
+        <>
+          {dashboardProps.status === false &&
+            <CardAlert
+              title={t("error.text")}
+              content={t("error.default")}
+              type="error"
             />
+          }
+        </>
 
-            {state.feed === "sessions" && sessions.map((s) => <Session key={s.id} session={s} />)}
-            {state.feed === "accesses" && accesses.map((a) => <Access key={a.id} access={a} />)}
+        :
 
-          </>
-        }
-      </InfiniteScroll>
+        <>
+          <User user={user} />
 
-      {/* Don't display footer if the route is still loading or error*/}
-      {!(!user || !currentSession || dashboardProps.loading) && <Footer />}
-    </AppShell>
+          <Session session={currentSession} currentSession />
+
+          <CardPanel
+            segments={[
+              {
+                value: state.feed,
+                setValue: changeFeed,
+                label: t("show"),
+                data: [
+                  { label: t("sessions"), value: "sessions" },
+                  { label: t("accesses"), value: "accesses" },
+                ]
+              },
+              {
+                value: getOrder(),
+                setValue: changeOrder,
+                label: t("order"),
+                data: [
+                  { label: t("newer"), value: "newer" },
+                  { label: t("older"), value: "older" },
+                ]
+              },
+            ]}
+          />
+
+          {state.feed === "sessions" && sessions.map((s) => <Session key={s.id} session={s} />)}
+          {state.feed === "accesses" && accesses.map((a) => <Access key={a.id} access={a} />)}
+
+        </>
+      }
+    </InfiniteScroll>
   )
 }
 

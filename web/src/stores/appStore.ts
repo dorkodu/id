@@ -10,6 +10,7 @@ interface State {
   };
 
   redirect: string | undefined;
+  route: "menu" | "any";
 
   options: {
     dashboard: {
@@ -35,6 +36,7 @@ const initialState: State = {
   },
 
   redirect: undefined,
+  route: "any",
 
   options: {
     dashboard: {

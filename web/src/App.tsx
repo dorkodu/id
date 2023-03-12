@@ -2,7 +2,7 @@ import { css, Global } from "@emotion/react";
 import { ColorScheme, ColorSchemeProvider, MantineProvider } from "@mantine/core";
 import { useLocalStorage } from "@mantine/hooks";
 import { Suspense, useEffect } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import CenterLoader from "./components/cards/CenterLoader";
 import OverlayLoader from "./components/cards/OverlayLoader";
 import { useAppStore } from "./stores/appStore";
@@ -35,6 +35,8 @@ const global = css`
 `;
 
 function App() {
+  const location = useLocation();
+
   // Loading auth and locale are different,
   // on locale, it's fine to keep current view since it doesn't effect functionality
   // on auth, it effects functionality so hide the view
@@ -63,6 +65,12 @@ function App() {
     if (themeColor) themeColor.content = color;
     setColorScheme(scheme);
   }
+
+  // Check the current route on change & set useAppStore.route accordingly
+  useEffect(() => {
+    if (location.pathname.indexOf("/menu") !== -1) useAppStore.setState(s => { s.route = "menu" });
+    else useAppStore.setState(s => { s.route = "any" });
+  }, [location.pathname]);
 
   useEffect(() => { queryAuth() }, []);
 

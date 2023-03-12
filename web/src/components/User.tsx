@@ -20,7 +20,6 @@ import {
   IconDots,
   IconAsterisk,
   IconUser,
-  IconLogout,
   IconAt,
   IconUserCircle,
 } from "@tabler/icons-react";
@@ -73,7 +72,6 @@ function User({ user }: Props) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const queryEditProfile = useUserStore((state) => state.queryEditProfile);
-  const queryLogout = useUserStore((state) => state.queryLogout);
 
   const changeEmail = () => navigate("/change-email");
   const changePassword = () => navigate("/change-password");
@@ -139,15 +137,6 @@ function User({ user }: Props) {
                   onClick={changePassword}
                 >
                   {t("changePassword")}
-                </Menu.Item>
-
-                <Menu.Divider />
-
-                <Menu.Item
-                  icon={<IconLogout size={14} />}
-                  onClick={queryLogout}
-                >
-                  {t("logout")}
                 </Menu.Item>
               </Menu.Dropdown>
             </Menu>

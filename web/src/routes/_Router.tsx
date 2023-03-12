@@ -2,6 +2,7 @@ import React from "react";
 import { createBrowserRouter, createRoutesFromElements, Navigate, Route } from "react-router-dom";
 import App from "../App";
 import { useWait } from "../components/hooks";
+import DefaultLayout from "../components/layouts/DefaultLayout";
 import RequireAuth from "../components/RequireAuth";
 import Access from "./Access";
 
@@ -14,6 +15,7 @@ const RevertChangeEmail = React.lazy(useWait(() => import("./RevertChangeEmail")
 const ConfirmChangePassword = React.lazy(useWait(() => import("./ConfirmChangePassword")));
 const ChangePassword = React.lazy(useWait(() => import("./ChangePassword")));
 const Dashboard = React.lazy(useWait(() => import("./Dashboard")));
+const Menu = React.lazy(useWait(() => import("./Menu")));
 const NotFound = React.lazy(useWait(() => import("./NotFound")));
 
 export const router = createBrowserRouter(
@@ -34,7 +36,10 @@ export const router = createBrowserRouter(
 
       {/* Routes that require authentication */}
       <Route element={<RequireAuth />}>
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route element={<DefaultLayout />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/menu" element={<Menu />} />
+        </Route>
         <Route path="/change-email" element={<ChangeEmail />} />
       </Route>
 
