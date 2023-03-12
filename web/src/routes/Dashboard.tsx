@@ -8,7 +8,7 @@ import { ActionIcon, AppShell, Card, Flex, Header } from "@mantine/core";
 
 import User from "../components/User";
 
-import DorkoduIDKeyIcon from "@assets/id.svg";
+import IDIcon from "@assets/id.svg";
 
 import { IconArrowLeft, IconMenu2 } from "@tabler/icons-react";
 import { css } from "@emotion/react";
@@ -206,7 +206,7 @@ function Dashboard() {
               <IconArrowLeft />
             </ActionIcon>
 
-            <img src={DorkoduIDKeyIcon} width={28} height={28} alt="Dorkodu ID" />
+            <img src={IDIcon} width={32} height={32} alt="Dorkodu ID" />
 
             <ActionIcon onClick={routeMenu}><IconMenu2 /></ActionIcon>
           </Flex>

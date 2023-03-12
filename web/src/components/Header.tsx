@@ -1,5 +1,5 @@
 import { Flex } from "@mantine/core";
-import DorkoduIDKeyIcon from "@assets/id.svg";
+import IDIcon from "@assets/id.svg";
 import { useNavigate } from "react-router-dom";
 import { clickable } from "../styles/css";
 
@@ -11,7 +11,7 @@ function Header() {
   return (
     <Flex justify="center" >
       <img
-        src={DorkoduIDKeyIcon}
+        src={IDIcon}
         alt="Dorkodu ID"
         width={100}
         height={100}
