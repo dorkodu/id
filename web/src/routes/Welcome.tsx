@@ -1,17 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useUserStore } from "../stores/userStore";
-
-import {
-  Title,
-  Text,
-  Button,
-  Anchor,
-  ThemeIcon,
-  ThemeIconProps,
-  Flex,
-  Space,
-} from "@mantine/core";
-
+import { Title, Text, Button, Anchor, ThemeIcon, ThemeIconProps, Flex } from "@mantine/core";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { IconDiscountCheck, IconLock, IconUnlink, IconUser } from "@tabler/icons-react";
@@ -110,8 +99,6 @@ function Welcome() {
             </Flex>
           </Flex>
         </Flex>
-
-        <Space />
 
         <Footer />
       </Flex>

@@ -48,6 +48,7 @@ function Footer() {
 
         <ColorToggleSegmented />
       </Flex>
+
       <Space h="xs" />
     </Flex>
   )
