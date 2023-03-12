@@ -23,7 +23,7 @@ import {
   IconLogout,
   IconAt,
   IconUserCircle,
-} from "@tabler/icons";
+} from "@tabler/icons-react";
 import { date } from "../lib/date";
 import UserAvatar from "@assets/avatar.webp";
 import { useUserStore } from "../stores/userStore";

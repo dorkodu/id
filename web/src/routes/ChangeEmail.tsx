@@ -1,5 +1,5 @@
 import { Alert, Anchor, Button, Card, Flex, Text, TextInput, Title } from "@mantine/core";
-import { IconAlertCircle, IconArrowLeft, IconAt, IconInfoCircle } from "@tabler/icons";
+import { IconAlertCircle, IconArrowLeft, IconAt, IconInfoCircle } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";

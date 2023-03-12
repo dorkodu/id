@@ -9,7 +9,7 @@ import {
   TextInput,
   Title,
 } from "@mantine/core";
-import { IconAlertCircle, IconArrowLeft, IconCircleCheck, IconInfoCircle } from "@tabler/icons";
+import { IconAlertCircle, IconArrowLeft, IconCircleCheck, IconInfoCircle } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Header from "../components/Header";

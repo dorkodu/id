@@ -11,7 +11,7 @@ import {
   IconNetwork,
   IconPlugConnected,
   IconTrash,
-} from "@tabler/icons";
+} from "@tabler/icons-react";
 import { tokens } from "@dorkodu/prism";
 import { css } from "@emotion/react";
 import { IAccess } from "@api/types/access";

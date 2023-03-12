@@ -10,7 +10,7 @@ import User from "../components/User";
 
 import DorkoduIDKeyIcon from "@assets/id.svg";
 
-import { IconArrowLeft, IconMenu2, IconRefresh } from "@tabler/icons";
+import { IconArrowLeft, IconMenu2 } from "@tabler/icons-react";
 import { css } from "@emotion/react";
 import { Session } from "../components/Session";
 import Access from "../components/Access";
@@ -220,9 +220,7 @@ function Dashboard() {
       <InfiniteScroll
         refresh={fetchRoute}
         next={() => fetcher(state.feed, false, true)}
-        length={getFeed(state.feed).length}
         hasMore={getHasMore(state.feed)}
-        hideLoader={!user || !currentSession}
       >
         {(!user || !currentSession || dashboardProps.loading) ?
           <>
@@ -260,8 +258,7 @@ function Dashboard() {
                   data: [
                     { label: t("newer"), value: "newer" },
                     { label: t("older"), value: "older" },
-                  ],
-                  buttons: [{ icon: IconRefresh, onClick: fetchRoute }]
+                  ]
                 },
               ]}
             />

@@ -14,7 +14,7 @@ import {
 
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import { IconDiscountCheck, IconLock, IconUnlink, IconUser } from "@tabler/icons";
+import { IconDiscountCheck, IconLock, IconUnlink, IconUser } from "@tabler/icons-react";
 import { fullWidth, widthLimit } from "../styles/css";
 import { useTranslation } from "react-i18next";
 

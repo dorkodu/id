@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useUserStore } from "../stores/userStore";
 
 import { Title, Text, TextInput, Button, Anchor, Alert, Card, Flex } from "@mantine/core";
-import { IconAlertCircle, IconArrowLeft, IconInfoCircle } from "@tabler/icons";
+import { IconAlertCircle, IconArrowLeft, IconInfoCircle } from "@tabler/icons-react";
 
 import Header from "../components/Header";
 import Footer from "../components/Footer";

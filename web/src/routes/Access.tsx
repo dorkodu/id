@@ -1,5 +1,5 @@
 import { Alert, Anchor, Button, Card, Flex, Text, Title } from "@mantine/core";
-import { IconAlertCircle, IconArrowLeft } from "@tabler/icons";
+import { IconAlertCircle, IconArrowLeft } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";

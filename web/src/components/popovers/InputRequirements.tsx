@@ -1,6 +1,6 @@
 import { css } from "@emotion/react";
 import { Flex, Popover, Text } from "@mantine/core";
-import { IconCheck, IconX } from "@tabler/icons";
+import { IconCheck, IconX } from "@tabler/icons-react";
 import { TFunction } from "i18next";
 import { useState } from "react";
 

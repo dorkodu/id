@@ -1,5 +1,5 @@
 import { Anchor, Divider, Flex, NativeSelect, Space, Text } from "@mantine/core";
-import { IconWorld } from "@tabler/icons";
+import { IconWorld } from "@tabler/icons-react";
 import i18n from "../lib/i18n";
 import { widthLimit } from "../styles/css";
 import { ColorToggleSegmented } from "./ColorToggle";

@@ -1,5 +1,5 @@
 import { Anchor, Flex, Text, Title } from "@mantine/core";
-import { IconArrowLeft } from "@tabler/icons";
+import { IconArrowLeft } from "@tabler/icons-react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import Footer from "../components/Footer";

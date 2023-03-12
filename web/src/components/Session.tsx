@@ -12,7 +12,7 @@ import {
   IconKey,
   IconNetwork,
   IconTrash,
-} from "@tabler/icons";
+} from "@tabler/icons-react";
 import { tokens } from "@dorkodu/prism";
 import { css } from "@emotion/react";
 import { useUserStore } from "../stores/userStore";

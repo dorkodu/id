@@ -1,7 +1,6 @@
 import { css } from "@emotion/react";
-import { ActionIcon, Button, Card, createStyles, Flex, SegmentedControl, Tooltip, useMantineTheme } from "@mantine/core"
+import { Button, Card, createStyles, Flex, SegmentedControl, Tooltip, useMantineTheme } from "@mantine/core"
 import { useClickOutside } from "@mantine/hooks";
-import { TablerIcon } from "@tabler/icons";
 import React, { useState } from "react";
 
 const useStyles = createStyles((_theme) => ({
@@ -20,7 +19,6 @@ interface ISegment {
   setValue: (value: string) => any;
   data: { label: string, value: string }[];
   label: string;
-  buttons?: { icon: TablerIcon, onClick: () => any }[]
 }
 
 interface Props {
@@ -48,7 +46,7 @@ function Segments({ segments }: { segments?: ISegment[] }) {
 }
 
 function SingleSegment({ segment }: { segment: ISegment }) {
-  const theme = useMantineTheme();  
+  const theme = useMantineTheme();
   const { classes } = useStyles();
   const [opened, setOpened] = useState(false);
   const ref = useClickOutside(() => setOpened(false));
@@ -82,11 +80,6 @@ function SingleSegment({ segment }: { segment: ISegment }) {
           ref={ref}
           css={css`flex-grow: 1;`}
         />
-        {segment.buttons?.map((button, index) => (
-          <ActionIcon color="dark" key={index}>
-            <button.icon onClick={button.onClick} />
-          </ActionIcon>
-        ))}
       </Flex>
     </Tooltip>
   )
