@@ -69,7 +69,7 @@ export function getRequirement(t: TFunction<"common", undefined>, requirement: R
       ]
     case "bio":
       return [
-        { req: /^.{0,500}$/s, label: t("requirements.bioLength"), hidden: true },
+        { req: /^[\s\S]{0,500}$/s, label: t("requirements.bioLength"), hidden: true },
       ]
     case "email":
       return [
