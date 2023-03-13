@@ -42,7 +42,7 @@ interface Action {
   queryLogout: () => Promise<boolean>;
 
   queryGetUser: () => Promise<boolean>;
-  queryEditProfile: (name: string, username: string, bio: string) => Promise<boolean>;
+  queryEditProfile: (name: string, username: string, bio: string) => Promise<"ok" | "error" | "username">;
   queryInitiateEmailChange: (newEmail: string) => Promise<boolean>;
   queryConfirmEmailChange: (token: string) => Promise<boolean>;
   queryRevertEmailChange: (token: string) => Promise<boolean>;
@@ -257,6 +257,7 @@ export const useUserStore = create(
       );
 
       const status = !(!res?.a.data || res.a.error);
+
       set(state => {
         if (!status || !state.user) return;
         state.user.name = name;
@@ -264,7 +265,15 @@ export const useUserStore = create(
         state.user.bio = bio;
       });
 
-      return status;
+      if (res?.a.error) {
+        switch (res?.a.error) {
+          case ErrorCode.UsernameUsed: return "username";
+          default: return "error";
+        }
+      }
+      else {
+        return "ok";
+      }
     },
 
     queryInitiateEmailChange: async (newEmail) => {

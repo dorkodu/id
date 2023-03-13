@@ -98,11 +98,15 @@
   },
 
   "requirements": {
-    "usernameLength": "1-16 karakter kullanın",
+    "nameLength": "1-64 karakter kullanın.",
+
+    "usernameLength": "1-16 karakter kullanın.",
     "usernameChars": "Harf (a-z veya A-Z), rakam (0-9), nokta (.) ve alt çizgi (_) kullanın.",
     "usernameAvoid": "Başta, sonda ve yan yana nokta (.) ve alt çizgi (_) kullanmayın.",
 
-    "emailLength": "320 karaterden az.",
+    "bioLength": "Maksimum 500 karakter.",
+
+    "emailLength": "Maksimum 320 karakter.",
     "emailEmpty": "Boş olmamalı.",
 
     "passwordLength": "Minimum 8 karakter."

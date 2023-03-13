@@ -98,11 +98,15 @@
   },
 
   "requirements": {
+    "nameLength": "Use 1-64 characters.",
+
     "usernameLength": "Use 1-16 characters.",
     "usernameChars": "Use letters (a-z or A-Z), digits (0-9), dot (.), and underscore (_).",
     "usernameAvoid": "Avoid consecutive and at start/end dots/underscores.",
 
-    "emailLength": "Less than 320 characters.",
+    "bioLength": "Maximum 500 characters.",
+
+    "emailLength": "Maximum 320 characters.",
     "emailEmpty": "Can not be empty.",
 
     "passwordLength": "Minimum 8 characters."

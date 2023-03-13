@@ -53,15 +53,23 @@ function Requirement({ meets, label }: { meets: boolean, label: string }) {
   )
 }
 
-type Requirement = "username" | "email" | "password";
+type Requirement = "name" | "username" | "bio" | "email" | "password";
 
 export function getRequirement(t: TFunction<"common", undefined>, requirement: Requirement) {
   switch (requirement) {
+    case "name":
+      return [
+        { req: /^.{1,64}$/, label: t("requirements.nameLength") },
+      ]
     case "username":
       return [
         { req: /^.{1,16}$/, label: t("requirements.usernameLength") },
         { req: /^[a-zA-Z0-9._]*$/, label: t("requirements.usernameChars"), hidden: true },
         { req: /^(?![_.])(?!.*[_.]{2}).+(?<![_.])$/, label: t("requirements.usernameAvoid"), hidden: true },
+      ]
+    case "bio":
+      return [
+        { req: /^.{0,500}$/s, label: t("requirements.bioLength"), hidden: true },
       ]
     case "email":
       return [
@@ -90,5 +98,3 @@ export function getRequirementError(
 
   return null;
 }
-
-//^(?![_.])(?!.*[_.]{2}).*(?<![_.])$

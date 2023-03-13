@@ -49,13 +49,25 @@ const editProfile = sage.resource(
     if (!info) return { error: ErrorCode.Default };
 
     const { name, username, bio } = parsed.data;
-    const result = await pg`
+
+    // Check if username is already used by someone else
+    const [result0]: [{ exists: boolean }?] = await pg`
+      SELECT EXISTS (
+        SELECT * FROM users
+        WHERE id!=${info.userId} AND username_ci=${username.toLowerCase()}
+      )
+    `;
+    if (!result0) return { error: ErrorCode.Default };
+    if (result0.exists) return { error: ErrorCode.UsernameUsed };
+
+    // Set name, username & bio
+    const result1 = await pg`
       UPDATE users
       SET name=${name}, bio=${bio}, 
       username=${username}, username_ci=${username.toLowerCase()}
       WHERE id=${info.userId}
     `;
-    if (result.count === 0) return { error: ErrorCode.Default };
+    if (result1.count === 0) return { error: ErrorCode.Default };
 
     return { data: {} };
   }

@@ -13,6 +13,7 @@ import {
   TextInput,
   Textarea,
   Button,
+  Alert,
 } from "@mantine/core";
 import {
   IconMailOpened,
@@ -22,16 +23,20 @@ import {
   IconUser,
   IconAt,
   IconUserCircle,
+  IconAlertCircle,
 } from "@tabler/icons-react";
 import { date } from "../lib/date";
 import UserAvatar from "@assets/avatar.webp";
 import { useUserStore } from "../stores/userStore";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { wrapContent } from "../styles/css";
 import TextParser, { PieceType } from "./TextParser";
 import OverlayLoader from "./cards/OverlayLoader";
+import { useFocusWithin } from "@mantine/hooks";
+import InputRequirements, { getRequirement, getRequirementError } from "./popovers/InputRequirements";
+import { useWait } from "./hooks";
 
 const useStyles = createStyles((theme) => ({
   icon: {
@@ -50,7 +55,7 @@ interface State {
   editing: boolean;
 
   loading: boolean;
-  status: boolean | undefined;
+  status: "ok" | "error" | "username" | undefined;
 }
 
 interface Props {
@@ -79,29 +84,43 @@ function User({ user }: Props) {
   const editProfile = async () => {
     if (state.loading) return false;
 
-    setState({ ...state, loading: true, status: undefined });
-    const status = await queryEditProfile(state.name, state.username, state.bio);
-    setState({ ...state, loading: false, status: status });
+    setState(s => ({ ...s, loading: true }));
+    const status = await useWait(() => queryEditProfile(state.name, state.username, state.bio))();
+    setState(s => ({ ...s, loading: false, status: status }));
 
-    return status;
+    return status === "ok";
   }
 
   const startEdit = () => {
-    setState({
-      ...state,
+    setState(s => ({
+      ...s,
       name: user.name,
       username: user.username,
       bio: user.bio,
       editing: true,
-    })
+    }));
   }
 
   const stopEdit = async (saveChanges: boolean) => {
     let status = false;
     if (saveChanges) status = !(await editProfile());
 
-    setState({ ...state, editing: status });
+    setState(s => ({ ...s, editing: status }));
   }
+
+  // Necessary stuff for input validation & error messages
+  const [inputReady, setInputReady] = useState({ name: false, username: false, bio: false });
+  const { ref: nameRef, focused: nameFocused } = useFocusWithin();
+  const { ref: usernameRef, focused: usernameFocused } = useFocusWithin();
+  const { ref: bioRef, focused: bioFocused } = useFocusWithin();
+  useEffect(() => {
+    setInputReady(s => ({
+      ...s,
+      name: nameFocused || s.name,
+      username: usernameFocused || s.username,
+      bio: bioFocused || s.bio,
+    }))
+  }, [nameFocused, usernameFocused, bioFocused]);
 
   return (
     <Card shadow="sm" p="md" m="md" radius="md" withBorder css={css`overflow: visible;`}>
@@ -178,41 +197,71 @@ function User({ user }: Props) {
         {state.loading && <OverlayLoader />}
 
         <Flex direction="column" gap="md">
-          <TextInput
-            radius="md"
-            label={t("name")}
-            description={t("nameDescription")}
-            placeholder={t("enterName")}
-            icon={<IconUserCircle size={16} />}
-            defaultValue={state.name}
-            onChange={(ev) => { setState({ ...state, name: ev.target.value }) }}
-          />
+          <InputRequirements
+            value={state.name}
+            requirements={getRequirement(t, "name")}
+          >
+            <TextInput
+              radius="md"
+              label={t("name")}
+              placeholder={t("enterName")}
+              icon={<IconUserCircle size={16} />}
+              defaultValue={state.name}
+              onChange={(ev) => { setState(s => ({ ...s, name: ev.target.value })) }}
+              error={inputReady.name && !nameFocused && getRequirementError(t, "name", state.name)}
+              ref={nameRef}
+            />
+          </InputRequirements>
 
-          <TextInput
-            radius="md"
-            label={t("username")}
-            description={t("usernameDescription")}
-            placeholder={t("enterUsername")}
-            icon={<IconUser size={16} />}
-            defaultValue={state.username}
-            onChange={(ev) => { setState({ ...state, username: ev.target.value }) }}
-          />
+          <InputRequirements
+            value={state.username}
+            requirements={getRequirement(t, "username")}
+          >
+            <TextInput
+              radius="md"
+              label={t("username")}
+              placeholder={t("enterUsername")}
+              icon={<IconUser size={16} />}
+              defaultValue={state.username}
+              onChange={(ev) => { setState(s => ({ ...s, username: ev.target.value })) }}
+              error={inputReady.username && !usernameFocused && getRequirementError(t, "username", state.username)}
+              ref={usernameRef}
+            />
+          </InputRequirements>
 
-          <Textarea
-            radius="md"
-            label={t("bio")}
-            description={t("bioDescription")}
-            placeholder={t("enterBio")}
-            defaultValue={state.bio}
-            onChange={(ev) => { setState({ ...state, bio: ev.target.value }) }}
-            autosize
-          />
+          <InputRequirements
+            value={state.bio}
+            requirements={getRequirement(t, "bio")}
+          >
+            <Textarea
+              radius="md"
+              label={t("bio")}
+              placeholder={t("enterBio")}
+              defaultValue={state.bio}
+              onChange={(ev) => { setState(s => ({ ...s, bio: ev.target.value })) }}
+              autosize
+              error={inputReady.bio && !bioFocused && getRequirementError(t, "bio", state.bio)}
+              ref={bioRef}
+            />
+          </InputRequirements>
 
           <Flex justify="flex-end">
             <Button onClick={() => stopEdit(true)} radius="md">
               {t("confirm")}
             </Button>
           </Flex>
+
+          {state.status && state.status !== "ok" &&
+            <Alert
+              icon={<IconAlertCircle size={24} />}
+              title={t("error.text")}
+              color="red"
+              variant="light"
+            >
+              {state.status === "error" && t("error.default")}
+              {state.status === "username" && t("error.usernameUsed")}
+            </Alert>
+          }
         </Flex>
       </Modal>
 
