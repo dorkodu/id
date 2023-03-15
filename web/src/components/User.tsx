@@ -208,7 +208,7 @@ function User({ user }: Props) {
               icon={<IconUserCircle size={16} />}
               defaultValue={state.name}
               onChange={(ev) => { setState(s => ({ ...s, name: ev.target.value })) }}
-              error={inputReady.name && !nameFocused && getRequirementError(t, "name", state.name)}
+              error={inputReady.name && getRequirementError(t, "name", state.name, nameFocused)}
               ref={nameRef}
             />
           </InputRequirements>
@@ -224,7 +224,7 @@ function User({ user }: Props) {
               icon={<IconUser size={16} />}
               defaultValue={state.username}
               onChange={(ev) => { setState(s => ({ ...s, username: ev.target.value })) }}
-              error={inputReady.username && !usernameFocused && getRequirementError(t, "username", state.username)}
+              error={inputReady.username && getRequirementError(t, "username", state.username, usernameFocused)}
               ref={usernameRef}
             />
           </InputRequirements>
@@ -240,7 +240,7 @@ function User({ user }: Props) {
               defaultValue={state.bio}
               onChange={(ev) => { setState(s => ({ ...s, bio: ev.target.value })) }}
               autosize
-              error={inputReady.bio && !bioFocused && getRequirementError(t, "bio", state.bio)}
+              error={inputReady.bio && getRequirementError(t, "bio", state.bio, bioFocused)}
               ref={bioRef}
             />
           </InputRequirements>

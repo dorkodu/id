@@ -80,7 +80,7 @@ function ChangeEmail() {
                   variant="filled"
                   icon={<IconAt size={16} />}
                   type={"email"}
-                  error={inputReady && !focused && getRequirementError(t, "email", state.email)}
+                  error={inputReady && getRequirementError(t, "email", state.email, focused)}
                   ref={ref}
                   onKeyDown={getHotkeyHandler([["Enter", initiateEmailChange]])}
                 />

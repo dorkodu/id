@@ -126,7 +126,7 @@ function CreateAccount() {
                 defaultValue={state.username}
                 onChange={(ev) => { setState({ ...state, username: ev.target.value }) }}
                 disabled={state.stage === "confirm"}
-                error={inputReady.username && !usernameFocused && getRequirementError(t, "username", state.username)}
+                error={inputReady.username && getRequirementError(t, "username", state.username, usernameFocused)}
                 ref={usernameRef}
                 onKeyDown={getHotkeyHandler([["Enter", signup]])}
               />
@@ -145,7 +145,7 @@ function CreateAccount() {
                 defaultValue={state.email}
                 onChange={(ev) => { setState({ ...state, email: ev.target.value }) }}
                 disabled={state.stage === "confirm"}
-                error={inputReady.email && !emailFocused && getRequirementError(t, "email", state.email)}
+                error={inputReady.email && getRequirementError(t, "email", state.email, emailFocused)}
                 ref={emailRef}
                 onKeyDown={getHotkeyHandler([["Enter", signup]])}
               />
@@ -209,7 +209,7 @@ function CreateAccount() {
             visibilityToggleIcon={VisibilityToggleIcon}
             defaultValue={state.password}
             onChange={(ev) => { setState({ ...state, password: ev.target.value }) }}
-            error={inputReady.password && !passwordFocused && getRequirementError(t, "password", state.password)}
+            error={inputReady.password && getRequirementError(t, "password", state.password, passwordFocused)}
             ref={passwordRef}
             onKeyDown={getHotkeyHandler([["Enter", confirmSignup]])}
           />

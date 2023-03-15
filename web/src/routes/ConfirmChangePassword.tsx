@@ -87,7 +87,7 @@ function ConfirmChangePassword() {
                   visibilityToggleIcon={VisibilityToggleIcon}
                   variant="filled"
                   icon={<IconAsterisk size={16} />}
-                  error={inputReady && !focused && getRequirementError(t, "password", state.password)}
+                  error={inputReady && getRequirementError(t, "password", state.password, focused)}
                   ref={ref}
                   onKeyDown={getHotkeyHandler([["Enter", confirmChangePassword]])}
                 />
