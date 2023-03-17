@@ -2,12 +2,13 @@ import type { AppProps } from 'next/app'
 import { ColorScheme, ColorSchemeProvider, MantineProvider } from "@mantine/core"
 import { useLocalStorage } from '@mantine/hooks';
 import { theme } from '@/styles/theme';
+import { emotionCache } from '@/styles/cache';
 
 export default function App({ Component, pageProps }: AppProps) {
   const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
     key: "theme",
     defaultValue: "light",
-    getInitialValueInEffect: false,
+    getInitialValueInEffect: true,
     serialize: (value) => value,
     deserialize: (value) => value as ColorScheme,
   });
@@ -25,7 +26,7 @@ export default function App({ Component, pageProps }: AppProps) {
 
   return (
     <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
-      <MantineProvider theme={{ ...theme, colorScheme }} withGlobalStyles withNormalizeCSS>
+      <MantineProvider emotionCache={emotionCache} theme={{ ...theme, colorScheme }} withGlobalStyles withNormalizeCSS>
         <Component {...pageProps} />
       </MantineProvider>
     </ColorSchemeProvider>
