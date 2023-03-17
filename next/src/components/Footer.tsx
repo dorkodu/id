@@ -4,6 +4,7 @@ import i18n from "../lib/i18n";
 import { ColorToggleSegmented } from "./ColorToggle";
 import { useAppStore } from "../stores/appStore";
 import { useTranslation } from "react-i18next";
+import { widthLimit } from "@/styles/css";
 
 function Footer() {
   const { t } = useTranslation();
@@ -25,7 +26,7 @@ function Footer() {
   return (
     <Flex direction="column">
       <Flex direction="column" align="center" gap="xs">
-        <Divider />
+        <Divider sx={widthLimit} />
 
         <Flex gap="xs" justify="center" wrap="wrap">{items}</Flex>
 

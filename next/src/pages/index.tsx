@@ -1,19 +1,12 @@
+import CustomLink from '@/components/CustomLink'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import { useUserStore } from '@/stores/userStore'
-import { Anchor, Button, Flex, Text, ThemeIcon, ThemeIconProps, Title } from '@mantine/core'
+import { fullWidth, themeIcon, widthLimit } from '@/styles/css'
+import { Anchor, Button, Flex, Text, ThemeIcon, Title } from '@mantine/core'
 import { IconDiscountCheck, IconLock, IconUnlink, IconUser } from '@tabler/icons-react'
 import Head from 'next/head'
-import Link from 'next/link'
 import { useTranslation } from 'react-i18next'
-
-const styles: { themeIcons: Partial<ThemeIconProps> } = {
-  themeIcons: {
-    variant: "light",
-    size: 32,
-    radius: "md",
-  },
-}
 
 export default function Home() {
   const { t } = useTranslation();
@@ -29,90 +22,88 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main>
-        <Flex>
-          <Flex direction="column" gap="md" mx="md">
-            <Header />
+      <Flex sx={widthLimit}>
+        <Flex direction="column" gap="md" mx="md">
+          <Header />
 
-            <Title order={1} align="center">
-              {t("route.welcome.title")}
-            </Title>
-            <Text color="dimmed" size="md" align="center" weight={600}>
-              {t("route.welcome.description")}
-            </Text>
+          <Title order={1} align="center">
+            {t("route.welcome.title")}
+          </Title>
+          <Text color="dimmed" size="md" align="center" weight={600}>
+            {t("route.welcome.description")}
+          </Text>
 
-            <Flex justify="center">
-              <Flex direction="column" gap="md">
-                {authorized &&
-                  <Link href="/dashboard">
-                    <Button
-                      variant="filled"
-                      radius="md">
-                      {t("continueToDashboard")}
+          <Flex justify="center">
+            <Flex direction="column" gap="md" sx={fullWidth}>
+              {authorized &&
+                <Button
+                  variant="filled"
+                  radius="md">
+                  <CustomLink href="/dashboard">
+                    {t("continueToDashboard")}
+                  </CustomLink>
+                </Button>
+              }
+              {!authorized &&
+                <>
+                  <CustomLink href="/signup">
+                    <Button variant="filled" radius="md" fullWidth>
+                      {t("createAccount")}
                     </Button>
-                  </Link>
-                }
-                {!authorized &&
-                  <>
-                    <Link href="/signup">
-                      <Button variant="filled" radius="md">
-                        {t("createAccount")}
-                      </Button>
-                    </Link>
-                    <Link href="/login">
-                      <Button variant="default" radius="md">
-                        {t("login")}
-                      </Button>
-                    </Link>
+                  </CustomLink>
+                  <CustomLink href="/login">
+                    <Button variant="default" radius="md" fullWidth>
+                      {t("login")}
+                    </Button>
+                  </CustomLink>
 
-                    <Anchor
-                      color="blue"
-                      align="center"
-                      href="/change-password"
-                    >
-                      {t("forgotYourPassword")}
-                    </Anchor>
-                  </>
-                }
-              </Flex>
+                  <Flex justify="center">
+                    <CustomLink href="/change-password">
+                      <Anchor color="blue" align="center" component="div">
+                        {t("forgotYourPassword")}
+                      </Anchor>
+                    </CustomLink>
+                  </Flex>
+                </>
+              }
             </Flex>
-
-            <Flex justify="center">
-              <Flex direction="column" gap="md">
-                <Flex align="center" gap="md">
-                  <ThemeIcon {...styles.themeIcons} color="cyan">
-                    <IconUser />
-                  </ThemeIcon>
-                  {t("route.welcome.list.item1")}
-                </Flex>
-
-                <Flex align="center" gap="md">
-                  <ThemeIcon {...styles.themeIcons} color="blue">
-                    <IconDiscountCheck />
-                  </ThemeIcon>
-                  {t("route.welcome.list.item2")}
-                </Flex>
-
-                <Flex align="center" gap="md">
-                  <ThemeIcon {...styles.themeIcons} color="indigo">
-                    <IconLock />
-                  </ThemeIcon>
-                  {t("route.welcome.list.item3")}
-                </Flex>
-
-                <Flex align="center" gap="md">
-                  <ThemeIcon {...styles.themeIcons} color="violet">
-                    <IconUnlink />
-                  </ThemeIcon>
-                  {t("route.welcome.list.item4")}
-                </Flex>
-              </Flex>
-            </Flex>
-
-            <Footer />
           </Flex>
+
+          <Flex justify="center">
+            <Flex direction="column" gap="md">
+              <Flex align="center" gap="md">
+                <ThemeIcon {...themeIcon} color="cyan">
+                  <IconUser />
+                </ThemeIcon>
+                {t("route.welcome.list.item1")}
+              </Flex>
+
+              <Flex align="center" gap="md">
+                <ThemeIcon {...themeIcon} color="blue">
+                  <IconDiscountCheck />
+                </ThemeIcon>
+                {t("route.welcome.list.item2")}
+              </Flex>
+
+              <Flex align="center" gap="md">
+                <ThemeIcon {...themeIcon} color="indigo">
+                  <IconLock />
+                </ThemeIcon>
+                {t("route.welcome.list.item3")}
+              </Flex>
+
+              <Flex align="center" gap="md">
+                <ThemeIcon {...themeIcon} color="violet">
+                  <IconUnlink />
+                </ThemeIcon>
+                {t("route.welcome.list.item4")}
+              </Flex>
+            </Flex>
+          </Flex>
+
+          <Footer />
         </Flex>
-      </main>
+      </Flex>
     </>
   )
 }

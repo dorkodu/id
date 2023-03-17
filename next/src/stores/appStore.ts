@@ -23,12 +23,14 @@ export const useAppStore = create(
     ...initialState,
 
     changeLocale: async (lang) => {
-      set((state) => { state.loading.locale = true });
+      if (typeof window !== "undefined") {
+        set((state) => { state.loading.locale = true });
 
-      await Promise.all([i18n.changeLanguage(lang), /*changeDateLanguage(lang)*/]);
-      document.documentElement.lang = lang;
+        await Promise.all([i18n.changeLanguage(lang), /*changeDateLanguage(lang)*/]);
+        document.documentElement.lang = lang;
 
-      set(state => { state.loading.locale = false })
+        set(state => { state.loading.locale = false })
+      }
     },
   }))
 );

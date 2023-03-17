@@ -2,6 +2,9 @@
 const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  compiler: {
+    emotion: true,
+  }
 }
 
 module.exports = nextConfig

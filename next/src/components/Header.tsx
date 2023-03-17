@@ -1,15 +1,20 @@
 import { Flex } from "@mantine/core";
 import IDIcon from "@assets/id.svg";
-import Link from "next/link";
 import Image from "next/image";
+import CustomLink from "./CustomLink";
 
 function Header() {
-
   return (
     <Flex justify="center">
-      <Link href="/welcome">
-        <Image src={IDIcon} alt="Dorkodu ID" width={100} height={100} />
-      </Link>
+      <CustomLink href="/">
+        <Image
+          src={IDIcon}
+          alt="Dorkodu ID"
+          width={100}
+          height={100}
+          draggable={false}
+        />
+      </CustomLink>
     </Flex>
   )
 }
