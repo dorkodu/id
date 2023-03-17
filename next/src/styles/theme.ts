@@ -1,9 +1,17 @@
-import { MantineThemeOverride } from "@mantine/core";
+import { MantineTheme, MantineThemeOverride } from "@mantine/core";
 import localFont from 'next/font/local'
 
 const fontRubik = localFont({ src: '../assets/fonts/Rubik.woff2' });
 
 export const theme: MantineThemeOverride = {
+  globalStyles: (_theme: MantineTheme) => ({
+    body: {
+      overflowY: "scroll",
+      maxWidth: 768,
+      margin: "0 auto",
+    }
+  }),
+
   dir: "ltr",
   respectReducedMotion: true,
 
