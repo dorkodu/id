@@ -2,34 +2,24 @@ version: '3.8'
 name: id_prod
 
 services:
-  id_api:
+  id_next:
     build:
       context: .
-      dockerfile: ./api/Dockerfile.prod
+      dockerfile: ./next/Dockerfile.dev
     env_file:
       - ./.env
     environment:
       - NODE_ENV=production
       - VIRTUAL_HOST=${VIRTUAL_HOST:-id.dorkodu.com}
-      - VIRTUAL_PORT=${API_PORT:-8001}
+      - VIRTUAL_PORT=${NEXT_PORT:-8000}
       - LETSENCRYPT_HOST=${LETSENCRYPT_HOST:-id.dorkodu.com}
       - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL:-hey@dorkodu.com}
-      - VIRTUAL_PATH=/api
     expose:
-      - ${API_PORT:-8001}
+      - ${NEXT_PORT:-8000}
     restart: always
     networks:
       - app
       - nginx-proxy
-
-  id_web:
-    build:
-      context: .
-      dockerfile: ./web/Dockerfile.prod
-    env_file:
-      - ./.env
-    environment:
-      - NODE_ENV=production
 
   id_postgres:
     image: postgres:15-alpine
