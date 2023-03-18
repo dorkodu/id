@@ -6,6 +6,7 @@ import Head from 'next/head';
 import { useState } from 'react';
 import App from 'next/app';
 import { getCookie, setCookie } from 'cookies-next';
+import Script from 'next/script';
 
 type CustomAppProps = { theme: ColorScheme }
 
@@ -15,7 +16,8 @@ export function CustomApp(props: AppProps & CustomAppProps) {
   const [colorScheme, setColorScheme] = useState<ColorScheme>(props.theme);
   const toggleColorScheme = (value?: ColorScheme) => {
     const scheme = value || (colorScheme === 'dark' ? 'light' : 'dark');
-    const color = scheme === "light" ? "#ffffff" : "#1A1B1E";
+    const color = scheme === "light" ? "#fff" : "#1A1B1E";
+    document.documentElement.style.backgroundColor = color;
     const themeColor = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
     if (themeColor) themeColor.content = color;
 
@@ -30,6 +32,10 @@ export function CustomApp(props: AppProps & CustomAppProps) {
         <Head>
           <meta name="theme-color" content="#ffffff" />
         </Head>
+
+        <Script id="theme" strategy="beforeInteractive">
+          {'let a=`; ${document.cookie}`.split("; theme=");let b=a.length===2&&a.pop().split(";").shift();let c=b==="dark"?"#1A1B1E":"#fff";document.documentElement.style.backgroundColor=c'}
+        </Script>
 
         <Component {...pageProps} />
 
