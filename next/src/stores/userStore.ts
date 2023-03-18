@@ -37,7 +37,7 @@ interface Action {
   queryConfirmSignup: (password: string, token: string | undefined) => Promise<boolean>;
 
   queryLogin: (info: string, password: string) => Promise<"ok" | "error" | "verify">;
-  queryVerifyLogin: (token: string | null) => Promise<boolean>;
+  queryVerifyLogin: (token: string | undefined) => Promise<boolean>;
 
   queryLogout: () => Promise<boolean>;
 
@@ -215,7 +215,7 @@ export const useUserStore = create(
     },
 
     queryVerifyLogin: async (token) => {
-      if (token === null) return false;
+      if (!token) return false;
 
       const res = await sage.get(
         { a: sage.query("verifyLogin", { token }) },

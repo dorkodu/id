@@ -223,8 +223,8 @@ export default function Signup() {
       </Head>
       <main>
         <PageLayout
-          title={t("route.welcome.title")}
-          description={t("route.welcome.description")}
+          title={t("route.signup.title")}
+          description={t("route.signup.description")}
           content={
             <>
               <Card shadow="sm" p="md" radius="md" withBorder>

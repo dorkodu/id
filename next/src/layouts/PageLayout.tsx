@@ -11,7 +11,7 @@ interface Props {
 
 function PageLayout({ title, description, content }: Props) {
   return (
-    <Flex sx={widthLimit}>
+    <div style={widthLimit}>
       <Flex direction="column" gap="md" mx="md">
         <Header />
 
@@ -26,7 +26,7 @@ function PageLayout({ title, description, content }: Props) {
 
         <Footer />
       </Flex>
-    </Flex>
+    </div>
   )
 }
 
