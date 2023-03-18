@@ -1,3 +1,4 @@
+import CustomLink from '@/components/CustomLink'
 import { useWait } from '@/components/hooks'
 import OverlayLoader from '@/components/loaders/OverlayLoader'
 import { VisibilityToggle } from '@/components/VisibilityToggle'
@@ -67,12 +68,14 @@ export default function Login() {
     return (
       <>
         <Flex>
-          <Anchor size={15} >
-            <Flex align="center" gap="xs">
-              <IconArrowLeft size={16} stroke={2.5} />
-              <Text>{t("goBack")}</Text>
-            </Flex>
-          </Anchor>
+          <CustomLink href="/">
+            <Anchor size={15} component="div">
+              <Flex align="center" gap="xs">
+                <IconArrowLeft size={16} stroke={2.5} />
+                <Text>{t("goBack")}</Text>
+              </Flex>
+            </Anchor>
+          </CustomLink>
         </Flex>
 
         <TextInput
@@ -131,12 +134,14 @@ export default function Login() {
       <>
         {!state.loading &&
           <Flex>
-            <Anchor size={15}>
-              <Flex align="center" gap="xs">
-                <IconArrowLeft size={16} stroke={2.5} />
-                <Text>{t("goBack")}</Text>
-              </Flex>
-            </Anchor>
+            <CustomLink href="/">
+              <Anchor size={15} component="div">
+                <Flex align="center" gap="xs">
+                  <IconArrowLeft size={16} stroke={2.5} />
+                  <Text>{t("goBack")}</Text>
+                </Flex>
+              </Anchor>
+            </CustomLink>
           </Flex>
         }
 
@@ -192,13 +197,18 @@ export default function Login() {
 
               {state.stage !== "verify" &&
                 <>
-                  <Anchor color="blue" align="center">
-                    {t("dontHaveAnAccount")}
-                  </Anchor>
+                  <CustomLink href="/signup">
+                    <Anchor color="blue" align="center" component="div">
+                      {t("dontHaveAnAccount")}
+                    </Anchor>
+                  </CustomLink>
 
-                  <Anchor color="blue" align="center">
-                    {t("forgotYourPassword")}
-                  </Anchor>
+
+                  <CustomLink href="/change-password">
+                    <Anchor color="blue" align="center" component="div">
+                      {t("forgotYourPassword")}
+                    </Anchor>
+                  </CustomLink>
                 </>
               }
             </>

@@ -1,3 +1,4 @@
+import CustomLink from '@/components/CustomLink';
 import { useWait } from '@/components/hooks';
 import OverlayLoader from '@/components/loaders/OverlayLoader';
 import InputRequirements, { getRequirement, getRequirementError } from '@/components/popovers/InputRequirements';
@@ -11,7 +12,7 @@ import { IconAlertCircle, IconArrowLeft, IconAsterisk, IconAt, IconInfoCircle, I
 import Head from 'next/head'
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
 interface State {
   loading: boolean;
@@ -87,12 +88,14 @@ export default function Signup() {
         {state.status !== "ok" &&
           <>
             <Flex>
-              <Anchor size={15}>
-                <Flex align="center" gap="xs">
-                  <IconArrowLeft size={16} stroke={2.5} />
-                  <Text>{t("goBack")}</Text>
-                </Flex>
-              </Anchor>
+              <CustomLink href="/">
+                <Anchor size={15} component="div">
+                  <Flex align="center" gap="xs">
+                    <IconArrowLeft size={16} stroke={2.5} />
+                    <Text>{t("goBack")}</Text>
+                  </Flex>
+                </Anchor>
+              </CustomLink>
             </Flex>
 
             <InputRequirements
@@ -170,12 +173,14 @@ export default function Signup() {
     return (
       <>
         <Flex>
-          <Anchor size={15}>
-            <Flex align="center" gap="xs">
-              <IconArrowLeft size={16} stroke={2.5} />
-              <Text>{t("goBack")}</Text>
-            </Flex>
-          </Anchor>
+          <CustomLink href="/">
+            <Anchor size={15} component="div">
+              <Flex align="center" gap="xs">
+                <IconArrowLeft size={16} stroke={2.5} />
+                <Text>{t("goBack")}</Text>
+              </Flex>
+            </Anchor>
+          </CustomLink>
         </Flex>
 
         <InputRequirements
@@ -236,6 +241,16 @@ export default function Signup() {
                   {state.stage === "confirm" && confirmSignupStage()}
                 </Flex>
               </Card>
+
+              <Text color="dimmed" size="sm" align="center">
+                <Trans t={t} i18nKey="route.signup.notice" />
+              </Text>
+
+              <CustomLink href="/login">
+                <Anchor color="blue" align="center" component="div">
+                  {t("alreadyHaveAnAccount")}
+                </Anchor>
+              </CustomLink>
             </>
           }
         />
