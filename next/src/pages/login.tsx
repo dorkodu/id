@@ -1,5 +1,5 @@
 import CustomLink from '@/components/CustomLink'
-import { useWait } from '@/components/hooks'
+import { wait } from '@/components/hooks'
 import OverlayLoader from '@/components/loaders/OverlayLoader'
 import { VisibilityToggle } from '@/components/VisibilityToggle'
 import PageLayout from '@/layouts/PageLayout'
@@ -46,7 +46,7 @@ export default function Login() {
     if (state.loading) return;
 
     setState({ ...state, loading: true });
-    const status = await useWait(() => queryLogin(state.info, state.password))();
+    const status = await wait(() => queryLogin(state.info, state.password))();
     setState({ ...state, loading: false, status: status });
 
     if (status !== "ok") return;
@@ -60,7 +60,7 @@ export default function Login() {
     if (state.loading) return;
 
     setState({ ...state, loading: true });
-    const status = await useWait(() => queryVerifyLogin(state.token))();
+    const status = await wait(() => queryVerifyLogin(state.token))();
     setState({ ...state, loading: false, status: status ? "ok" : "error" });
   }
 

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-export function useWait<T>(start: () => Promise<T>): () => Promise<T> {
+export function wait<T>(start: () => Promise<T>): () => Promise<T> {
   const before = 100;
   const after = 500;
   let out: T;

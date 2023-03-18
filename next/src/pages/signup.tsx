@@ -1,5 +1,5 @@
 import CustomLink from '@/components/CustomLink';
-import { useWait } from '@/components/hooks';
+import { wait } from '@/components/hooks';
 import OverlayLoader from '@/components/loaders/OverlayLoader';
 import InputRequirements, { getRequirement, getRequirementError } from '@/components/popovers/InputRequirements';
 import { VisibilityToggle } from '@/components/VisibilityToggle';
@@ -63,7 +63,7 @@ export default function Signup() {
     if (state.loading) return;
 
     setState({ ...state, loading: true });
-    const status = await useWait(() => querySignup(state.username, state.email))();
+    const status = await wait(() => querySignup(state.username, state.email))();
     setState({ ...state, loading: false, status: status });
   }
 
@@ -71,7 +71,7 @@ export default function Signup() {
     if (state.loading) return;
 
     setState({ ...state, loading: true });
-    const status = await useWait(() => queryConfirmSignup(state.password, state.token))();
+    const status = await wait(() => queryConfirmSignup(state.password, state.token))();
     setState({ ...state, loading: false, status: status ? "ok" : "error" });
 
     if (!status) return;
