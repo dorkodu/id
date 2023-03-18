@@ -5,7 +5,7 @@ import CustomLink from "./CustomLink";
 
 function Header() {
   return (
-    <Flex justify="center">
+    <Flex justify="center" mb="-md">
       <CustomLink href="/">
         <Image
           src={IDIcon}
