@@ -59,7 +59,7 @@ export const useAppStore = create(
     },
 
     changeLocale: async (lang) => {
-      if (typeof window !== undefined) {
+      if (typeof window !== "undefined") {
         set((state) => { state.loading.locale = true });
         await Promise.all([i18n.changeLanguage(lang), /*changeDateLanguage(lang)*/]);
         document.documentElement.lang = lang;
