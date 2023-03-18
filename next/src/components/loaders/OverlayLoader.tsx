@@ -2,12 +2,13 @@ import { LoadingOverlay } from "@mantine/core";
 import { useDelay } from "../hooks";
 
 interface Props {
+  noDelay?: boolean;
   full?: boolean;
 }
 
-function OverlayLoader({ full }: Props) {
+function OverlayLoader({ noDelay, full }: Props) {
   const delay = useDelay();
-  if (delay) return null;
+  if (delay && !noDelay) return null;
 
   return (
     <LoadingOverlay
