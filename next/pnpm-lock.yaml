@@ -1,6 +1,7 @@
 lockfileVersion: 5.4
 
 specifiers:
+  '@dorkodu/sage-client': ^0.1.4
   '@emotion/react': ^11.10.6
   '@emotion/server': ^11.10.0
   '@mantine/core': ^6.0.2
@@ -25,9 +26,11 @@ specifiers:
   twemoji: ^14.0.2
   typescript: 5.0.2
   url-regex: ^5.0.0
+  zod: ^3.21.4
   zustand: ^4.3.6
 
 dependencies:
+  '@dorkodu/sage-client': 0.1.4
   '@emotion/react': 11.10.6_pmekkgnqduwlme35zpnqhenc34
   '@emotion/server': 11.10.0
   '@mantine/core': 6.0.2_md2nfwiomeeos7ogkicwnxcafa
@@ -52,6 +55,7 @@ dependencies:
   twemoji: 14.0.2
   typescript: 5.0.2
   url-regex: 5.0.0
+  zod: 3.21.4
   zustand: 4.3.6_immer@9.0.19+react@18.2.0
 
 packages:
@@ -103,6 +107,10 @@ packages:
       '@babel/helper-string-parser': 7.19.4
       '@babel/helper-validator-identifier': 7.19.1
       to-fast-properties: 2.0.0
+    dev: false
+
+  /@dorkodu/sage-client/0.1.4:
+    resolution: {integrity: sha512-YW2uHbePdHDtD5WzLbUhA2rKTadAcuW2AdtTlhyw2o5SAKqvvFjs5GTgwpdRWGDzYDzDkrcD/a734+vLYgqUZA==}
     dev: false
 
   /@emotion/babel-plugin/11.10.6:
@@ -3224,6 +3232,10 @@ packages:
   /yocto-queue/0.1.0:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
+    dev: false
+
+  /zod/3.21.4:
+    resolution: {integrity: sha512-m46AKbrzKVzOzs/DZgVnG5H55N1sv1M8qZU3A8RIKbs3mrACDNeIOeilDymVb2HdmP8uwshOCF4uJ8uM9rCqJw==}
     dev: false
 
   /zustand/4.3.6_immer@9.0.19+react@18.2.0:

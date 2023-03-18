@@ -1,10 +1,10 @@
 import { Anchor, Divider, Flex, NativeSelect, Space, Text } from "@mantine/core";
 import { IconWorld } from "@tabler/icons-react";
-import i18n from "../lib/i18n";
 import { ColorToggleSegmented } from "./ColorToggle";
 import { useAppStore } from "../stores/appStore";
 import { useTranslation } from "react-i18next";
 import { widthLimit } from "@/styles/css";
+import i18n from "@/lib/web/i18n";
 
 function Footer() {
   const { t } = useTranslation();

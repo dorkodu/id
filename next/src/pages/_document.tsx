@@ -14,6 +14,6 @@ export default class _Document extends Document {
         initialProps.styles,
         <ServerStyles html={initialProps.html} server={stylesServer} key="styles" />,
       ],
-    };
+    }
   }
 }

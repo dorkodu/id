@@ -3,7 +3,7 @@ import { initReactI18next } from 'react-i18next';
 
 import ResourcesToBackend from 'i18next-resources-to-backend';
 import LanguageDetector from 'i18next-browser-languagedetector';
-import { useAppStore } from '../stores/appStore';
+import { useAppStore } from '@/stores/appStore';
 
 const locales: Record<string, Record<string, () => Promise<any>>> = {
   en: { common: () => import("@assets/locales/en/common.json") },
@@ -28,7 +28,7 @@ export default i18n;
 
 i18n.on("languageChanged", (lng) => {
   /**
-   * Stripe "-" character from languages since it's not necessary.
+   * Strip "-" character from languages since it's not necessary.
    * Also needed for /routes/Menu.tsx language component to work.
    * For ex. en-US -> en, tr-TR -> tr
    */
