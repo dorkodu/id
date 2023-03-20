@@ -1,13 +1,11 @@
-import { Anchor, Divider, Flex, NativeSelect, Space, Text } from "@mantine/core";
-import { IconWorld } from "@tabler/icons-react";
+import { Anchor, Divider, Flex, Space, Text } from "@mantine/core";
 import { ColorToggleSegmented } from "./ColorToggle";
-import { useAppStore } from "../stores/appStore";
 import { useTranslation } from "next-i18next";
 import { widthLimit } from "@/styles/css";
+import LanguagePicker from "./LanguagePicker";
 
 function Footer() {
   const { t } = useTranslation();
-  const changeLocale = useAppStore(state => state.changeLocale);
 
   const links = [
     { link: "https://dorkodu.com", label: t("footer.about"), },
@@ -33,17 +31,7 @@ function Footer() {
           <b>Dorkodu</b> &copy; {new Date().getFullYear()}
         </Text>
 
-        <NativeSelect
-          radius="md"
-          variant="default"
-          icon={<IconWorld />}
-          //value={i18n.language}
-          onChange={(ev) => changeLocale(ev.currentTarget.value)}
-          data={[
-            { value: 'en', label: 'English' },
-            { value: 'tr', label: 'Türkçe' },
-          ]}
-        />
+        <LanguagePicker />
 
         <ColorToggleSegmented />
       </Flex>
