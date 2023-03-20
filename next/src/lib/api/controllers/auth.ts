@@ -1,14 +1,7 @@
-import type { NextApiRequest } from "next";
-
+import type { NextApiRequest, NextApiResponse } from "next";
 import { token } from "../token";
-
 import pg from "../pg";
-import {
-  confirmSignupSchema,
-  loginSchema,
-  signupSchema,
-  verifyLoginSchema,
-} from "../schemas/auth";
+import { confirmSignupSchema, loginSchema, signupSchema, verifyLoginSchema } from "../schemas/auth";
 import { SchemaContext } from "./_schema";
 import sage from "@dorkodu/sage-server";
 import { z } from "zod";
@@ -22,11 +15,11 @@ import { sharedSchemas } from "../schemas/_shared";
 import { ErrorCode } from "@type/error_codes";
 
 async function middleware(ctx: SchemaContext) {
-  const rawToken = token.get(ctx.req, "session");
+  const rawToken = token.get({ req: ctx.req, res: ctx.res }, "session");
   const parsedToken = rawToken ? token.parse(rawToken) : undefined;
   if (!parsedToken) return;
 
-  const session = await queryGetSession(ctx.req);
+  const session = await queryGetSession(ctx.req, ctx.res);
   if (!session) return;
   if (!token.check(session, parsedToken.validator)) return;
 
@@ -147,7 +140,7 @@ const confirmSignup = sage.resource(
     const result1 = await pg`INSERT INTO users ${pg(row)}`;
     if (result1.count === 0) return { error: ErrorCode.Default };
 
-    if (!(await queryCreateSession(ctx.req, row.id)))
+    if (!(await queryCreateSession(ctx.req, ctx.res, row.id)))
       return { error: ErrorCode.Default };
 
     return { data: {} };
@@ -235,7 +228,7 @@ const login = sage.resource(
       }
     }
 
-    if (!(await queryCreateSession(ctx.req, result0.id)))
+    if (!(await queryCreateSession(ctx.req, ctx.res, result0.id)))
       return { error: ErrorCode.Default };
 
     return { data: {} };
@@ -286,13 +279,13 @@ const logout = sage.resource(
   async (_arg, ctx): Promise<{ data?: {}; error?: ErrorCode }> => {
     const authInfo = await getAuthInfo(ctx);
     if (!authInfo) return { error: ErrorCode.Default };
-    await queryExpireSession(authInfo.sessionId, authInfo.userId);
+    await queryExpireSession(ctx.req, ctx.res, authInfo.sessionId, authInfo.userId);
     return { data: {} };
   }
 );
 
-async function queryGetSession(req: NextApiRequest) {
-  const rawToken = token.get(req, "session");
+async function queryGetSession(req: NextApiRequest, res: NextApiResponse) {
+  const rawToken = token.get({ req, res }, "session");
   const parsedToken = rawToken ? token.parse(rawToken) : undefined;
   if (!parsedToken) return undefined;
 
@@ -307,6 +300,7 @@ async function queryGetSession(req: NextApiRequest) {
 
 async function queryCreateSession(
   req: NextApiRequest,
+  res: NextApiResponse,
   userId: string
 ): Promise<boolean> {
   const tkn = token.create();
@@ -324,13 +318,18 @@ async function queryCreateSession(
   const result = await pg`INSERT INTO sessions ${pg(row)}`;
   if (result.count === 0) return false;
 
-  token.attach({ value: tkn.full, expiresAt: row.expiresAt }, "session");
+  token.attach({ req, res }, { value: tkn.full, expiresAt: row.expiresAt }, "session");
   return true;
 }
 
-async function queryExpireSession(sessionId: string, userId: string) {
+async function queryExpireSession(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  sessionId: string,
+  userId: string
+) {
   await pg`UPDATE sessions SET expires_at=${date.utc()} WHERE id=${sessionId} AND user_id=${userId}`;
-  token.detach("session");
+  token.detach({ req, res }, "session");
 }
 
 async function getAuthInfo(ctx: SchemaContext) {

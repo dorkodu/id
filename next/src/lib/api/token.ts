@@ -1,14 +1,12 @@
-import type { NextApiRequest } from "next";
-import { deleteCookie, setCookie } from "cookies-next";
+import type { NextApiRequest, NextApiResponse } from "next";
+import { deleteCookie, setCookie, getCookie } from "cookies-next";
 import { crypto } from "./crypto";
 import { date } from "./date";
 import { encoding } from "./encoding";
 import { util } from "./util";
 
-const cookies = {
-  session: "session",
-  temp: "temp",
-}
+type Context = { req: NextApiRequest, res: NextApiResponse }
+const cookies = { session: "session" }
 
 function create() {
   const selector = crypto.bytes(32);
@@ -40,8 +38,9 @@ function check<
   return date.utc() < util.intParse(tkn.expiresAt, -1);
 }
 
-function attach(token: { value: string, expiresAt: number }, cookie: keyof typeof cookies) {
+function attach(ctx: Context, token: { value: string, expiresAt: number }, cookie: keyof typeof cookies) {
   setCookie(cookies[cookie], token.value, {
+    ...ctx,
     secure: true,
     httpOnly: true,
     sameSite: true,
@@ -49,12 +48,12 @@ function attach(token: { value: string, expiresAt: number }, cookie: keyof typeo
   });
 }
 
-function detach(cookie: keyof typeof cookies) {
-  deleteCookie(cookies[cookie]);
+function detach(ctx: Context, cookie: keyof typeof cookies) {
+  deleteCookie(cookies[cookie], { ...ctx });
 }
 
-function get(req: NextApiRequest, cookie: keyof typeof cookies): string | undefined {
-  return req.cookies[cookies[cookie]];
+function get(ctx: Context, cookie: keyof typeof cookies): string | undefined {
+  return getCookie(cookie, ctx) as string | undefined;
 }
 
 export const token = {
