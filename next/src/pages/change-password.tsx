@@ -9,6 +9,7 @@ import { IconAlertCircle, IconArrowLeft, IconInfoCircle } from '@tabler/icons-re
 import Head from 'next/head'
 import { useState } from 'react';
 import { useTranslation } from 'next-i18next';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 interface State {
   loading: boolean;
@@ -116,4 +117,12 @@ export default function Login() {
       </main>
     </>
   )
+}
+
+export const getStaticProps = async ({ locale }: { locale: string }) => {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, ['common'])),
+    },
+  }
 }

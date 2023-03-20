@@ -10,6 +10,7 @@ import { IconAlertCircle, IconArrowLeft, IconAt, IconInfoCircle, IconUser } from
 import Head from 'next/head'
 import { useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'next-i18next';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 interface State {
   loading: boolean;
@@ -165,4 +166,12 @@ export default function Signup() {
       </main>
     </>
   )
+}
+
+export const getStaticProps = async ({ locale }: { locale: string }) => {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, ['common'])),
+    },
+  }
 }
