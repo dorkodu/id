@@ -21,7 +21,7 @@ function sendVerifyLogin(
   ip: string,
   userAgent: string
 ): Promise<boolean> {
-  const link = `${url}/login?token=${token}`;
+  const link = `${url}/verify-login?token=${token}`;
 
   return new Promise((resolve) => {
     transporter.sendMail(
@@ -37,7 +37,7 @@ function sendVerifyLogin(
 }
 
 function sendConfirmSignup(email: string, token: string): Promise<boolean> {
-  const link = `${url}/create-account?token=${token}`;
+  const link = `${url}/confirm-signup?token=${token}`;
 
   return new Promise((resolve) => {
     transporter.sendMail(
