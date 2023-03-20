@@ -8,7 +8,7 @@ import { getHotkeyHandler } from '@mantine/hooks';
 import { IconAlertCircle, IconArrowLeft, IconInfoCircle } from '@tabler/icons-react';
 import Head from 'next/head'
 import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 
 interface State {
   loading: boolean;

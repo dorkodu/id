@@ -27,6 +27,7 @@ specifiers:
   knex: ^2.4.2
   long: ^5.2.1
   next: 13.2.4
+  next-i18next: ^13.2.2
   nodemailer: ^6.9.1
   pg: ^8.10.0
   postgres: ^3.3.4
@@ -64,6 +65,7 @@ dependencies:
   knex: 2.4.2_pg@8.10.0
   long: 5.2.1
   next: 13.2.4_biqbaboplfbrettd7655fr4n2y
+  next-i18next: 13.2.2_kunig3zwfzuoyjmo2vxzyuf2na
   nodemailer: 6.9.1
   pg: 8.10.0
   postgres: 3.3.4
@@ -794,6 +796,13 @@ packages:
     resolution: {integrity: sha512-XW/Aa8APYr6jSVVA1y/DEIZX0/GMKLEVekNG727R8cs56ahETkRAy/3DR7+fJyh7oUgGwNQaRfXCun0+KbWY7Q==}
     dev: false
 
+  /@types/hoist-non-react-statics/3.3.1:
+    resolution: {integrity: sha512-iMIqiko6ooLrTh1joXodJK5X9xeEALT1kM5G3ZLhD3hszxBdIEd5C75U834D9mLcINgD4OyZf5uQXjkuYydWvA==}
+    dependencies:
+      '@types/react': 18.0.28
+      hoist-non-react-statics: 3.3.2
+    dev: false
+
   /@types/json5/0.0.29:
     resolution: {integrity: sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==}
     dev: false
@@ -1219,6 +1228,11 @@ packages:
       '@types/cookie': 0.4.1
       '@types/node': 16.18.16
       cookie: 0.4.2
+    dev: false
+
+  /core-js/3.29.1:
+    resolution: {integrity: sha512-+jwgnhg6cQxKYIIjGtAHq2nwUOolo9eoFZ4sHfUH09BLXBgxnH4gA0zEd+t+BO2cNB8idaBtZFcFTRjQJRJmAw==}
+    requiresBuild: true
     dev: false
 
   /core-util-is/1.0.3:
@@ -2165,6 +2179,10 @@ packages:
       '@babel/runtime': 7.21.0
     dev: false
 
+  /i18next-fs-backend/2.1.1:
+    resolution: {integrity: sha512-FTnj+UmNgT3YRml5ruRv0jMZDG7odOL/OP5PF5mOqvXud2vHrPOOs68Zdk6iqzL47cnnM0ZVkK2BAvpFeDJToA==}
+    dev: false
+
   /i18next-resources-to-backend/1.1.2:
     resolution: {integrity: sha512-Qr93d8wRNSSGg6JKCNxlLBansJ3GEqpwNnB9gGq2Yntqy92zWprtw0Gq1N5Hz8lIRoihW1EttltKTfAuy8y0uA==}
     dependencies:
@@ -2660,6 +2678,26 @@ packages:
 
   /natural-compare/1.4.0:
     resolution: {integrity: sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==}
+    dev: false
+
+  /next-i18next/13.2.2_kunig3zwfzuoyjmo2vxzyuf2na:
+    resolution: {integrity: sha512-t0WU6K+HJoq2nVQ0n6OiiEZja9GyMqtDSU74FmOafgk4ljns+iZ18bsNJiI8rOUXfFfkW96ea1N7D5kbMyT+PA==}
+    engines: {node: '>=14'}
+    peerDependencies:
+      i18next: ^22.0.6
+      next: '>= 12.0.0'
+      react: '>= 17.0.2'
+      react-i18next: ^12.2.0
+    dependencies:
+      '@babel/runtime': 7.21.0
+      '@types/hoist-non-react-statics': 3.3.1
+      core-js: 3.29.1
+      hoist-non-react-statics: 3.3.2
+      i18next: 22.4.12
+      i18next-fs-backend: 2.1.1
+      next: 13.2.4_biqbaboplfbrettd7655fr4n2y
+      react: 18.2.0
+      react-i18next: 12.2.0_ifcy7d6sq4oet2tbyvl27swb2m
     dev: false
 
   /next/13.2.4_biqbaboplfbrettd7655fr4n2y:

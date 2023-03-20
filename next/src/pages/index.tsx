@@ -1,3 +1,4 @@
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import CustomLink from '@/components/CustomLink'
 import PageLayout from '@/layouts/PageLayout'
 import { useUserStore } from '@/stores/userStore'
@@ -5,10 +6,10 @@ import { themeIcon } from '@/styles/css'
 import { Anchor, Button, Flex, ThemeIcon } from '@mantine/core'
 import { IconDiscountCheck, IconLock, IconUnlink, IconUser } from '@tabler/icons-react'
 import Head from 'next/head'
-import { useTranslation } from 'react-i18next'
+import { useTranslation } from 'next-i18next'
 
 export default function Home() {
-  const { t } = useTranslation();
+  const { t } = useTranslation("common");
   const authorized = useUserStore((state) => state.authorized);
 
   return (
@@ -93,4 +94,12 @@ export default function Home() {
       </main>
     </>
   )
+}
+
+export const getStaticProps = async ({ locale }: { locale: string }) => {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, ['common'])),
+    },
+  }
 }

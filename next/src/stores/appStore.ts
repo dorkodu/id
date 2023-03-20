@@ -1,4 +1,3 @@
-import i18n from "@/lib/web/i18n";
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 
@@ -58,11 +57,11 @@ export const useAppStore = create(
       set((state) => { state.loading.locale = loading });
     },
 
-    changeLocale: async (lang) => {
+    changeLocale: async (_lang) => {
       if (typeof window !== "undefined") {
         set((state) => { state.loading.locale = true });
-        await Promise.all([i18n.changeLanguage(lang), /*changeDateLanguage(lang)*/]);
-        document.documentElement.lang = lang;
+        //await Promise.all([i18n.changeLanguage(lang), /*changeDateLanguage(lang)*/]);
+        //document.documentElement.lang = lang;
         set(state => { state.loading.locale = false });
       }
     },

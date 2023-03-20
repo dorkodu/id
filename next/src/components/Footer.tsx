@@ -2,9 +2,8 @@ import { Anchor, Divider, Flex, NativeSelect, Space, Text } from "@mantine/core"
 import { IconWorld } from "@tabler/icons-react";
 import { ColorToggleSegmented } from "./ColorToggle";
 import { useAppStore } from "../stores/appStore";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
 import { widthLimit } from "@/styles/css";
-import i18n from "@/lib/web/i18n";
 
 function Footer() {
   const { t } = useTranslation();
@@ -38,7 +37,7 @@ function Footer() {
           radius="md"
           variant="default"
           icon={<IconWorld />}
-          value={i18n.language}
+          //value={i18n.language}
           onChange={(ev) => changeLocale(ev.currentTarget.value)}
           data={[
             { value: 'en', label: 'English' },

@@ -8,7 +8,7 @@ import { IconAlertCircle, IconArrowLeft, IconCircleCheck } from '@tabler/icons-r
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
-import { useTranslation } from 'react-i18next'
+import { useTranslation } from 'next-i18next'
 
 interface State {
   loading: boolean;

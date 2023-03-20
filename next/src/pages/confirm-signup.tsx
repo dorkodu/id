@@ -12,7 +12,7 @@ import { IconAlertCircle, IconArrowLeft, IconAsterisk } from '@tabler/icons-reac
 import Head from 'next/head'
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { Trans, useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'next-i18next';
 
 interface State {
   loading: boolean;

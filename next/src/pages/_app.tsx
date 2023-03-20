@@ -7,6 +7,7 @@ import { useState } from 'react';
 import App from 'next/app';
 import { getCookie, setCookie } from 'cookies-next';
 import Script from 'next/script';
+import { appWithTranslation } from 'next-i18next';
 
 type CustomAppProps = { theme: ColorScheme }
 
@@ -53,4 +54,4 @@ CustomApp.getInitialProps = async (context: AppContext): Promise<CustomAppProps 
   return { ...ctx, theme }
 }
 
-export default CustomApp
+export default appWithTranslation(CustomApp)
