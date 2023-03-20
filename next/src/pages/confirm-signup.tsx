@@ -20,21 +20,16 @@ interface State {
   status: boolean | undefined;
 
   password: string;
-  token: string | undefined;
 }
 
 export default function ConfirmSignup() {
-  const router = useRouter();
-  const { query } = router;
-  const token: State["token"] = typeof query.token === "string" ? query.token : undefined;
-
   const [state, setState] = useState<State>({
     loading: false,
     status: undefined,
     password: "",
-    token: token,
   });
 
+  const router = useRouter();
   const { t } = useTranslation();
   const queryConfirmSignup = useUserStore((state) => state.queryConfirmSignup);
 
@@ -47,9 +42,10 @@ export default function ConfirmSignup() {
 
   const confirmSignup = async () => {
     if (state.loading) return;
+    const token = typeof router.query.token === "string" ? router.query.token : undefined;
 
     setState({ ...state, loading: true });
-    const status = await wait(() => queryConfirmSignup(state.password, state.token))();
+    const status = await wait(() => queryConfirmSignup(state.password, token))();
     setState({ ...state, loading: false, status });
 
     if (!status) return;

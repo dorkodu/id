@@ -14,27 +14,20 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 interface State {
   loading: boolean;
   status: undefined | "verify" | "error" | "ok";
-
-  token: string | undefined;
 }
 
 export default function VerifyLogin() {
+  const [state, setState] = useState<State>({ loading: true, status: undefined });
+
   const router = useRouter();
-  const { query } = router;
-  const token: State["token"] = typeof query.token === "string" ? query.token : undefined;
-
-  const [state, setState] = useState<State>({
-    loading: true,
-    status: undefined,
-    token: token,
-  });
-
   const { t } = useTranslation();
   const queryVerifyLogin = useUserStore((state) => state.queryVerifyLogin);
 
   const verifyLogin = async () => {
+    const token = typeof router.query.token === "string" ? router.query.token : undefined;
+
     setState({ ...state, loading: true });
-    const status = await wait(() => queryVerifyLogin(state.token))();
+    const status = await wait(() => queryVerifyLogin(token))();
     setState({ ...state, loading: false, status: status ? "ok" : "error" });
   }
 
