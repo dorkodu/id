@@ -15,14 +15,12 @@ const data = [
 
 const useStyles = createStyles((theme, { opened }: { opened: boolean }) => ({
   control: {
-    width: rem(200),
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: `${theme.spacing.xs} ${theme.spacing.md}`,
     borderRadius: theme.radius.md,
-    border: `${rem(1)} solid ${theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[2]
-      }`,
+    border: `${rem(1)} solid ${theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[2]}`,
     transition: 'background-color 150ms ease',
     backgroundColor:
       theme.colorScheme === 'dark'
@@ -76,7 +74,7 @@ function LanguagePicker() {
     >
       <Menu.Target>
         <UnstyledButton className={classes.control}>
-          <Group spacing="xs">
+          <Group spacing="xs" mr="xs">
             <Image src={selected.image} alt={selected.label} width={22} height={22} />
             <span className={classes.label}>{selected.label}</span>
           </Group>
