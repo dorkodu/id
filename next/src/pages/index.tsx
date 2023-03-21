@@ -11,7 +11,7 @@ import { useUserContext } from '@/stores/userContext'
 export default function Home() {
   const { t } = useTranslation("common");
   const authorized = useUserContext((state) => state.authorized);
-  console.log(useUserContext)
+
   return (
     <>
       <Head>
