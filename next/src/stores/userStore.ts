@@ -1,4 +1,4 @@
-import { create } from "zustand";
+import { createStore } from "zustand";
 import { immer } from "zustand/middleware/immer";
 import { array } from "../lib/web/array";
 import { useAppStore } from "./appStore";
@@ -9,7 +9,7 @@ import { IUser } from "@/types/user";
 import { IAccess } from "@/types/access";
 import { ErrorCode } from "@/types/error_codes";
 
-interface State {
+export interface UserState {
   authorized: boolean;
   user: IUser | undefined;
 
@@ -18,7 +18,7 @@ interface State {
   access: { entities: { [key: string]: IAccess } }
 }
 
-interface Action {
+export interface UserAction {
   setUser: (user: IUser | undefined) => void;
 
   setCurrentSession: (session: ISession | undefined) => void;
@@ -58,355 +58,358 @@ interface Action {
   queryRevokeAccess: (accessId: string) => Promise<void>;
 }
 
-const initialState: State = {
+const initialState: UserState = {
   authorized: false,
   user: undefined,
   currentSession: undefined,
   session: { entities: {} },
   access: { entities: {} },
-};
+}
 
-export const useUserStore = create(
-  immer<State & Action>((set, get) => ({
-    ...initialState,
+export const createUserStore = (props?: Partial<UserState>) => {
+  return createStore(
+    immer<UserState & UserAction>((set, get) => ({
+      ...initialState,
+      ...props,
 
-    setUser: (data) => {
-      set((state) => {
-        state.user = data;
-      });
-    },
+      setUser: (data) => {
+        set((state) => {
+          state.user = data;
+        });
+      },
 
-    setCurrentSession: (data) => {
-      set((state) => {
-        state.currentSession = data;
-      });
-    },
+      setCurrentSession: (data) => {
+        set((state) => {
+          state.currentSession = data;
+        });
+      },
 
 
-    getSessions: (type) => {
-      const object = get().session.entities;
-      if (!object) return [];
+      getSessions: (type) => {
+        const object = get().session.entities;
+        if (!object) return [];
 
-      const out: ISession[] = [];
-      const keys = Object.keys(object);
-      keys.forEach(key => {
-        const session = get().session.entities[key];
-        if (session) out.push(session);
-      })
-
-      return array.sort(out, "id", ((a, b) => util.compareId(a, b, type === "newer")));
-    },
-
-    setSessions: (sessions, refresh) => {
-      set(state => {
-        if (refresh) state.session.entities = {};
-        if (!sessions) return;
-
-        sessions.forEach((session) => {
-          state.session.entities[session.id] = session;
+        const out: ISession[] = [];
+        const keys = Object.keys(object);
+        keys.forEach(key => {
+          const session = get().session.entities[key];
+          if (session) out.push(session);
         })
-      })
-    },
 
-    getSessionsAnchor: (type, refresh) => {
-      return array.getAnchor(get().getSessions("newer"), "id", "-1", type, refresh);
-    },
+        return array.sort(out, "id", ((a, b) => util.compareId(a, b, type === "newer")));
+      },
 
+      setSessions: (sessions, refresh) => {
+        set(state => {
+          if (refresh) state.session.entities = {};
+          if (!sessions) return;
 
-    getAccesses: (type) => {
-      const object = get().access.entities;
-      if (!object) return [];
-
-      const out: IAccess[] = [];
-      const keys = Object.keys(object);
-      keys.forEach(key => {
-        const access = get().access.entities[key];
-        if (access) out.push(access);
-      })
-
-      return array.sort(out, "id", ((a, b) => util.compareId(a, b, type === "newer")));
-    },
-
-    setAccesses: (accesses, refresh) => {
-      set(state => {
-        if (refresh) state.access.entities = {};
-        if (!accesses) return;
-
-        accesses.forEach((access) => {
-          state.access.entities[access.id] = access;
+          sessions.forEach((session) => {
+            state.session.entities[session.id] = session;
+          })
         })
-      })
-    },
+      },
 
-    getAccessesAnchor: (type, refresh) => {
-      return array.getAnchor(get().getAccesses("newer"), "id", "-1", type, refresh);
-    },
+      getSessionsAnchor: (type, refresh) => {
+        return array.getAnchor(get().getSessions("newer"), "id", "-1", type, refresh);
+      },
 
 
-    queryAuth: async () => {
-      const res = await sage.get(
-        { a: sage.query("auth", undefined) },
-        (query) => request(query)
-      );
+      getAccesses: (type) => {
+        const object = get().access.entities;
+        if (!object) return [];
 
-      const authorized = !(!res?.a.data || res.a.error);
-      set((state) => {
-        state.authorized = authorized;
-      });
-      useAppStore.getState().setAuthLoading(false);
-      return authorized;
-    },
+        const out: IAccess[] = [];
+        const keys = Object.keys(object);
+        keys.forEach(key => {
+          const access = get().access.entities[key];
+          if (access) out.push(access);
+        })
 
-    querySignup: async (username, email) => {
-      const res = await sage.get(
-        { a: sage.query("signup", { username, email }) },
-        (query) => request(query)
-      );
+        return array.sort(out, "id", ((a, b) => util.compareId(a, b, type === "newer")));
+      },
 
-      if (res?.a.error) {
-        switch (res.a.error) {
-          case ErrorCode.UsernameUsed: return "username";
-          case ErrorCode.EmailUsed: return "email";
-          case ErrorCode.UsernameAndEmailUsed: return "both";
-          default: return "error";
+      setAccesses: (accesses, refresh) => {
+        set(state => {
+          if (refresh) state.access.entities = {};
+          if (!accesses) return;
+
+          accesses.forEach((access) => {
+            state.access.entities[access.id] = access;
+          })
+        })
+      },
+
+      getAccessesAnchor: (type, refresh) => {
+        return array.getAnchor(get().getAccesses("newer"), "id", "-1", type, refresh);
+      },
+
+
+      queryAuth: async () => {
+        const res = await sage.get(
+          { a: sage.query("auth", undefined) },
+          (query) => request(query)
+        );
+
+        const authorized = !(!res?.a.data || res.a.error);
+        set((state) => {
+          state.authorized = authorized;
+        });
+        useAppStore.getState().setAuthLoading(false);
+        return authorized;
+      },
+
+      querySignup: async (username, email) => {
+        const res = await sage.get(
+          { a: sage.query("signup", { username, email }) },
+          (query) => request(query)
+        );
+
+        if (res?.a.error) {
+          switch (res.a.error) {
+            case ErrorCode.UsernameUsed: return "username";
+            case ErrorCode.EmailUsed: return "email";
+            case ErrorCode.UsernameAndEmailUsed: return "both";
+            default: return "error";
+          }
         }
-      }
 
-      return "ok";
-    },
-
-    queryConfirmSignup: async (password, token) => {
-      if (!token) return false;
-
-      const res = await sage.get(
-        { a: sage.query("confirmSignup", { password, token }) },
-        (query) => request(query)
-      );
-
-      const status = !(!res?.a.data || res.a.error);
-      if (status) set((state) => { state.authorized = true });
-
-      return status;
-    },
-
-    queryLogin: async (info, password) => {
-      const res = await sage.get(
-        { a: sage.query("login", { info, password }) },
-        (query) => request(query)
-      );
-
-      const status = !(!res?.a.data || res.a.error);
-
-      if (status) {
-        set(state => { state.authorized = true });
         return "ok";
-      }
+      },
 
-      if (res?.a.error) {
-        switch (res.a.error) {
-          case ErrorCode.LoginNewLocation: return "verify";
-          case ErrorCode.Default:
-          default:
-            return "error";
+      queryConfirmSignup: async (password, token) => {
+        if (!token) return false;
+
+        const res = await sage.get(
+          { a: sage.query("confirmSignup", { password, token }) },
+          (query) => request(query)
+        );
+
+        const status = !(!res?.a.data || res.a.error);
+        if (status) set((state) => { state.authorized = true });
+
+        return status;
+      },
+
+      queryLogin: async (info, password) => {
+        const res = await sage.get(
+          { a: sage.query("login", { info, password }) },
+          (query) => request(query)
+        );
+
+        const status = !(!res?.a.data || res.a.error);
+
+        if (status) {
+          set(state => { state.authorized = true });
+          return "ok";
         }
-      }
 
-      return "error";
-    },
-
-    queryVerifyLogin: async (token) => {
-      if (!token) return false;
-
-      const res = await sage.get(
-        { a: sage.query("verifyLogin", { token }) },
-        (query) => request(query)
-      );
-
-      if (!res?.a.data || res.a.error) return false;
-      return true;
-    },
-
-    queryLogout: async () => {
-      const res = await sage.get(
-        { a: sage.query("logout", undefined) },
-        (query) => request(query)
-      );
-
-      if (!res?.a.data || res.a.error) return false;
-      set(initialState);
-      return true;
-    },
-
-    queryGetUser: async () => {
-      const res = await sage.get(
-        { a: sage.query("getUser", undefined) },
-        (query) => request(query)
-      );
-
-      if (!res?.a.data || res.a.error) return false;
-      set((state) => {
-        state.user = res.a.data;
-      });
-      return true;
-    },
-
-    queryEditProfile: async (name, username, bio) => {
-      const res = await sage.get(
-        { a: sage.query("editProfile", { name, username, bio }) },
-        (query) => request(query)
-      );
-
-      const status = !(!res?.a.data || res.a.error);
-
-      set(state => {
-        if (!status || !state.user) return;
-        state.user.name = name;
-        state.user.username = username;
-        state.user.bio = bio;
-      });
-
-      if (res?.a.error) {
-        switch (res?.a.error) {
-          case ErrorCode.UsernameUsed: return "username";
-          default: return "error";
+        if (res?.a.error) {
+          switch (res.a.error) {
+            case ErrorCode.LoginNewLocation: return "verify";
+            case ErrorCode.Default:
+            default:
+              return "error";
+          }
         }
-      }
-      else {
-        return "ok";
-      }
-    },
 
-    queryInitiateEmailChange: async (newEmail) => {
-      const res = await sage.get(
-        { a: sage.query("initiateEmailChange", { newEmail }) },
-        (query) => request(query)
-      );
+        return "error";
+      },
 
-      if (!res?.a.data || res.a.error) return false;
-      return true;
-    },
+      queryVerifyLogin: async (token) => {
+        if (!token) return false;
 
-    queryConfirmEmailChange: async (token) => {
-      const res = await sage.get(
-        { a: sage.query("confirmEmailChange", { token }) },
-        (query) => request(query)
-      );
+        const res = await sage.get(
+          { a: sage.query("verifyLogin", { token }) },
+          (query) => request(query)
+        );
 
-      if (!res?.a.data || res.a.error) return false;
-      return true;
-    },
+        if (!res?.a.data || res.a.error) return false;
+        return true;
+      },
 
-    queryRevertEmailChange: async (token) => {
-      const res = await sage.get(
-        { a: sage.query("revertEmailChange", { token }) },
-        (query) => request(query)
-      );
+      queryLogout: async () => {
+        const res = await sage.get(
+          { a: sage.query("logout", undefined) },
+          (query) => request(query)
+        );
 
-      if (!res?.a.data || res.a.error) return false;
-      return true;
-    },
+        if (!res?.a.data || res.a.error) return false;
+        set(initialState);
+        return true;
+      },
 
-    queryInitiatePasswordChange: async (username, email) => {
-      const res = await sage.get(
-        { a: sage.query("initiatePasswordChange", { username, email }) },
-        (query) => request(query)
-      );
+      queryGetUser: async () => {
+        const res = await sage.get(
+          { a: sage.query("getUser", undefined) },
+          (query) => request(query)
+        );
 
-      if (!res?.a.data || res.a.error) return false;
-      return true;
-    },
+        if (!res?.a.data || res.a.error) return false;
+        set((state) => {
+          state.user = res.a.data;
+        });
+        return true;
+      },
 
-    queryConfirmPasswordChange: async (newPassword, token) => {
-      const res = await sage.get(
-        { a: sage.query("confirmPasswordChange", { newPassword, token }) },
-        (query) => request(query)
-      );
+      queryEditProfile: async (name, username, bio) => {
+        const res = await sage.get(
+          { a: sage.query("editProfile", { name, username, bio }) },
+          (query) => request(query)
+        );
 
-      if (!res?.a.data || res.a.error) return false;
-      return true;
-    },
+        const status = !(!res?.a.data || res.a.error);
 
-    queryGetCurrentSession: async () => {
-      const res = await sage.get(
-        { a: sage.query("getCurrentSession", undefined) },
-        (query) => request(query)
-      );
+        set(state => {
+          if (!status || !state.user) return;
+          state.user.name = name;
+          state.user.username = username;
+          state.user.bio = bio;
+        });
 
-      if (!res?.a.data || res.a.error) return;
-      set((state) => {
-        state.currentSession = res.a.data;
-      });
-    },
+        if (res?.a.error) {
+          switch (res?.a.error) {
+            case ErrorCode.UsernameUsed: return "username";
+            default: return "error";
+          }
+        }
+        else {
+          return "ok";
+        }
+      },
 
-    queryGetSessions: async (type, refresh) => {
-      const anchor = get().getSessionsAnchor(type, refresh);
+      queryInitiateEmailChange: async (newEmail) => {
+        const res = await sage.get(
+          { a: sage.query("initiateEmailChange", { newEmail }) },
+          (query) => request(query)
+        );
 
-      const res = await sage.get(
-        { a: sage.query("getSessions", { anchor, type }) },
-        (query) => request(query)
-      );
+        if (!res?.a.data || res.a.error) return false;
+        return true;
+      },
 
-      const status = !(!res?.a.data || res.a.error);
-      const sessions = res?.a.data;
+      queryConfirmEmailChange: async (token) => {
+        const res = await sage.get(
+          { a: sage.query("confirmEmailChange", { token }) },
+          (query) => request(query)
+        );
 
-      if (sessions) get().setSessions(sessions, refresh);
+        if (!res?.a.data || res.a.error) return false;
+        return true;
+      },
 
-      return { status, length: sessions?.length ?? 0 };
-    },
+      queryRevertEmailChange: async (token) => {
+        const res = await sage.get(
+          { a: sage.query("revertEmailChange", { token }) },
+          (query) => request(query)
+        );
 
-    queryTerminateSession: async (sessionId) => {
-      const res = await sage.get(
-        { a: sage.query("terminateSession", { sessionId }) },
-        (query) => request(query)
-      );
+        if (!res?.a.data || res.a.error) return false;
+        return true;
+      },
 
-      const status = !(!res?.a.data || res.a.error);
+      queryInitiatePasswordChange: async (username, email) => {
+        const res = await sage.get(
+          { a: sage.query("initiatePasswordChange", { username, email }) },
+          (query) => request(query)
+        );
 
-      if (status) {
-        set((state) => { delete state.session.entities[sessionId] });
+        if (!res?.a.data || res.a.error) return false;
+        return true;
+      },
 
-        // If terminated session is current session, reset state
-        if (get().currentSession?.id === sessionId) set(initialState);
-      }
-    },
+      queryConfirmPasswordChange: async (newPassword, token) => {
+        const res = await sage.get(
+          { a: sage.query("confirmPasswordChange", { newPassword, token }) },
+          (query) => request(query)
+        );
 
-    queryGetAccesses: async (type, refresh) => {
-      const anchor = get().getAccessesAnchor(type, refresh);
+        if (!res?.a.data || res.a.error) return false;
+        return true;
+      },
 
-      const res = await sage.get(
-        { a: sage.query("getAccesses", { anchor, type }) },
-        (query) => request(query)
-      );
+      queryGetCurrentSession: async () => {
+        const res = await sage.get(
+          { a: sage.query("getCurrentSession", undefined) },
+          (query) => request(query)
+        );
 
-      const status = !(!res?.a.data || res.a.error);
-      const accesses = res?.a.data;
+        if (!res?.a.data || res.a.error) return;
+        set((state) => {
+          state.currentSession = res.a.data;
+        });
+      },
 
-      if (accesses) get().setAccesses(accesses, refresh);
+      queryGetSessions: async (type, refresh) => {
+        const anchor = get().getSessionsAnchor(type, refresh);
 
-      return { status, length: accesses?.length ?? 0 };
-    },
+        const res = await sage.get(
+          { a: sage.query("getSessions", { anchor, type }) },
+          (query) => request(query)
+        );
 
-    queryGrantAccess: async (service) => {
-      const res = await sage.get(
-        { a: sage.query("grantAccess", { service }) },
-        (query) => request(query)
-      );
+        const status = !(!res?.a.data || res.a.error);
+        const sessions = res?.a.data;
 
-      if (!res?.a.data || res.a.error) return undefined;
-      return res.a.data.code;
-    },
+        if (sessions) get().setSessions(sessions, refresh);
 
-    queryRevokeAccess: async (accessId) => {
-      const res = await sage.get(
-        { a: sage.query("revokeAccess", { accessId }) },
-        (query) => request(query)
-      );
+        return { status, length: sessions?.length ?? 0 };
+      },
 
-      const status = !(!res?.a.data || res.a.error);
+      queryTerminateSession: async (sessionId) => {
+        const res = await sage.get(
+          { a: sage.query("terminateSession", { sessionId }) },
+          (query) => request(query)
+        );
 
-      if (status) {
-        set((state) => { delete state.access.entities[accessId] });
-      }
-    },
-  }))
-);
+        const status = !(!res?.a.data || res.a.error);
+
+        if (status) {
+          set((state) => { delete state.session.entities[sessionId] });
+
+          // If terminated session is current session, reset state
+          if (get().currentSession?.id === sessionId) set(initialState);
+        }
+      },
+
+      queryGetAccesses: async (type, refresh) => {
+        const anchor = get().getAccessesAnchor(type, refresh);
+
+        const res = await sage.get(
+          { a: sage.query("getAccesses", { anchor, type }) },
+          (query) => request(query)
+        );
+
+        const status = !(!res?.a.data || res.a.error);
+        const accesses = res?.a.data;
+
+        if (accesses) get().setAccesses(accesses, refresh);
+
+        return { status, length: accesses?.length ?? 0 };
+      },
+
+      queryGrantAccess: async (service) => {
+        const res = await sage.get(
+          { a: sage.query("grantAccess", { service }) },
+          (query) => request(query)
+        );
+
+        if (!res?.a.data || res.a.error) return undefined;
+        return res.a.data.code;
+      },
+
+      queryRevokeAccess: async (accessId) => {
+        const res = await sage.get(
+          { a: sage.query("revokeAccess", { accessId }) },
+          (query) => request(query)
+        );
+
+        const status = !(!res?.a.data || res.a.error);
+
+        if (status) {
+          set((state) => { delete state.access.entities[accessId] });
+        }
+      },
+    }))
+  )
+}

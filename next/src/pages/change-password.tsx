@@ -2,7 +2,6 @@ import CustomLink from '@/components/CustomLink';
 import { wait } from '@/components/hooks';
 import OverlayLoader from '@/components/loaders/OverlayLoader';
 import PageLayout from '@/layouts/PageLayout'
-import { useUserStore } from '@/stores/userStore';
 import { Alert, Anchor, Button, Card, Flex, Text, TextInput } from '@mantine/core';
 import { getHotkeyHandler } from '@mantine/hooks';
 import { IconAlertCircle, IconArrowLeft, IconInfoCircle } from '@tabler/icons-react';
@@ -10,6 +9,7 @@ import Head from 'next/head'
 import { useState } from 'react';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { useUserContext } from '@/stores/userContext';
 
 interface State {
   loading: boolean;
@@ -20,10 +20,10 @@ interface State {
 }
 
 export default function Login() {
-  const user = useUserStore((state) => state.user);
+  const user = useUserContext((state) => state.user);
 
   const { t } = useTranslation();
-  const queryInitiatePasswordChange = useUserStore((state) => state.queryInitiatePasswordChange);
+  const queryInitiatePasswordChange = useUserContext((state) => state.queryInitiatePasswordChange);
 
   const [state, setState] = useState<State>({
     loading: false,

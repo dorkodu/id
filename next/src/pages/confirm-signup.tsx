@@ -5,7 +5,6 @@ import InputRequirements, { getRequirement, getRequirementError } from '@/compon
 import { VisibilityToggle } from '@/components/VisibilityToggle';
 import PageLayout from '@/layouts/PageLayout'
 import { useAppStore } from '@/stores/appStore';
-import { useUserStore } from '@/stores/userStore';
 import { Alert, Anchor, Button, Card, Flex, PasswordInput, Text } from '@mantine/core';
 import { getHotkeyHandler, useFocusWithin } from '@mantine/hooks';
 import { IconAlertCircle, IconArrowLeft, IconAsterisk } from '@tabler/icons-react';
@@ -14,6 +13,7 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { useUserContext } from '@/stores/userContext';
 
 interface State {
   loading: boolean;
@@ -31,7 +31,7 @@ export default function ConfirmSignup() {
 
   const router = useRouter();
   const { t } = useTranslation();
-  const queryConfirmSignup = useUserStore((state) => state.queryConfirmSignup);
+  const queryConfirmSignup = useUserContext((state) => state.queryConfirmSignup);
 
   // Necessary stuff for input validation & error messages
   const [inputReady, setInputReady] = useState({ password: false });

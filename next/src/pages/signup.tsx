@@ -3,7 +3,6 @@ import { wait } from '@/components/hooks';
 import OverlayLoader from '@/components/loaders/OverlayLoader';
 import InputRequirements, { getRequirement, getRequirementError } from '@/components/popovers/InputRequirements';
 import PageLayout from '@/layouts/PageLayout'
-import { useUserStore } from '@/stores/userStore';
 import { Alert, Anchor, Button, Card, Flex, Text, TextInput } from '@mantine/core';
 import { getHotkeyHandler, useFocusWithin } from '@mantine/hooks';
 import { IconAlertCircle, IconArrowLeft, IconAt, IconInfoCircle, IconUser } from '@tabler/icons-react';
@@ -11,6 +10,7 @@ import Head from 'next/head'
 import { useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { useUserContext } from '@/stores/userContext';
 
 interface State {
   loading: boolean;
@@ -29,7 +29,7 @@ export default function Signup() {
   });
 
   const { t } = useTranslation();
-  const querySignup = useUserStore((state) => state.querySignup);
+  const querySignup = useUserContext((state) => state.querySignup);
 
   // Necessary stuff for input validation & error messages
   const [inputReady, setInputReady] = useState({ username: false, email: false, password: false });

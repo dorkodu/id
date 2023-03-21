@@ -10,6 +10,7 @@ import Script from 'next/script';
 import { appWithTranslation } from 'next-i18next';
 import { NextApiRequest, NextApiResponse } from 'next';
 import type auth from '@/lib/api/controllers/auth';
+import { UserProvider } from '@/stores/userContext';
 
 type CustomAppProps = { authorized?: boolean, theme?: ColorScheme }
 
@@ -32,15 +33,19 @@ export function CustomApp(props: AppProps & CustomAppProps) {
     <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
       <MantineProvider emotionCache={emotionCache} theme={{ ...theme, colorScheme }} withGlobalStyles withNormalizeCSS>
 
-        <Head>
-          <meta name="theme-color" content="#ffffff" />
-        </Head>
+        <UserProvider authorized={props.authorized}>
 
-        <Script id="theme" strategy="beforeInteractive">
-          {'let a=`; ${document.cookie}`.split("; theme=");let b=a.length===2&&a.pop().split(";").shift();let c=b==="dark"?"#1A1B1E":"#fff";document.documentElement.style.backgroundColor=c'}
-        </Script>
+          <Head>
+            <meta name="theme-color" content="#ffffff" />
+          </Head>
 
-        <Component {...pageProps} />
+          <Script id="theme" strategy="beforeInteractive">
+            {'let a=`; ${document.cookie}`.split("; theme=");let b=a.length===2&&a.pop().split(";").shift();let c=b==="dark"?"#1A1B1E":"#fff";document.documentElement.style.backgroundColor=c'}
+          </Script>
+
+          <Component {...pageProps} />
+
+        </UserProvider>
 
       </MantineProvider>
     </ColorSchemeProvider>

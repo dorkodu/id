@@ -2,7 +2,6 @@ import CustomLink from '@/components/CustomLink'
 import { wait } from '@/components/hooks'
 import OverlayLoader from '@/components/loaders/OverlayLoader'
 import PageLayout from '@/layouts/PageLayout'
-import { useUserStore } from '@/stores/userStore'
 import { Alert, Anchor, Card, Flex, Text } from '@mantine/core'
 import { IconAlertCircle, IconArrowLeft, IconCircleCheck } from '@tabler/icons-react'
 import Head from 'next/head'
@@ -10,6 +9,7 @@ import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'next-i18next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+import { useUserContext } from '@/stores/userContext'
 
 interface State {
   loading: boolean;
@@ -21,7 +21,7 @@ export default function VerifyLogin() {
 
   const router = useRouter();
   const { t } = useTranslation();
-  const queryVerifyLogin = useUserStore((state) => state.queryVerifyLogin);
+  const queryVerifyLogin = useUserContext((state) => state.queryVerifyLogin);
 
   const verifyLogin = async () => {
     const token = typeof router.query.token === "string" ? router.query.token : undefined;

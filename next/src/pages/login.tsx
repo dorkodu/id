@@ -4,7 +4,6 @@ import OverlayLoader from '@/components/loaders/OverlayLoader'
 import { VisibilityToggle } from '@/components/VisibilityToggle'
 import PageLayout from '@/layouts/PageLayout'
 import { useAppStore } from '@/stores/appStore'
-import { useUserStore } from '@/stores/userStore'
 import { Alert, Anchor, Button, Card, Flex, PasswordInput, Text, TextInput } from '@mantine/core'
 import { getHotkeyHandler } from '@mantine/hooks'
 import { IconAlertCircle, IconArrowLeft, IconInfoCircle } from '@tabler/icons-react'
@@ -13,6 +12,7 @@ import { useRouter } from 'next/router'
 import { useState } from 'react'
 import { useTranslation } from 'next-i18next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+import { useUserContext } from '@/stores/userContext'
 
 interface State {
   loading: boolean;
@@ -33,7 +33,7 @@ export default function Login() {
   });
 
   const { t } = useTranslation();
-  const queryLogin = useUserStore((state) => state.queryLogin);
+  const queryLogin = useUserContext((state) => state.queryLogin);
 
   const login = async () => {
     if (state.loading) return;
