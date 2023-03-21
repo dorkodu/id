@@ -35,8 +35,6 @@ import CustomLink from "./CustomLink";
 import OverlayLoader from "./loaders/OverlayLoader";
 import { IUser } from "@/types/user";
 
-console.log(UserAvatar)
-
 const useStyles = createStyles((theme) => ({
   icon: {
     color:

@@ -5,6 +5,7 @@ import { useFeedProps, wait } from "@/components/hooks";
 import InfiniteScroll from "@/components/InfiniteScroll";
 import { Session } from "@/components/Session";
 import User from "@/components/User";
+import DashboardLayout from "@/layouts/DashboardLayout";
 import { useAppStore } from "@/stores/appStore";
 import { useUserContext, useUserStore } from "@/stores/userContext";
 import { IAccess } from "@/types/access";
@@ -176,58 +177,60 @@ function Dashboard() {
   }, [state.feed, state.sessionOrder, state.accessOrder]);
 
   return (
-    <InfiniteScroll
-      refresh={fetchRoute}
-      next={() => fetcher(state.feed, false, true)}
-      hasMore={getHasMore(state.feed)}
-    >
-      {(!user || !currentSession) ?
-        <>
-          {dashboardProps.status === false &&
-            <CardAlert
-              title={t("error.text")}
-              content={t("error.default")}
-              type="error"
+    <DashboardLayout>
+      <InfiniteScroll
+        refresh={fetchRoute}
+        next={() => fetcher(state.feed, false, true)}
+        hasMore={getHasMore(state.feed)}
+      >
+        {(!user || !currentSession) ?
+          <>
+            {dashboardProps.status === false &&
+              <CardAlert
+                title={t("error.text")}
+                content={t("error.default")}
+                type="error"
+              />
+            }
+          </>
+
+          :
+
+          <>
+            <User user={user} />
+
+            <Session session={currentSession} currentSession />
+
+            <CardPanel
+              segments={[
+                {
+                  value: state.feed,
+                  setValue: changeFeed,
+                  label: t("show"),
+                  data: [
+                    { label: t("sessions"), value: "sessions" },
+                    { label: t("accesses"), value: "accesses" },
+                  ]
+                },
+                {
+                  value: getOrder(),
+                  setValue: changeOrder,
+                  label: t("order"),
+                  data: [
+                    { label: t("newer"), value: "newer" },
+                    { label: t("older"), value: "older" },
+                  ]
+                },
+              ]}
             />
-          }
-        </>
 
-        :
+            {state.feed === "sessions" && sessions.map((s) => <Session key={s.id} session={s} />)}
+            {state.feed === "accesses" && accesses.map((a) => <Access key={a.id} access={a} />)}
 
-        <>
-          <User user={user} />
-
-          <Session session={currentSession} currentSession />
-
-          <CardPanel
-            segments={[
-              {
-                value: state.feed,
-                setValue: changeFeed,
-                label: t("show"),
-                data: [
-                  { label: t("sessions"), value: "sessions" },
-                  { label: t("accesses"), value: "accesses" },
-                ]
-              },
-              {
-                value: getOrder(),
-                setValue: changeOrder,
-                label: t("order"),
-                data: [
-                  { label: t("newer"), value: "newer" },
-                  { label: t("older"), value: "older" },
-                ]
-              },
-            ]}
-          />
-
-          {state.feed === "sessions" && sessions.map((s) => <Session key={s.id} session={s} />)}
-          {state.feed === "accesses" && accesses.map((a) => <Access key={a.id} access={a} />)}
-
-        </>
-      }
-    </InfiniteScroll>
+          </>
+        }
+      </InfiniteScroll>
+    </DashboardLayout>
   )
 }
 

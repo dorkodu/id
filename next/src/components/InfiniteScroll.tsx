@@ -1,5 +1,5 @@
 import InfiniteScrollComponent from "react-simple-pull-to-refresh";
-import React, { ReactElement, useLayoutEffect, useMemo, useRef } from "react";
+import React, { ReactElement, useEffect, useMemo, useRef } from "react";
 import { IconArrowBigDownLineFilled } from "@tabler/icons-react";
 import { Flex } from "@mantine/core";
 import DefaultLoader from "./loaders/DefaultLoader";
@@ -56,7 +56,7 @@ function InfiniteScroll({ children, refresh, next, hasMore }: Props) {
     )
   }, [])
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (!ref.current) return;
     (ref.current.firstChild as HTMLElement).style.overflow = "visible";
   }, []);
