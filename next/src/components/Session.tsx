@@ -14,6 +14,7 @@ import {
 import { useTranslation } from "next-i18next";
 import { useUserContext } from "@/stores/userContext";
 import { ISession } from "@/types/session";
+import { useRouter } from "next/router";
 
 interface Props {
   session: ISession;
@@ -24,6 +25,7 @@ const flexNoShrink = { flexShrink: 0 } satisfies CSSObject
 const fullWidth = { width: "100%" } satisfies CSSObject
 
 export function Session({ session, currentSession }: Props) {
+  const { locale } = useRouter();
   const { t } = useTranslation();
   const queryTerminateSession = useUserContext((state) => state.queryTerminateSession);
   const terminateSession = () => queryTerminateSession(session.id);
@@ -68,7 +70,9 @@ export function Session({ session, currentSession }: Props) {
         <Flex gap="xs" align="center">
           <Flex gap="xs" align="center" justify="space-betweens" sx={fullWidth}>
             <IconClock style={flexNoShrink} />
-            <Text>{new Date(session.createdAt).toString()}</Text>
+            <Text>
+              {new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeStyle: "short" }).format(session.createdAt)}
+            </Text>
           </Flex>
 
           {!currentSession && <SessionMenu />}
@@ -78,7 +82,9 @@ export function Session({ session, currentSession }: Props) {
 
         <Flex gap="xs" align="center">
           <IconCalendarTime style={flexNoShrink} />
-          <Text>{new Date(session.expiresAt).toString()}</Text>
+          <Text>
+            {new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeStyle: "short" }).format(session.expiresAt)}
+          </Text>
         </Flex>
 
         <Divider />

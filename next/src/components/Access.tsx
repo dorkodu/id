@@ -13,6 +13,7 @@ import { useTranslation } from "next-i18next";
 import { useUserContext } from "@/stores/userContext";
 import { IAccess } from "@/types/access";
 import { util } from "@/lib/web/util";
+import { useRouter } from "next/router";
 
 interface Props {
   access: IAccess;
@@ -22,6 +23,7 @@ const flexNoShrink = { flexShrink: 0 } satisfies CSSObject
 const fullWidth = { width: "100%" } satisfies CSSObject
 
 function Access({ access }: Props) {
+  const { locale } = useRouter();
   const { t } = useTranslation();
   const queryRevokeAccess = useUserContext((state) => state.queryRevokeAccess);
   const revokeAccess = () => queryRevokeAccess(access.id);
@@ -32,7 +34,9 @@ function Access({ access }: Props) {
         <Flex gap="xs" align="center">
           <Flex gap="xs" align="center" justify="space-betweens" sx={fullWidth}>
             <IconClock style={flexNoShrink} />
-            <Text>{new Date(access.createdAt).toString()}</Text>
+            <Text>
+              {new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeStyle: "short" }).format(access.createdAt)}
+            </Text>
           </Flex>
 
           <Menu shadow="md" radius="md" position="bottom-end">
@@ -56,7 +60,7 @@ function Access({ access }: Props) {
 
         <Flex gap="xs" align="center">
           <IconCalendarTime style={flexNoShrink} />
-          <Text>{new Date(access.expiresAt).toString()}</Text>
+          <Text>{new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeStyle: "short" }).format(access.expiresAt)}</Text>
         </Flex>
 
         <Divider />

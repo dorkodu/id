@@ -34,6 +34,7 @@ import { useUserContext } from "@/stores/userContext";
 import CustomLink from "./CustomLink";
 import OverlayLoader from "./loaders/OverlayLoader";
 import { IUser } from "@/types/user";
+import { useRouter } from "next/router";
 
 const useStyles = createStyles((theme) => ({
   icon: {
@@ -71,6 +72,7 @@ function User({ user }: Props) {
     status: undefined,
   });
 
+  const { locale } = useRouter();
   const { t } = useTranslation();
   const queryEditProfile = useUserContext((state) => state.queryEditProfile);
 
@@ -175,7 +177,9 @@ function User({ user }: Props) {
 
         <Flex align="center" gap="md">
           <IconCalendar className={styles.icon} />
-          <Text size="sm" color="dimmed">{new Date(user.joinedAt).toString()}</Text>
+          <Text size="sm" color="dimmed">
+            {new Intl.DateTimeFormat(locale, { dateStyle: "medium" }).format(user.joinedAt)}
+          </Text>
         </Flex>
       </Flex>
 
