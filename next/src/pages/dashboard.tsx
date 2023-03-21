@@ -15,6 +15,8 @@ import Head from "next/head";
 import { useEffect } from "react";
 import { useTranslation } from "next-i18next";
 import { request, sage } from "../stores/api";
+import { GetServerSideProps, NextApiRequest, NextApiResponse } from "next";
+import auth from "@/lib/api/controllers/auth";
 
 function Dashboard() {
   const state = useAppStore(state => state.options.dashboard);
@@ -246,10 +248,25 @@ function Dashboard() {
 
 export default Dashboard
 
-export const getStaticProps = async ({ locale }: { locale: string }) => {
+export const getServerSideProps: GetServerSideProps = async (props) => {
+  const req = props.req as NextApiRequest;
+  const res = props.res as NextApiResponse;
+
+  const result = await auth.auth.executor({}, { req, res });
+  const status = !(!result?.data || result.error);
+
+  if (!status) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      }
+    }
+  }
+
   return {
     props: {
-      ...(await serverSideTranslations(locale, ['common'])),
+      ...(await serverSideTranslations(props.locale || "en", ['common'])),
     },
   }
 }
