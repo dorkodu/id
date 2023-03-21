@@ -11,12 +11,12 @@ import { appWithTranslation } from 'next-i18next';
 import { NextApiRequest, NextApiResponse } from 'next';
 import type auth from '@/lib/api/controllers/auth';
 
-type CustomAppProps = { authorized: boolean, theme: ColorScheme }
+type CustomAppProps = { authorized?: boolean, theme?: ColorScheme }
 
 export function CustomApp(props: AppProps & CustomAppProps) {
   const { Component, pageProps } = props;
 
-  const [colorScheme, setColorScheme] = useState<ColorScheme>(props.theme);
+  const [colorScheme, setColorScheme] = useState<ColorScheme>(props.theme || "light");
   const toggleColorScheme = (value?: ColorScheme) => {
     const scheme = value || (colorScheme === 'dark' ? 'light' : 'dark');
     const color = scheme === "light" ? "#fff" : "#1A1B1E";
@@ -52,19 +52,21 @@ CustomApp.getInitialProps = async (context: AppContext): Promise<CustomAppProps 
   const req = context.ctx.req as NextApiRequest;
   const res = context.ctx.res as NextApiResponse;
 
-  let authorized = false;
-
-  let theme = getCookie("theme", context.ctx) as ColorScheme | undefined;
-  if (theme !== "light" && theme !== "dark") theme = "light";
+  let authorized: boolean | undefined = undefined;
+  let theme: ColorScheme | undefined = undefined;
 
   if (typeof window === "undefined") {
     // Called only once when the user first enters the website
     if (!context.ctx.req?.url?.startsWith("/_next/data")) {
+      // Get user's theme
+      theme = getCookie("theme", context.ctx) as ColorScheme | undefined;
+      if (theme !== "light" && theme !== "dark") theme = "light";
+
+      // Get user's authorization status
       const _auth = (await require('@/lib/api/controllers/auth')).default as typeof auth;
       const result = await _auth.auth.executor({}, { req, res });
       const status = !(!result?.data || result.error);
       authorized = status;
-      console.log(authorized)
     }
   }
 
