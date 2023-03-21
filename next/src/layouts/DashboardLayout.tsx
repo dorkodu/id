@@ -1,10 +1,11 @@
-import { ActionIcon, AppShell, Card, CSSObject, Flex, Header } from "@mantine/core"
+import { ActionIcon, AppShell, Card, CSSObject, Flex, Header, useMantineTheme } from "@mantine/core"
 import { IconArrowLeft, IconMenu2 } from "@tabler/icons-react";
 import { useAppStore } from "@/stores/appStore";
 import { useRouter } from "next/router";
 import CustomLink from "@/components/CustomLink";
 import Image from "next/image";
-import IDIcon from "@assets/id.svg";
+import IDBrandLight from "@public/id_brand-light.svg";
+import IDBrandDark from "@public/id_brand-dark.svg";
 
 const width = { maxWidth: "768px", margin: "0 auto" } satisfies CSSObject
 
@@ -19,9 +20,9 @@ function DashboardLayout({ children }: React.PropsWithChildren) {
 export default DashboardLayout
 
 function LayoutHeader() {
+  const theme = useMantineTheme();
   const router = useRouter();
   const route = useAppStore(state => state.route);
-
   const goBack = () => router.back();
 
   return (
@@ -36,10 +37,11 @@ function LayoutHeader() {
           </ActionIcon>
 
           <CustomLink href="/">
-            <ActionIcon size={32}>
+            <ActionIcon size={64}>
               <Image
-                src={IDIcon} alt="Dorkodu ID"
-                width={32} height={32}
+                src={theme.colorScheme === "light" ? IDBrandDark : IDBrandLight}
+                alt="Dorkodu ID"
+                width={64} height={64}
                 draggable={false}
               />
             </ActionIcon>

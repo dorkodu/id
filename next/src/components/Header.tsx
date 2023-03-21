@@ -1,5 +1,5 @@
 import { Flex } from "@mantine/core";
-import IDIcon from "@assets/id.svg";
+import IDIcon from "@public/id_key.svg";
 import Image from "next/image";
 import CustomLink from "./CustomLink";
 
