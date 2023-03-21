@@ -2,7 +2,7 @@ import { Alert, Anchor, Card, Flex, Text } from "@mantine/core";
 import { IconAlertCircle, IconArrowLeft, IconCircleCheck } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { fullWidth } from "../styles/css";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
 import { useUserContext } from "@/stores/userContext";
 import { wait } from "@/components/hooks";
 import DefaultLoader from "@/components/loaders/DefaultLoader";

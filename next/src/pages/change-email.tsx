@@ -2,7 +2,7 @@ import { Alert, Anchor, Button, Card, Flex, Text, TextInput } from "@mantine/cor
 import { IconAlertCircle, IconArrowLeft, IconAt, IconInfoCircle } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { fullWidth } from "../styles/css";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
 import InputRequirements, { getRequirement, getRequirementError } from "../components/popovers/InputRequirements";
 import { getHotkeyHandler, useFocusWithin } from "@mantine/hooks";
 import { GetServerSideProps, NextApiRequest, NextApiResponse } from "next";

@@ -11,7 +11,7 @@ import {
   IconNetwork,
   IconTrash,
 } from "@tabler/icons-react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
 import { useUserContext } from "@/stores/userContext";
 import { ISession } from "@/types/session";
 

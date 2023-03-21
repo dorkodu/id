@@ -13,7 +13,7 @@ import { ISession } from "@/types/session";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import Head from "next/head";
 import { useEffect } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
 import { request, sage } from "../stores/api";
 
 function Dashboard() {

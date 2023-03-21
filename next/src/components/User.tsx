@@ -24,7 +24,7 @@ import {
 } from "@tabler/icons-react";
 import UserAvatar from "@assets/avatar.webp";
 import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
 import { wrapContent } from "../styles/css";
 import TextParser, { PieceType } from "./TextParser";
 import { useFocusWithin } from "@mantine/hooks";
