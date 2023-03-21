@@ -11,6 +11,7 @@ import { useUserContext, useUserStore } from "@/stores/userContext";
 import { IAccess } from "@/types/access";
 import { ISession } from "@/types/session";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import Head from "next/head";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { request, sage } from "../stores/api";
@@ -177,60 +178,69 @@ function Dashboard() {
   }, [state.feed, state.sessionOrder, state.accessOrder]);
 
   return (
-    <DashboardLayout>
-      <InfiniteScroll
-        refresh={fetchRoute}
-        next={() => fetcher(state.feed, false, true)}
-        hasMore={getHasMore(state.feed)}
-      >
-        {(!user || !currentSession) ?
-          <>
-            {dashboardProps.status === false &&
-              <CardAlert
-                title={t("error.text")}
-                content={t("error.default")}
-                type="error"
-              />
+    <>
+      <Head>
+        <title>Dorkodu ID</title>
+        <meta name="title" content="Dorkodu ID" />
+        <meta name="description" content="Your Digital Identity @ Dorkodu" />
+      </Head>
+      <main>
+        <DashboardLayout>
+          <InfiniteScroll
+            refresh={fetchRoute}
+            next={() => fetcher(state.feed, false, true)}
+            hasMore={getHasMore(state.feed)}
+          >
+            {(!user || !currentSession) ?
+              <>
+                {dashboardProps.status === false &&
+                  <CardAlert
+                    title={t("error.text")}
+                    content={t("error.default")}
+                    type="error"
+                  />
+                }
+              </>
+
+              :
+
+              <>
+                <User user={user} />
+
+                <Session session={currentSession} currentSession />
+
+                <CardPanel
+                  segments={[
+                    {
+                      value: state.feed,
+                      setValue: changeFeed,
+                      label: t("show"),
+                      data: [
+                        { label: t("sessions"), value: "sessions" },
+                        { label: t("accesses"), value: "accesses" },
+                      ]
+                    },
+                    {
+                      value: getOrder(),
+                      setValue: changeOrder,
+                      label: t("order"),
+                      data: [
+                        { label: t("newer"), value: "newer" },
+                        { label: t("older"), value: "older" },
+                      ]
+                    },
+                  ]}
+                />
+
+                {state.feed === "sessions" && sessions.map((s) => <Session key={s.id} session={s} />)}
+                {state.feed === "accesses" && accesses.map((a) => <Access key={a.id} access={a} />)}
+
+              </>
             }
-          </>
-
-          :
-
-          <>
-            <User user={user} />
-
-            <Session session={currentSession} currentSession />
-
-            <CardPanel
-              segments={[
-                {
-                  value: state.feed,
-                  setValue: changeFeed,
-                  label: t("show"),
-                  data: [
-                    { label: t("sessions"), value: "sessions" },
-                    { label: t("accesses"), value: "accesses" },
-                  ]
-                },
-                {
-                  value: getOrder(),
-                  setValue: changeOrder,
-                  label: t("order"),
-                  data: [
-                    { label: t("newer"), value: "newer" },
-                    { label: t("older"), value: "older" },
-                  ]
-                },
-              ]}
-            />
-
-            {state.feed === "sessions" && sessions.map((s) => <Session key={s.id} session={s} />)}
-            {state.feed === "accesses" && accesses.map((a) => <Access key={a.id} access={a} />)}
-
-          </>
-        }
-      </InfiniteScroll>
-    </DashboardLayout>
+          </InfiniteScroll>
+        </DashboardLayout>
+      </main>
+    </>
   )
 }
 

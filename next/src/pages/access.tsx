@@ -8,12 +8,12 @@ import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { useRouter } from "next/router";
 import queryString from "query-string";
 import { useState } from "react";
-import Footer from "../components/Footer";
-import Header from "../components/Header";
-import { fullWidth, widthLimit } from "../styles/css";
+import { fullWidth } from "../styles/css";
 import { useTranslation, Trans } from 'next-i18next'
 import { GetServerSideProps, NextApiRequest, NextApiResponse } from "next";
 import auth from "@/lib/api/controllers/auth";
+import Head from "next/head";
+import PageLayout from "@/layouts/PageLayout";
 
 interface State {
   loading: boolean;
@@ -53,81 +53,79 @@ function Access() {
   }
 
   return (
-    <Flex mx="md">
-      <Flex direction="column" gap="md" sx={widthLimit}>
-        <Header />
+    <>
+      <Head>
+        <title>Dorkodu ID</title>
+        <meta name="title" content="Dorkodu ID" />
+        <meta name="description" content="Your Digital Identity @ Dorkodu" />
+      </Head>
+      <main>
+        <PageLayout
+          title={t("route.access.title")}
+          description={t("route.access.description")}
+          content={
+            <Card shadow="sm" p="md" radius="md" withBorder sx={fullWidth}>
+              {state.loading && <OverlayLoader />}
 
-        <Title order={2} align="center">
-          {t("route.access.title")}
-        </Title>
-        <Text color="dimmed" size="md" align="center" weight={500}>
-          {t("route.access.description")}
-        </Text>
+              <Flex direction="column" gap="md">
+                {state.service &&
+                  <>
+                    <Title order={4} align="center">{state.service}</Title>
+                    <Text>
+                      <Trans t={t} i18nKey="route.access.serviceRequirements" />
+                    </Text>
 
-        <Flex justify="center">
-          <Card shadow="sm" p="md" radius="md" withBorder sx={fullWidth}>
-            {state.loading && <OverlayLoader />}
-
-            <Flex direction="column" gap="md">
-              {state.service &&
-                <>
-                  <Title order={4} align="center">{state.service}</Title>
-                  <Text>
-                    <Trans t={t} i18nKey="route.access.serviceRequirements" />
-                  </Text>
-
-                  <Button onClick={accept} fullWidth>
-                    {t("accept")}
-                  </Button>
-
-                  <CustomLink href="/dashboard">
-                    <Button variant="default" fullWidth>
-                      {t("reject")}
+                    <Button onClick={accept} fullWidth>
+                      {t("accept")}
                     </Button>
-                  </CustomLink>
-                </>
-              }
 
-              {state.status === false &&
-                <Alert
-                  icon={<IconAlertCircle size={24} />}
-                  title={t("error.text")}
-                  color="red"
-                  variant="light"
-                >
-                  {t("error.default")}
-                </Alert>
-              }
-
-              {!state.service &&
-                <>
-                  <Flex>
                     <CustomLink href="/dashboard">
-                      <Anchor size={15} component="div">
-                        <Flex align="center" gap="xs">
-                          <IconArrowLeft size={16} stroke={2.5} />
-                          <Text>{t("goBack")}</Text>
-                        </Flex>
-                      </Anchor>
+                      <Button variant="default" fullWidth>
+                        {t("reject")}
+                      </Button>
                     </CustomLink>
-                  </Flex>
+                  </>
+                }
+
+                {state.status === false &&
                   <Alert
                     icon={<IconAlertCircle size={24} />}
                     title={t("error.text")}
                     color="red"
                     variant="light"
                   >
-                    {t("error.accessServiceNotFound")}
+                    {t("error.default")}
                   </Alert>
-                </>
-              }
-            </Flex>
-          </Card>
-        </Flex>
+                }
 
-        <Footer />
-      </Flex>
-    </Flex>
+                {!state.service &&
+                  <>
+                    <Flex>
+                      <CustomLink href="/dashboard">
+                        <Anchor size={15} component="div">
+                          <Flex align="center" gap="xs">
+                            <IconArrowLeft size={16} stroke={2.5} />
+                            <Text>{t("goBack")}</Text>
+                          </Flex>
+                        </Anchor>
+                      </CustomLink>
+                    </Flex>
+                    <Alert
+                      icon={<IconAlertCircle size={24} />}
+                      title={t("error.text")}
+                      color="red"
+                      variant="light"
+                    >
+                      {t("error.accessServiceNotFound")}
+                    </Alert>
+                  </>
+                }
+              </Flex>
+            </Card>
+          }
+        />
+      </main>
+    </>
   )
 }
 
