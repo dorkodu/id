@@ -22,8 +22,6 @@ export function CustomApp(props: AppProps & CustomAppProps) {
     const scheme = value || (colorScheme === 'dark' ? 'light' : 'dark');
     const color = scheme === "light" ? "#fff" : "#1A1B1E";
     document.documentElement.style.backgroundColor = color;
-    const themeColor = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
-    if (themeColor) themeColor.content = color;
 
     setColorScheme(scheme);
     setCookie('theme', scheme, { maxAge: 60 * 60 * 24 * 365 });
@@ -36,11 +34,11 @@ export function CustomApp(props: AppProps & CustomAppProps) {
         <UserProvider authorized={props.authorized}>
 
           <Head>
-            <meta name="theme-color" content="#ffffff" />
+            <meta name="theme-color" content={colorScheme === "light" ? "#fff" : "#1A1B1E"} />
           </Head>
 
           <Script id="theme" strategy="beforeInteractive">
-            {'let a=`; ${document.cookie}`.split("; theme=");let b=a.length===2&&a.pop().split(";").shift();let c=b==="dark"?"#1A1B1E":"#fff";document.documentElement.style.backgroundColor=c'}
+            {'let a=`; ${document.cookie}`.split("; theme="),b=2===a.length&&a.pop().split(";").shift(),c="dark"===b?"#1A1B1E":"#fff";document.documentElement.style.backgroundColor=c'}
           </Script>
 
           <Component {...pageProps} />
