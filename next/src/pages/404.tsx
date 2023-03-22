@@ -6,7 +6,7 @@ import { useTranslation } from "next-i18next";
 import CustomLink from "@/components/CustomLink";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
-function Error() {
+function Page404() {
   const { t } = useTranslation();
 
   return (
@@ -38,7 +38,7 @@ function Error() {
   )
 }
 
-export default Error
+export default Page404
 
 export const getStaticProps = async ({ locale }: { locale: string }) => {
   return {
