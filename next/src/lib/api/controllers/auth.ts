@@ -1,16 +1,16 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { token } from "../token";
+import { token } from "../lib/token";
 import pg from "../pg";
 import { confirmSignupSchema, loginSchema, signupSchema, verifyLoginSchema } from "../schemas/auth";
 import { SchemaContext } from "./_schema";
 import sage from "@dorkodu/sage-server";
 import { z } from "zod";
-import { snowflake } from "../snowflake";
-import { date } from "../date";
-import { crypto } from "../crypto";
-import { mailer } from "../mail/mailer";
-import { util } from "../util";
-import { userAgent } from "../user_agent";
+import { snowflake } from "../lib/snowflake";
+import { date } from "../lib/date";
+import { crypto } from "../lib/crypto";
+import { mailer } from "../lib/mail/mailer";
+import { util } from "../lib/util";
+import { userAgent } from "../lib/user_agent";
 import { sharedSchemas } from "../schemas/_shared";
 import { ErrorCode } from "@type/error_codes";
 

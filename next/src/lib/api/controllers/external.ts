@@ -2,7 +2,7 @@ import { checkAccessSchema, expireAccessTokenSchema, getAccessTokenSchema, getUs
 import sage from "@dorkodu/sage-server";
 import { SchemaContext } from "./_schema";
 import { z } from "zod";
-import { token } from "../token";
+import { token } from "../lib/token";
 import access from "./access";
 import pg from "../pg";
 import { IUserParsed, iUserSchema } from "@type/user";

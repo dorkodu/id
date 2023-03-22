@@ -1,12 +1,12 @@
 import sage from "@dorkodu/sage-server";
 import { z } from "zod";
 import { config } from "../config";
-import { crypto } from "../crypto";
-import { date } from "../date";
-import { snowflake } from "../snowflake";
-import { token } from "../token";
-import { userAgent } from "../user_agent";
-import { util } from "../util";
+import { crypto } from "../lib/crypto";
+import { date } from "../lib/date";
+import { snowflake } from "../lib/snowflake";
+import { token } from "../lib/token";
+import { userAgent } from "../lib/user_agent";
+import { util } from "../lib/util";
 import pg from "../pg";
 
 import {

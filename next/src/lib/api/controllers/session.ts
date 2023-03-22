@@ -5,7 +5,7 @@ import { z } from "zod";
 import auth from "./auth";
 import pg from "../pg";
 import { ISessionParsed, iSessionSchema } from "@type/session";
-import { date } from "../date";
+import { date } from "../lib/date";
 import { ErrorCode } from "@type/error_codes";
 
 const getCurrentSession = sage.resource(

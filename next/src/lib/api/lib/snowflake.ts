@@ -1,5 +1,5 @@
 import Long from "long";
-import { config } from "./config";
+import { config } from "../config";
 
 class Snowflake {
   public static readonly epochTime: number = config.epochTime;
