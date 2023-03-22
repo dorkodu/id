@@ -1,7 +1,6 @@
 {
-  "name": "next",
+  "name": "id-next",
   "version": "0.1.0",
-  "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -17,8 +16,6 @@
     "@mantine/hooks": "^6.0.2",
     "@mantine/next": "^6.0.2",
     "@tabler/icons-react": "^2.10.0",
-    "@types/react": "18.0.28",
-    "@types/react-dom": "18.0.11",
     "bcrypt": "^5.1.0",
     "cookies-next": "^2.1.1",
     "emoji-regex": "^10.2.1",
@@ -52,6 +49,8 @@
     "@types/bcrypt": "^5.0.0",
     "@types/node": "18.15.3",
     "@types/nodemailer": "^6.4.7",
+    "@types/react": "18.0.28",
+    "@types/react-dom": "18.0.11",
     "@types/ua-parser-js": "^0.7.36"
   }
 }
