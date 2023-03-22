@@ -1,7 +1,6 @@
 import { createStore } from "zustand";
 import { immer } from "zustand/middleware/immer";
 import { array } from "../lib/web/array";
-import { useAppStore } from "./appStore";
 import { request, sage } from "./api";
 import { util } from "@/lib/web/util";
 import { ISession } from "@/types/session";
@@ -152,10 +151,7 @@ export const createUserStore = (props?: Partial<UserState>) => {
         );
 
         const authorized = !(!res?.a.data || res.a.error);
-        set((state) => {
-          state.authorized = authorized;
-        });
-        useAppStore.getState().setAuthLoading(false);
+        set((state) => { state.authorized = authorized });
         return authorized;
       },
 

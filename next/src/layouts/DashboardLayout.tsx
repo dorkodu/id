@@ -1,6 +1,5 @@
 import { ActionIcon, AppShell, Card, CSSObject, Flex, Header, useMantineTheme } from "@mantine/core"
 import { IconArrowLeft, IconMenu2 } from "@tabler/icons-react";
-import { useAppStore } from "@/stores/appStore";
 import { useRouter } from "next/router";
 import CustomLink from "@/components/CustomLink";
 import Image from "next/image";
@@ -22,7 +21,6 @@ export default DashboardLayout
 function LayoutHeader() {
   const theme = useMantineTheme();
   const router = useRouter();
-  const route = useAppStore(state => state.route);
   const goBack = () => router.back();
 
   return (
@@ -48,7 +46,7 @@ function LayoutHeader() {
           </CustomLink>
 
           <CustomLink href="/menu">
-            <ActionIcon color={route === "menu" ? "green" : "dark"}>
+            <ActionIcon color={router.pathname === "/menu" ? "green" : "dark"}>
               <IconMenu2 />
             </ActionIcon>
           </CustomLink>

@@ -2,14 +2,6 @@ import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 
 interface State {
-  loading: {
-    auth: boolean;
-    locale: boolean;
-  };
-
-  redirect: string | undefined;
-  route: "menu" | "any";
-
   options: {
     dashboard: {
       feed: "sessions" | "accesses";
@@ -20,22 +12,10 @@ interface State {
 }
 
 interface Action {
-  setAuthLoading: (loading: boolean) => void;
-  setLocaleLoading: (loading: boolean) => void;
-  changeLocale: (lang: string) => void;
 
-  setRedirect: (redirect: string | undefined) => void;
 }
 
 const initialState: State = {
-  loading: {
-    auth: true,
-    locale: true,
-  },
-
-  redirect: undefined,
-  route: "any",
-
   options: {
     dashboard: {
       feed: "sessions",
@@ -46,28 +26,7 @@ const initialState: State = {
 };
 
 export const useAppStore = create(
-  immer<State & Action>((set, _get) => ({
+  immer<State & Action>((_set, _get) => ({
     ...initialState,
-
-    setAuthLoading: (loading) => {
-      set((state) => { state.loading.auth = loading });
-    },
-
-    setLocaleLoading: (loading) => {
-      set((state) => { state.loading.locale = loading });
-    },
-
-    changeLocale: async (_lang) => {
-      if (typeof window !== "undefined") {
-        set((state) => { state.loading.locale = true });
-        //await Promise.all([i18n.changeLanguage(lang), /*changeDateLanguage(lang)*/]);
-        //document.documentElement.lang = lang;
-        set(state => { state.loading.locale = false });
-      }
-    },
-
-    setRedirect: (redirect) => {
-      set(state => { state.redirect = redirect });
-    },
   }))
 );

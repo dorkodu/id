@@ -4,7 +4,6 @@ import OverlayLoader from '@/components/loaders/OverlayLoader';
 import InputRequirements, { getRequirement, getRequirementError } from '@/components/popovers/InputRequirements';
 import { VisibilityToggle } from '@/components/VisibilityToggle';
 import PageLayout from '@/layouts/PageLayout'
-import { useAppStore } from '@/stores/appStore';
 import { Alert, Anchor, Button, Card, Flex, PasswordInput, Text } from '@mantine/core';
 import { getHotkeyHandler, useFocusWithin } from '@mantine/hooks';
 import { IconAlertCircle, IconArrowLeft, IconAsterisk } from '@tabler/icons-react';
@@ -49,11 +48,6 @@ export default function ConfirmSignup() {
     setState({ ...state, loading: false, status });
 
     if (!status) return;
-
-    const redirect = useAppStore.getState().redirect;
-
-    if (!redirect) router.push("/dashboard");
-    else router.push(redirect);
   }
 
   return (

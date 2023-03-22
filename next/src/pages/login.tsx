@@ -3,12 +3,10 @@ import { wait } from '@/components/hooks'
 import OverlayLoader from '@/components/loaders/OverlayLoader'
 import { VisibilityToggle } from '@/components/VisibilityToggle'
 import PageLayout from '@/layouts/PageLayout'
-import { useAppStore } from '@/stores/appStore'
 import { Alert, Anchor, Button, Card, Flex, PasswordInput, Text, TextInput } from '@mantine/core'
 import { getHotkeyHandler } from '@mantine/hooks'
 import { IconAlertCircle, IconArrowLeft, IconInfoCircle } from '@tabler/icons-react'
 import Head from 'next/head'
-import { useRouter } from 'next/router'
 import { useState } from 'react'
 import { useTranslation } from 'next-i18next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
@@ -23,8 +21,6 @@ interface State {
 }
 
 export default function Login() {
-  const router = useRouter();
-
   const [state, setState] = useState<State>({
     loading: false,
     status: undefined,
@@ -43,10 +39,6 @@ export default function Login() {
     setState({ ...state, loading: false, status: status });
 
     if (status !== "ok") return;
-
-    const redirect = useAppStore.getState().redirect;
-    if (!redirect) router.push("/dashboard");
-    else router.push(redirect);
   }
 
   return (
