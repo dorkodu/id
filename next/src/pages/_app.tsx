@@ -79,8 +79,7 @@ CustomApp.getInitialProps = async (context: AppContext): Promise<CustomAppProps 
       // Get user's authorization status
       const _auth = (await require('@/lib/api/controllers/auth')).default as typeof auth;
       const result = await _auth.auth.executor({}, { req, res });
-      const status = !(!result?.data || result.error);
-      authorized = status;
+      authorized = !(!result?.data || result.error);
     }
   }
 
