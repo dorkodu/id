@@ -8,7 +8,7 @@ import { getHotkeyHandler, useFocusWithin } from "@mantine/hooks";
 import { GetServerSideProps, NextApiRequest, NextApiResponse } from "next";
 import auth from "@/lib/api/controllers/auth";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
-import { useUserContext } from "@/stores/userContext";
+import { useUserStore } from "@/stores/userStore";
 import { wait } from "@/components/hooks";
 import CustomLink from "@/components/CustomLink";
 import OverlayLoader from "@/components/loaders/OverlayLoader";
@@ -26,7 +26,7 @@ function ChangeEmail() {
   const [state, setState] = useState<State>({ loading: false, status: undefined, email: "" });
 
   const { t } = useTranslation();
-  const queryInitiateEmailChange = useUserContext(state => state.queryInitiateEmailChange);
+  const queryInitiateEmailChange = useUserStore(state => state.queryInitiateEmailChange);
 
   const initiateEmailChange = async () => {
     if (state.loading) return;

@@ -1,7 +1,7 @@
 import CustomLink from "@/components/CustomLink";
 import { wait } from "@/components/hooks";
 import OverlayLoader from "@/components/loaders/OverlayLoader";
-import { useUserContext } from "@/stores/userContext";
+import { useUserStore } from "@/stores/userStore";
 import { Alert, Anchor, Button, Card, Flex, Text, Title } from "@mantine/core";
 import { IconAlertCircle, IconArrowLeft } from "@tabler/icons-react";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
@@ -37,7 +37,7 @@ function Access() {
   });
 
   const { t } = useTranslation();
-  const queryGrantAccess = useUserContext((state) => state.queryGrantAccess);
+  const queryGrantAccess = useUserStore((state) => state.queryGrantAccess);
 
   const accept = async () => {
     const service = typeof router.query.service === "string" ? router.query.service : undefined;

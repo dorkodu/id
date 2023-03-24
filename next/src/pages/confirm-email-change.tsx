@@ -3,7 +3,7 @@ import { IconAlertCircle, IconArrowLeft, IconCircleCheck } from "@tabler/icons-r
 import { useEffect, useState } from "react";
 import { fullWidth } from "../styles/css";
 import { useTranslation } from "next-i18next";
-import { useUserContext } from "@/stores/userContext";
+import { useUserStore } from "@/stores/userStore";
 import { wait } from "@/components/hooks";
 import DefaultLoader from "@/components/loaders/DefaultLoader";
 import CustomLink from "@/components/CustomLink";
@@ -22,7 +22,7 @@ function ConfirmEmailChange() {
 
   const router = useRouter();
   const { t } = useTranslation();
-  const queryConfirmEmailChange = useUserContext(state => state.queryConfirmEmailChange);
+  const queryConfirmEmailChange = useUserStore(state => state.queryConfirmEmailChange);
 
   const confirmEmailChange = async () => {
     const token = typeof router.query.token === "string" ? router.query.token : undefined;

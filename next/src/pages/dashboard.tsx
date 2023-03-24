@@ -6,8 +6,8 @@ import InfiniteScroll from "@/components/InfiniteScroll";
 import { Session } from "@/components/Session";
 import User from "@/components/User";
 import DashboardLayout from "@/layouts/DashboardLayout";
-import { useAppStore } from "@/stores/appStore";
-import { useUserContext, useUserStore } from "@/stores/userContext";
+import { appStore, useAppStore } from "@/stores/appStore";
+import { userStore, useUserStore } from "@/stores/userStore";
 import { IAccess } from "@/types/access";
 import { ISession } from "@/types/session";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
@@ -23,18 +23,18 @@ function Dashboard() {
 
   const { t } = useTranslation();
 
-  const setUser = useUserContext((state) => state.setUser);
-  const setCurrentSession = useUserContext((state) => state.setCurrentSession);
-  const setSessions = useUserContext((state) => state.setSessions);
-  const setAccesses = useUserContext((state) => state.setAccesses);
+  const setUser = useUserStore((state) => state.setUser);
+  const setCurrentSession = useUserStore((state) => state.setCurrentSession);
+  const setSessions = useUserStore((state) => state.setSessions);
+  const setAccesses = useUserStore((state) => state.setAccesses);
 
-  const queryGetSessions = useUserContext((state) => state.queryGetSessions);
-  const queryGetAccesses = useUserContext((state) => state.queryGetAccesses);
+  const queryGetSessions = useUserStore((state) => state.queryGetSessions);
+  const queryGetAccesses = useUserStore((state) => state.queryGetAccesses);
 
-  const user = useUserContext((state) => state.user);
-  const currentSession = useUserContext((state) => state.currentSession);
-  const sessions = useUserContext((_state) => _state.getSessions(state.sessionOrder));
-  const accesses = useUserContext((_state) => _state.getAccesses(state.accessOrder));
+  const user = useUserStore((state) => state.user);
+  const currentSession = useUserStore((state) => state.currentSession);
+  const sessions = useUserStore((_state) => _state.getSessions(state.sessionOrder));
+  const accesses = useUserStore((_state) => _state.getAccesses(state.accessOrder));
 
   const [dashboardProps, setDashboardProps] = useFeedProps();
   const [sessionFeedProps, setSessionFeedProps] = useFeedProps();
@@ -59,8 +59,8 @@ function Dashboard() {
   const fetchRoute = async () => {
     setDashboardProps(s => ({ ...s, loading: true, status: undefined }));
 
-    const sessionAnchor = useUserStore().getState().getSessionsAnchor(state.sessionOrder, true);
-    const accessAnchor = useUserStore().getState().getAccessesAnchor(state.accessOrder, true);
+    const sessionAnchor = userStore().getState().getSessionsAnchor(state.sessionOrder, true);
+    const accessAnchor = userStore().getState().getAccessesAnchor(state.accessOrder, true);
 
     const res = await sage.get(
       {
@@ -120,7 +120,7 @@ function Dashboard() {
 
   const changeFeed = (value: string) => {
     if (value === "sessions" || value === "accesses") {
-      useAppStore.setState(s => { s.options.dashboard.feed = value });
+      appStore().setState(s => { s.options.dashboard.feed = value });
     }
   }
 
@@ -142,7 +142,7 @@ function Dashboard() {
     if (getLoading(state.feed)) return;
 
     if (value === "newer" || value === "older") {
-      useAppStore.setState(s => {
+      appStore().setState(s => {
         switch (state.feed) {
           case "sessions": s.options.dashboard.sessionOrder = value; break;
           case "accesses": s.options.dashboard.accessOrder = value; break;
@@ -150,7 +150,7 @@ function Dashboard() {
       });
 
       // Clear feed when changing the order
-      useUserStore().setState(_state => {
+      userStore().setState(_state => {
         switch (state.feed) {
           case "sessions": _state.session.entities = {}; break;
           case "accesses": _state.access.entities = {}; break;

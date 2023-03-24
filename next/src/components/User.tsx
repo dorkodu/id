@@ -30,7 +30,7 @@ import TextParser, { PieceType } from "./TextParser";
 import { useFocusWithin } from "@mantine/hooks";
 import InputRequirements, { getRequirement, getRequirementError } from "./popovers/InputRequirements";
 import { wait } from "./hooks";
-import { useUserContext } from "@/stores/userContext";
+import { useUserStore } from "@/stores/userStore";
 import CustomLink from "./CustomLink";
 import OverlayLoader from "./loaders/OverlayLoader";
 import { IUser } from "@/types/user";
@@ -74,7 +74,7 @@ function User({ user }: Props) {
 
   const { locale } = useRouter();
   const { t } = useTranslation();
-  const queryEditProfile = useUserContext((state) => state.queryEditProfile);
+  const queryEditProfile = useUserStore((state) => state.queryEditProfile);
 
   const editProfile = async () => {
     if (state.loading) return false;

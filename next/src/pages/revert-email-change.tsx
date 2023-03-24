@@ -3,7 +3,7 @@ import { IconAlertCircle, IconArrowLeft, IconCircleCheck } from "@tabler/icons-r
 import { useEffect, useState } from "react";
 import { widthLimit } from "../styles/css";
 import { useTranslation } from "next-i18next";
-import { useUserContext } from "@/stores/userContext";
+import { useUserStore } from "@/stores/userStore";
 import { useRouter } from "next/router";
 import PageLayout from "@/layouts/PageLayout";
 import CustomLink from "@/components/CustomLink";
@@ -24,7 +24,7 @@ function RevertChangeEmail() {
 
   const router = useRouter();
   const { t } = useTranslation();
-  const queryRevertEmailChange = useUserContext(state => state.queryRevertEmailChange);
+  const queryRevertEmailChange = useUserStore(state => state.queryRevertEmailChange);
 
   const revertEmailChange = async () => {
     const token = typeof router.query.token === "string" ? router.query.token : undefined;

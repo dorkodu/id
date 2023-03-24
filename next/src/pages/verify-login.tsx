@@ -9,7 +9,7 @@ import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'next-i18next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
-import { useUserContext } from '@/stores/userContext'
+import { useUserStore } from '@/stores/userStore'
 
 interface State {
   loading: boolean;
@@ -21,7 +21,7 @@ export default function VerifyLogin() {
 
   const router = useRouter();
   const { t } = useTranslation();
-  const queryVerifyLogin = useUserContext((state) => state.queryVerifyLogin);
+  const queryVerifyLogin = useUserStore((state) => state.queryVerifyLogin);
 
   const verifyLogin = async () => {
     const token = typeof router.query.token === "string" ? router.query.token : undefined;

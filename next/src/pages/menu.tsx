@@ -5,14 +5,14 @@ import { GetServerSideProps, NextApiRequest, NextApiResponse } from "next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { useTranslation } from "next-i18next";
 import { ColorToggleSegmented } from "../components/ColorToggle";
-import { useUserContext } from "@/stores/userContext";
+import { useUserStore } from "@/stores/userStore";
 import LanguagePicker from "@/components/LanguagePicker";
 import DashboardLayout from "@/layouts/DashboardLayout";
 import Head from "next/head";
 
 function Menu() {
   const { t } = useTranslation();
-  const queryLogout = useUserContext(state => state.queryLogout);
+  const queryLogout = useUserStore(state => state.queryLogout);
 
   const logout = () => { queryLogout() }
 

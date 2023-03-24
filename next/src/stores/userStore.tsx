@@ -1,4 +1,4 @@
-import { createStore } from "zustand";
+import { createStore, useStore } from "zustand";
 import { immer } from "zustand/middleware/immer";
 import { array } from "../lib/web/array";
 import { request, sage } from "./api";
@@ -7,8 +7,9 @@ import { ISession } from "@/types/session";
 import { IUser } from "@/types/user";
 import { IAccess } from "@/types/access";
 import { ErrorCode } from "@/types/error_codes";
+import { createContext, useContext } from "react";
 
-export interface UserState {
+interface State {
   authorized: boolean;
   user: IUser | undefined;
 
@@ -17,7 +18,7 @@ export interface UserState {
   access: { entities: { [key: string]: IAccess } }
 }
 
-export interface UserAction {
+interface Action {
   setUser: (user: IUser | undefined) => void;
 
   setCurrentSession: (session: ISession | undefined) => void;
@@ -57,7 +58,7 @@ export interface UserAction {
   queryRevokeAccess: (accessId: string) => Promise<void>;
 }
 
-const initialState: UserState = {
+const initialState: State = {
   authorized: false,
   user: undefined,
   currentSession: undefined,
@@ -65,9 +66,9 @@ const initialState: UserState = {
   access: { entities: {} },
 }
 
-export const createUserStore = (props?: Partial<UserState>) => {
+export const createUserStore = (props?: Partial<State>) => {
   return createStore(
-    immer<UserState & UserAction>((set, get) => ({
+    immer<State & Action>((set, get) => ({
       ...initialState,
       ...props,
 
@@ -408,4 +409,34 @@ export const createUserStore = (props?: Partial<UserState>) => {
       },
     }))
   )
+}
+
+type UserStore = ReturnType<typeof createUserStore>
+type UserProviderProps = React.PropsWithChildren<Partial<State>>
+
+const UserContext = createContext<UserStore | null>(null);
+let store: UserStore | undefined = undefined;
+
+export function UserProvider({ children, ...props }: UserProviderProps) {
+  if (!store) store = createUserStore(props);
+
+  return (
+    <UserContext.Provider value={store}>
+      {children}
+    </UserContext.Provider>
+  )
+}
+
+export function useUserStore<T>(
+  selector: (state: State & Action) => T,
+  equalityFn?: (left: T, right: T) => boolean
+): T {
+  const store = useContext(UserContext);
+  if (!store) throw new Error('Missing UserContext.Provider in the tree');
+  return useStore(store, selector, equalityFn);
+}
+
+export function userStore() {
+  if (!store) throw new Error('Missing UserContext.Provider in the tree');
+  return store;
 }

@@ -6,7 +6,7 @@ import { useTranslation } from "next-i18next";
 import { getHotkeyHandler, useFocusWithin } from "@mantine/hooks";
 import InputRequirements, { getRequirement, getRequirementError } from "../components/popovers/InputRequirements";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
-import { useUserContext } from "@/stores/userContext";
+import { useUserStore } from "@/stores/userStore";
 import { wait } from "@/components/hooks";
 import PageLayout from "@/layouts/PageLayout";
 import OverlayLoader from "@/components/loaders/OverlayLoader";
@@ -31,7 +31,7 @@ function ConfirmPasswordChange() {
 
   const router = useRouter();
   const { t } = useTranslation();
-  const queryConfirmPasswordChange = useUserContext(state => state.queryConfirmPasswordChange);
+  const queryConfirmPasswordChange = useUserStore(state => state.queryConfirmPasswordChange);
 
   const confirmChangePassword = async () => {
     const token = typeof router.query.token === "string" ? router.query.token : undefined;

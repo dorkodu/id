@@ -10,7 +10,7 @@ import {
   IconTrash,
 } from "@tabler/icons-react";
 import { useTranslation } from "next-i18next";
-import { useUserContext } from "@/stores/userContext";
+import { useUserStore } from "@/stores/userStore";
 import { IAccess } from "@/types/access";
 import { util } from "@/lib/web/util";
 import { useRouter } from "next/router";
@@ -25,7 +25,7 @@ const fullWidth = { width: "100%" } satisfies CSSObject
 function Access({ access }: Props) {
   const { locale } = useRouter();
   const { t } = useTranslation();
-  const queryRevokeAccess = useUserContext((state) => state.queryRevokeAccess);
+  const queryRevokeAccess = useUserStore((state) => state.queryRevokeAccess);
   const revokeAccess = () => queryRevokeAccess(access.id);
 
   return (

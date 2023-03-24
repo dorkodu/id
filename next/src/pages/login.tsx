@@ -10,7 +10,7 @@ import Head from 'next/head'
 import { useState } from 'react'
 import { useTranslation } from 'next-i18next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
-import { useUserContext } from '@/stores/userContext'
+import { useUserStore } from '@/stores/userStore'
 
 interface State {
   loading: boolean;
@@ -29,7 +29,7 @@ export default function Login() {
   });
 
   const { t } = useTranslation();
-  const queryLogin = useUserContext((state) => state.queryLogin);
+  const queryLogin = useUserStore((state) => state.queryLogin);
 
   const login = async () => {
     if (state.loading) return;

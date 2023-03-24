@@ -6,11 +6,11 @@ import { Anchor, Button, Flex, ThemeIcon } from '@mantine/core'
 import { IconDiscountCheck, IconLock, IconUnlink, IconUser } from '@tabler/icons-react'
 import Head from 'next/head'
 import { useTranslation } from 'next-i18next'
-import { useUserContext } from '@/stores/userContext'
+import { useUserStore } from '@/stores/userStore'
 
 export default function Home() {
   const { t } = useTranslation("common");
-  const authorized = useUserContext((state) => state.authorized);
+  const authorized = useUserStore((state) => state.authorized);
 
   return (
     <>

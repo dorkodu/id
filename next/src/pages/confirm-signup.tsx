@@ -12,7 +12,7 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import { useUserContext } from '@/stores/userContext';
+import { useUserStore } from '@/stores/userStore';
 
 interface State {
   loading: boolean;
@@ -30,7 +30,7 @@ export default function ConfirmSignup() {
 
   const router = useRouter();
   const { t } = useTranslation();
-  const queryConfirmSignup = useUserContext((state) => state.queryConfirmSignup);
+  const queryConfirmSignup = useUserStore((state) => state.queryConfirmSignup);
 
   // Necessary stuff for input validation & error messages
   const [inputReady, setInputReady] = useState({ password: false });

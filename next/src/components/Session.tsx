@@ -12,7 +12,7 @@ import {
   IconTrash,
 } from "@tabler/icons-react";
 import { useTranslation } from "next-i18next";
-import { useUserContext } from "@/stores/userContext";
+import { useUserStore } from "@/stores/userStore";
 import { ISession } from "@/types/session";
 import { useRouter } from "next/router";
 
@@ -27,7 +27,7 @@ const fullWidth = { width: "100%" } satisfies CSSObject
 export function Session({ session, currentSession }: Props) {
   const { locale } = useRouter();
   const { t } = useTranslation();
-  const queryTerminateSession = useUserContext((state) => state.queryTerminateSession);
+  const queryTerminateSession = useUserStore((state) => state.queryTerminateSession);
   const terminateSession = () => queryTerminateSession(session.id);
 
   const SessionMenu = () => (
