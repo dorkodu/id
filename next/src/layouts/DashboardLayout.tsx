@@ -19,9 +19,9 @@ function DashboardLayout({ children }: React.PropsWithChildren) {
 export default DashboardLayout
 
 function LayoutHeader() {
-  const theme = useMantineTheme();
   const router = useRouter();
-  const goBack = () => router.back();
+  const theme = useMantineTheme();
+  const image = theme.colorScheme === "light" ? IDBrandDark : IDBrandLight;
 
   return (
     <Header sx={width} px="md" pt="md" height={64} withBorder={false}>
@@ -29,17 +29,17 @@ function LayoutHeader() {
         <Flex sx={{ height: "100%" }} align="center" justify="space-between">
           <ActionIcon
             color="dark"
-            onClick={goBack}
+            onClick={() => router.back()}
             style={router.pathname !== "/dashboard" ? {} : { visibility: "hidden" }}>
             <IconArrowLeft />
           </ActionIcon>
 
           <CustomLink href="/">
-            <ActionIcon size={64}>
+            <ActionIcon w={image.width / 7.5} h={image.height / 7.5}>
               <Image
-                src={theme.colorScheme === "light" ? IDBrandDark : IDBrandLight}
+                src={image.src}
                 alt="Dorkodu ID"
-                width={64} height={64}
+                width={image.width / 7.5} height={image.height / 7.5}
                 draggable={false}
               />
             </ActionIcon>
