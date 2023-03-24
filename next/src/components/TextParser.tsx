@@ -5,6 +5,7 @@ import twemoji from "twemoji";
 
 import urlRegexp from "url-regex";
 import emojiRegexp from "emoji-regex";
+import CustomLink from "./CustomLink";
 
 const urlRegex = urlRegexp();
 const emojiRegex = emojiRegexp();
@@ -90,7 +91,11 @@ function TextPiece({ text }: { text: string }) {
 }
 
 function UrlPiece({ url }: { url: string }) {
-  return <Anchor href={url}>{url}</Anchor>
+  return (
+    <CustomLink href={url}>
+      <Anchor component="div">{url}</Anchor>
+    </CustomLink>
+  )
 }
 
 function EmojiPiece({ emoji }: { emoji: string }) {

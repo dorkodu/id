@@ -3,6 +3,7 @@ import { ColorToggleSegmented } from "./ColorToggle";
 import { useTranslation } from "next-i18next";
 import { widthLimit } from "@/styles/css";
 import LanguagePicker from "./LanguagePicker";
+import CustomLink from "./CustomLink";
 
 function Footer() {
   const { t } = useTranslation();
@@ -15,9 +16,9 @@ function Footer() {
   ];
 
   const items = links.map((link) => (
-    <Anchor color="dimmed" key={link.label} href={link.link} size="sm">
-      {link.label}
-    </Anchor>
+    <CustomLink href={link.link} key={link.label}>
+      <Anchor color="dimmed" size="sm" component="div">{link.label}</Anchor>
+    </CustomLink>
   ));
 
   return (
