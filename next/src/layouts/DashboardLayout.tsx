@@ -3,8 +3,8 @@ import { IconArrowLeft, IconMenu2 } from "@tabler/icons-react";
 import { useRouter } from "next/router";
 import CustomLink from "@/components/CustomLink";
 import Image from "next/image";
-import IDBrandLight from "@public/id_brand-light.svg";
-import IDBrandDark from "@public/id_brand-dark.svg";
+import IDBrandLight from "@/../public/id_brand-light.svg";
+import IDBrandDark from "@/../public/id_brand-dark.svg";
 
 const width = { maxWidth: "768px", margin: "0 auto" } satisfies CSSObject
 

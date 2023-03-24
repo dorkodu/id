@@ -22,7 +22,7 @@ import {
   IconUserCircle,
   IconAlertCircle,
 } from "@tabler/icons-react";
-import UserAvatar from "@assets/avatar.webp";
+import UserAvatar from "@/assets/avatar.webp";
 import { useEffect, useState } from "react";
 import { useTranslation } from "next-i18next";
 import { wrapContent } from "../styles/css";

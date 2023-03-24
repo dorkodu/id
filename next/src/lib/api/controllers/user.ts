@@ -11,14 +11,14 @@ import { SchemaContext } from "./_schema";
 import { z } from "zod";
 import auth from "./auth";
 import pg from "../pg";
-import { IUserParsed, iUserSchema } from "@type/user";
+import { IUserParsed, iUserSchema } from "@/types/user";
 import { token } from "../lib/token";
 import { crypto } from "../lib/crypto";
 import { mailer } from "../lib/mail/mailer";
 import { date } from "../lib/date";
 import { snowflake } from "../lib/snowflake";
 import { util } from "../lib/util";
-import { ErrorCode } from "@type/error_codes";
+import { ErrorCode } from "@/types/error_codes";
 
 const getUser = sage.resource(
   {} as SchemaContext,

@@ -4,9 +4,9 @@ import { SchemaContext } from "./_schema";
 import { z } from "zod";
 import auth from "./auth";
 import pg from "../pg";
-import { ISessionParsed, iSessionSchema } from "@type/session";
+import { ISessionParsed, iSessionSchema } from "@/types/session";
 import { date } from "../lib/date";
-import { ErrorCode } from "@type/error_codes";
+import { ErrorCode } from "@/types/error_codes";
 
 const getCurrentSession = sage.resource(
   {} as SchemaContext,

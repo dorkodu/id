@@ -13,8 +13,8 @@ import {
   getAccessesSchema, grantAccessSchema,
   revokeAccessSchema
 } from "../schemas/access";
-import { IAccessParsed, iAccessSchema } from "@type/access";
-import { ErrorCode } from "@type/error_codes";
+import { IAccessParsed, iAccessSchema } from "@/types/access";
+import { ErrorCode } from "@/types/error_codes";
 import auth from "./auth";
 import { SchemaContext } from "./_schema";
 
