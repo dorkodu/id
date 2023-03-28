@@ -5,7 +5,7 @@ interface Props {
   full?: boolean;
 }
 
-function OverlayLoader({ full }: Props) {
+export default function OverlayLoader({ full }: Props) {
   const delay = useDelay();
   if (delay) return null;
 
@@ -17,5 +17,3 @@ function OverlayLoader({ full }: Props) {
     />
   )
 }
-
-export default OverlayLoader

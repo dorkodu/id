@@ -30,7 +30,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { wrapContent } from "../styles/css";
 import TextParser, { PieceType } from "./TextParser";
-import OverlayLoader from "./cards/OverlayLoader";
+import OverlayLoader from "./loaders/OverlayLoader";
 import { useFocusWithin } from "@mantine/hooks";
 import InputRequirements, { getRequirement, getRequirementError } from "./popovers/InputRequirements";
 import { useWait } from "./hooks";

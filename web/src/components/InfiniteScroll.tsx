@@ -2,7 +2,7 @@ import InfiniteScrollComponent from "react-simple-pull-to-refresh";
 import React, { ReactElement, useLayoutEffect, useMemo, useRef } from "react";
 import { IconArrowBigDownLineFilled } from "@tabler/icons-react";
 import { Flex } from "@mantine/core";
-import DefaultLoader from "./cards/DefaultLoader";
+import DefaultLoader from "./loaders/DefaultLoader";
 
 interface Props {
   children: React.ReactNode;

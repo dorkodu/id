@@ -7,11 +7,11 @@ import Footer from "../components/Footer";
 import { useUserStore } from "../stores/userStore";
 import { fullWidth, widthLimit } from "../styles/css";
 import { useTranslation } from "react-i18next";
-import OverlayLoader from "../components/cards/OverlayLoader";
+import OverlayLoader from "../components/loaders/OverlayLoader";
 import { useWait } from "../components/hooks";
 import { getHotkeyHandler, useFocusWithin } from "@mantine/hooks";
 import InputRequirements, { getRequirement, getRequirementError } from "../components/popovers/InputRequirements";
-import { VisibilityToggleIcon } from "../components/util";
+import VisibilityToggle from "../components/VisibilityToggle";
 
 interface State {
   loading: boolean;
@@ -84,7 +84,7 @@ function ConfirmChangePassword() {
                   placeholder={t("enterNewPassword")}
                   defaultValue={state.password}
                   onChange={(ev) => { setState({ ...state, password: ev.target.value }) }}
-                  visibilityToggleIcon={VisibilityToggleIcon}
+                  visibilityToggleIcon={VisibilityToggle}
                   variant="filled"
                   icon={<IconAsterisk size={16} />}
                   error={inputReady && getRequirementError(t, "password", state.password, focused)}

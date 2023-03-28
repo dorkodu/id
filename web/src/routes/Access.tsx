@@ -3,7 +3,7 @@ import { IconAlertCircle, IconArrowLeft } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
-import OverlayLoader from "../components/cards/OverlayLoader";
+import OverlayLoader from "../components/loaders/OverlayLoader";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 import { useWait } from "../components/hooks";

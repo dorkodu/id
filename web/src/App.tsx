@@ -2,8 +2,8 @@ import { ColorScheme, ColorSchemeProvider, MantineProvider } from "@mantine/core
 import { useLocalStorage } from "@mantine/hooks";
 import { Suspense, useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
-import CenterLoader from "./components/cards/CenterLoader";
-import OverlayLoader from "./components/cards/OverlayLoader";
+import CenterLoader from "./components/loaders/CenterLoader";
+import OverlayLoader from "./components/loaders/OverlayLoader";
 import { useAppStore } from "./stores/appStore";
 import { useUserStore } from "./stores/userStore";
 import { theme } from "./styles/theme";

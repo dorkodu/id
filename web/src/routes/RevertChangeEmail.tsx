@@ -7,7 +7,7 @@ import Footer from "../components/Footer";
 import { useUserStore } from "../stores/userStore";
 import { widthLimit } from "../styles/css";
 import { useTranslation } from "react-i18next";
-import Loader from "../components/cards/Loader";
+import DefaultLoader from "../components/loaders/DefaultLoader";
 
 interface State {
   loading: boolean;
@@ -56,7 +56,7 @@ function RevertChangeEmail() {
         <Flex justify="center">
           <Card shadow="sm" p="md" radius="md" withBorder sx={widthLimit}>
             <Flex direction="column" gap="md">
-              {state.loading && <Flex justify="center"><Loader /></Flex>}
+              {state.loading && <Flex justify="center"><DefaultLoader /></Flex>}
 
               {!state.loading &&
                 <Flex>

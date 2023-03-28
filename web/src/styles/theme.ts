@@ -6,7 +6,7 @@ export const theme: MantineThemeOverride = {
       overflowY: "scroll",
       overscrollBehavior: "contain",
 
-      maxWidth: 768,
+      maxWidth: "768px",
       margin: "0 auto",
     },
 

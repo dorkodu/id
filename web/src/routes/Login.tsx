@@ -18,10 +18,10 @@ import { useUserStore } from "../stores/userStore";
 import { fullWidth, widthLimit } from "../styles/css";
 import { useTranslation } from "react-i18next";
 import { useAppStore } from "../stores/appStore";
-import OverlayLoader from "../components/cards/OverlayLoader";
+import OverlayLoader from "../components/loaders/OverlayLoader";
 import { useWait } from "../components/hooks";
 import { getHotkeyHandler } from "@mantine/hooks";
-import { VisibilityToggleIcon } from "../components/util";
+import VisibilityToggle from "../components/VisibilityToggle";
 
 interface State {
   loading: boolean;
@@ -104,7 +104,7 @@ function Login() {
           variant="filled"
           label={t("password")}
           placeholder={t("enterPassword")}
-          visibilityToggleIcon={VisibilityToggleIcon}
+          visibilityToggleIcon={VisibilityToggle}
           defaultValue={state.password}
           onChange={(ev) => { setState({ ...state, password: ev.target.value }) }}
           withAsterisk={true}

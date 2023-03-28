@@ -26,10 +26,10 @@ import { fullWidth, widthLimit } from "../styles/css";
 import { Trans, useTranslation } from "react-i18next";
 import { useAppStore } from "../stores/appStore";
 import { useWait } from "../components/hooks";
-import OverlayLoader from "../components/cards/OverlayLoader";
+import OverlayLoader from "../components/loaders/OverlayLoader";
 import InputRequirements, { getRequirement, getRequirementError } from "../components/popovers/InputRequirements";
 import { getHotkeyHandler, useFocusWithin } from "@mantine/hooks";
-import { VisibilityToggleIcon } from "../components/util";
+import VisibilityToggle from "../components/VisibilityToggle";
 
 interface State {
   loading: boolean;
@@ -206,7 +206,7 @@ function CreateAccount() {
             label={t("password")}
             icon={<IconAsterisk size={16} />}
             placeholder={t("enterPassword")}
-            visibilityToggleIcon={VisibilityToggleIcon}
+            visibilityToggleIcon={VisibilityToggle}
             defaultValue={state.password}
             onChange={(ev) => { setState({ ...state, password: ev.target.value }) }}
             error={inputReady.password && getRequirementError(t, "password", state.password, passwordFocused)}

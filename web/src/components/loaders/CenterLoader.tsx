@@ -8,11 +8,9 @@ const center = {
   transform: "translate(-50%, -50%)",
 } satisfies CSSObject
 
-function CenterLoader() {
+export default function CenterLoader() {
   const delay = useDelay();
   if (delay) return null;
 
   return <Loader variant="dots" color="green" sx={center} />
 }
-
-export default CenterLoader

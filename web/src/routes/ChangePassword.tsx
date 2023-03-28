@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { fullWidth, widthLimit } from "../styles/css";
 import { useTranslation } from "react-i18next";
 import { useWait } from "../components/hooks";
-import OverlayLoader from "../components/cards/OverlayLoader";
+import OverlayLoader from "../components/loaders/OverlayLoader";
 import { getHotkeyHandler } from "@mantine/hooks";
 
 interface State {

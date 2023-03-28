@@ -8,7 +8,7 @@ import { useUserStore } from "../stores/userStore";
 import { fullWidth, widthLimit } from "../styles/css";
 import { useTranslation } from "react-i18next";
 import { useWait } from "../components/hooks";
-import OverlayLoader from "../components/cards/OverlayLoader";
+import OverlayLoader from "../components/loaders/OverlayLoader";
 import InputRequirements, { getRequirement, getRequirementError } from "../components/popovers/InputRequirements";
 import { getHotkeyHandler, useFocusWithin } from "@mantine/hooks";
 
