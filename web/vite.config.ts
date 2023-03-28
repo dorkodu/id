@@ -74,7 +74,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "@api": path.resolve(__dirname, "../api/src"),
-      "@assets": path.resolve(__dirname, "./src/assets"),
+      "@": path.resolve(__dirname, "./src"),
     },
   },
   build: {

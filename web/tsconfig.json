@@ -28,7 +28,7 @@
 
     "paths": {
       "@api/*": ["../api/src/*"],
-      "@assets/*": ["./src/assets/*"]
+      "@/*": ["./src/*"],
     }
   },
   "include": ["src"],

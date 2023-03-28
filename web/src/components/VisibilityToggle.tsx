@@ -2,7 +2,7 @@ import { IconEye, IconEyeOff } from "@tabler/icons-react";
 
 interface VisibilityToggleIconProps {
   reveal: boolean;
-  size: number;
+  size: string | number;
 }
 
 export default function VisibilityToggle({ reveal, size }: VisibilityToggleIconProps) {

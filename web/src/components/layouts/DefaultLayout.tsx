@@ -1,12 +1,14 @@
-import { ActionIcon, AppShell, Card, CSSObject, Flex, Header } from "@mantine/core"
-import IDIcon from "@assets/id.svg";
+import { ActionIcon, AppShell, Card, CSSObject, Flex, Header, useMantineTheme } from "@mantine/core"
 import { IconArrowLeft, IconMenu2 } from "@tabler/icons-react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { useAppStore } from "../../stores/appStore";
+import IDBrandLight from "@/assets/id_brand-light.svg";
+import IDBrandDark from "@/assets/id_brand-dark.svg";
 
 const width = { maxWidth: "768px", margin: "0 auto" } satisfies CSSObject
 
 function DefaultLayout() {
+  const theme = useMantineTheme();
   const navigate = useNavigate();
   const route = useAppStore(state => state.route);
 
@@ -26,10 +28,11 @@ function DefaultLayout() {
               <IconArrowLeft />
             </ActionIcon>
 
-            <ActionIcon size={32}>
+            <ActionIcon size={64}>
               <img
-                src={IDIcon} alt="Dorkodu ID"
-                width={32} height={32}
+                src={theme.colorScheme === "dark" ? IDBrandLight : IDBrandDark}
+                alt="Dorkodu ID"
+                width={64} height={64}
                 onClick={gotoWelcome}
                 draggable={false}
               />

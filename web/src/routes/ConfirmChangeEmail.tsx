@@ -1,14 +1,13 @@
-import { Alert, Anchor, Card, Flex, Text, Title } from "@mantine/core";
+import { Alert, Anchor, Card, Flex, Text } from "@mantine/core";
 import { IconAlertCircle, IconArrowLeft, IconCircleCheck } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
 import { useUserStore } from "../stores/userStore";
-import { fullWidth, widthLimit } from "../styles/css";
+import { fullWidth } from "../styles/css";
 import { useTranslation } from "react-i18next";
 import { useWait } from "../components/hooks";
 import DefaultLoader from "../components/loaders/DefaultLoader";
+import PageLayout from "@/components/layouts/PageLayout";
 
 interface State {
   loading: boolean;
@@ -43,61 +42,49 @@ function ConfirmChangeEmail() {
   useEffect(() => { confirmEmailChange() }, []);
 
   return (
-    <Flex mx="md">
-      <Flex direction="column" gap="md" sx={widthLimit}>
-        <Header />
+    <PageLayout
+      title={t("route.confirmEmailChange.title")}
+      description={t("route.confirmEmailChange.description")}
+    >
+      <Card shadow="sm" p="md" radius="md" withBorder sx={fullWidth}>
+        <Flex direction="column" gap="md">
+          {state.loading && <Flex justify="center"><DefaultLoader /></Flex>}
 
-        <Title order={2} align="center">
-          {t("route.confirmEmailChange.title")}
-        </Title>
-        <Text color="dimmed" size="md" align="center" weight={500}>
-          {t("route.confirmEmailChange.description")}
-        </Text>
-
-        <Flex justify="center">
-          <Card shadow="sm" p="md" radius="md" withBorder sx={fullWidth}>
-            <Flex direction="column" gap="md">
-              {state.loading && <Flex justify="center"><DefaultLoader /></Flex>}
-
-              {!state.loading &&
-                <Flex>
-                  <Anchor size={15} onClick={goBack}>
-                    <Flex align="center" gap="xs">
-                      <IconArrowLeft size={16} stroke={2.5} />
-                      <Text>{t("goBack")}</Text>
-                    </Flex>
-                  </Anchor>
+          {!state.loading &&
+            <Flex>
+              <Anchor size={15} onClick={goBack}>
+                <Flex align="center" gap="xs">
+                  <IconArrowLeft size={16} stroke={2.5} />
+                  <Text>{t("goBack")}</Text>
                 </Flex>
-              }
-
-              {state.status === true &&
-                <Alert
-                  icon={<IconCircleCheck size={24} />}
-                  title={t("success.text")}
-                  color="green"
-                  variant="light"
-                >
-                  {t("success.emailChanged")}
-                </Alert>
-              }
-
-              {state.status === false &&
-                <Alert
-                  icon={<IconAlertCircle size={24} />}
-                  title={t("error.text")}
-                  color="red"
-                  variant="light"
-                >
-                  {t("error.default")}
-                </Alert>
-              }
+              </Anchor>
             </Flex>
-          </Card>
-        </Flex>
+          }
 
-        <Footer />
-      </Flex>
-    </Flex>
+          {state.status === true &&
+            <Alert
+              icon={<IconCircleCheck size={24} />}
+              title={t("success.text")}
+              color="green"
+              variant="light"
+            >
+              {t("success.emailChanged")}
+            </Alert>
+          }
+
+          {state.status === false &&
+            <Alert
+              icon={<IconAlertCircle size={24} />}
+              title={t("error.text")}
+              color="red"
+              variant="light"
+            >
+              {t("error.default")}
+            </Alert>
+          }
+        </Flex>
+      </Card>
+    </PageLayout>
   )
 }
 

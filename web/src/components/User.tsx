@@ -23,7 +23,7 @@ import {
   IconUserCircle,
   IconAlertCircle,
 } from "@tabler/icons-react";
-import UserAvatar from "@assets/avatar.webp";
+import UserAvatar from "@/assets/avatar.webp";
 import { useUserStore } from "../stores/userStore";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";

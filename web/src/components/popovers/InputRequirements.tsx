@@ -20,7 +20,7 @@ function InputRequirements({ children, requirements, value }: Props) {
   )).filter(Boolean);
 
   return (
-    <Popover opened={popoverOpened} position="bottom" width="target" transition="pop">
+    <Popover opened={popoverOpened} position="bottom" width="target">
       <Popover.Target>
         <div
           onFocusCapture={() => setPopoverOpened(true)}
