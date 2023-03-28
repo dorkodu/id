@@ -1,7 +1,7 @@
 import { Card, Flex, Loader } from "@mantine/core";
 import { useDelay } from "../hooks";
 
-function CardLoader() {
+export default function CardLoader() {
   const delay = useDelay();
   if (delay) return null;
 
@@ -13,5 +13,3 @@ function CardLoader() {
     </Card>
   )
 }
-
-export default CardLoader

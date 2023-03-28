@@ -1,13 +1,14 @@
-import { css } from "@emotion/react";
+import { CSSObject } from "@mantine/core";
 
-export const widthLimit = css`width: 100%; max-width: 360px; margin: 0 auto;`
-export const fullWidth = css`width: 100%;`
+export const widthLimit = { width: "100%", maxWidth: "360px", margin: "0 auto" } satisfies CSSObject
+export const fullWidth = { width: "100%" } satisfies CSSObject
 
-export const clickable = css`cursor: pointer;`
-export const wrapContent = css`white-space: pre-wrap; word-break: break-word;`
-export const emoji = css`
-  height: 1em;
-  width: 1em;
-  margin: 0 .05em 0 .1em;
-  vertical-align: -0.1em;
-`
+export const wrapContent = { whiteSpace: "pre-wrap", wordBreak: "break-word" } satisfies CSSObject
+export const clickable = { cursor: "pointer" } satisfies CSSObject
+
+export const emoji = {
+  height: "1em",
+  width: "1em",
+  margin: "0 .05em 0 .1em",
+  verticalAlign: "-0.1em"
+} satisfies CSSObject

@@ -1,38 +1,15 @@
-import { css, Global } from "@emotion/react";
 import { ColorScheme, ColorSchemeProvider, MantineProvider } from "@mantine/core";
 import { useLocalStorage } from "@mantine/hooks";
 import { Suspense, useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
-import CenterLoader from "./components/cards/CenterLoader";
-import OverlayLoader from "./components/cards/OverlayLoader";
+import CenterLoader from "./components/loaders/CenterLoader";
+import OverlayLoader from "./components/loaders/OverlayLoader";
 import { useAppStore } from "./stores/appStore";
 import { useUserStore } from "./stores/userStore";
-import theme from "./styles/theme";
+import { theme } from "./styles/theme";
 import UpdateSW from "./components/modals/UpdateSW";
 import { useRegisterSW } from "virtual:pwa-register/react";
 import { ScrollRestoration } from "react-router-dom"
-
-const width = css`
-  max-width: 768px;
-  margin: 0 auto;
-`;
-
-const global = css`
-  body {
-    ${width}
-    overflow-y: scroll;
-    overscroll-behavior: contain;
-    
-    font-family: Rubik, sans-serif;
-  }
-
-  @font-face {
-    font-family: sans-serif;
-    src: local("sans-serif");
-    letter-spacing: 0.6px;
-    word-spacing: -1.65px;
-  }
-`;
 
 function App() {
   const location = useLocation();
@@ -86,7 +63,6 @@ function App() {
         </MantineProvider>
       </ColorSchemeProvider>
 
-      <Global styles={global} />
       <ScrollRestoration />
     </>
   );

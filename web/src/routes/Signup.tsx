@@ -1,35 +1,17 @@
-import {
-  Alert,
-  Anchor,
-  Button,
-  Card,
-  Flex,
-  PasswordInput,
-  Text,
-  TextInput,
-  Title,
-} from "@mantine/core";
-import {
-  IconAlertCircle,
-  IconArrowLeft,
-  IconAsterisk,
-  IconAt,
-  IconInfoCircle,
-  IconUser,
-} from "@tabler/icons-react";
+import { Alert, Anchor, Button, Card, Flex, PasswordInput, Text, TextInput } from "@mantine/core";
+import { IconAlertCircle, IconArrowLeft, IconAsterisk, IconAt, IconInfoCircle, IconUser } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
 import { useUserStore } from "../stores/userStore";
-import { fullWidth, widthLimit } from "../styles/css";
+import { fullWidth } from "../styles/css";
 import { Trans, useTranslation } from "react-i18next";
 import { useAppStore } from "../stores/appStore";
 import { useWait } from "../components/hooks";
-import OverlayLoader from "../components/cards/OverlayLoader";
+import OverlayLoader from "../components/loaders/OverlayLoader";
 import InputRequirements, { getRequirement, getRequirementError } from "../components/popovers/InputRequirements";
 import { getHotkeyHandler, useFocusWithin } from "@mantine/hooks";
-import { VisibilityToggleIcon } from "../components/util";
+import VisibilityToggle from "../components/VisibilityToggle";
+import PageLayout from "@/components/layouts/PageLayout";
 
 interface State {
   loading: boolean;
@@ -206,7 +188,7 @@ function CreateAccount() {
             label={t("password")}
             icon={<IconAsterisk size={16} />}
             placeholder={t("enterPassword")}
-            visibilityToggleIcon={VisibilityToggleIcon}
+            visibilityToggleIcon={VisibilityToggle}
             defaultValue={state.password}
             onChange={(ev) => { setState({ ...state, password: ev.target.value }) }}
             error={inputReady.password && getRequirementError(t, "password", state.password, passwordFocused)}
@@ -234,40 +216,30 @@ function CreateAccount() {
   }
 
   return (
-    <Flex mx="md">
-      <Flex direction="column" gap="md" css={widthLimit}>
-        <Header />
+    <PageLayout
+      title={t("route.signup.title")}
+      description={t("route.signup.description")}
+    >
+      <Flex justify="center">
+        <Card shadow="sm" p="md" radius="md" withBorder sx={fullWidth}>
+          {state.loading && <OverlayLoader />}
 
-        <Title order={2} align="center">
-          {t("route.signup.title")}
-        </Title>
-        <Text color="dimmed" size="md" align="center" weight={500}>
-          {t("route.signup.description")}
-        </Text>
-
-        <Flex justify="center">
-          <Card shadow="sm" p="md" radius="md" withBorder css={fullWidth}>
-            {state.loading && <OverlayLoader />}
-
-            <Flex direction="column" gap="md">
-              {/*Use Component() instead of <Component /> to avoid state-loss*/}
-              {state.stage === "signup" && signupStage()}
-              {state.stage === "confirm" && confirmSignupStage()}
-            </Flex>
-          </Card>
-        </Flex>
-
-        <Text color="dimmed" size="sm" align="center">
-          <Trans t={t} i18nKey="route.signup.notice" />
-        </Text>
-
-        <Anchor color="blue" align="center" onClick={gotoLogin}>
-          {t("alreadyHaveAnAccount")}
-        </Anchor>
-
-        <Footer />
+          <Flex direction="column" gap="md">
+            {/*Use Component() instead of <Component /> to avoid state-loss*/}
+            {state.stage === "signup" && signupStage()}
+            {state.stage === "confirm" && confirmSignupStage()}
+          </Flex>
+        </Card>
       </Flex>
-    </Flex>
+
+      <Text color="dimmed" size="sm" align="center">
+        <Trans t={t} i18nKey="route.signup.notice" />
+      </Text>
+
+      <Anchor color="blue" align="center" onClick={gotoLogin}>
+        {t("alreadyHaveAnAccount")}
+      </Anchor>
+    </PageLayout>
   )
 }
 

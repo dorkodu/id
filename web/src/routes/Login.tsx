@@ -1,27 +1,16 @@
-import {
-  Alert,
-  Anchor,
-  Button,
-  Card,
-  Flex,
-  PasswordInput,
-  Text,
-  TextInput,
-  Title,
-} from "@mantine/core";
+import { Alert, Anchor, Button, Card, Flex, PasswordInput, Text, TextInput } from "@mantine/core";
 import { IconAlertCircle, IconArrowLeft, IconCircleCheck, IconInfoCircle } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
 import { useUserStore } from "../stores/userStore";
-import { fullWidth, widthLimit } from "../styles/css";
+import { fullWidth } from "../styles/css";
 import { useTranslation } from "react-i18next";
 import { useAppStore } from "../stores/appStore";
-import OverlayLoader from "../components/cards/OverlayLoader";
+import OverlayLoader from "../components/loaders/OverlayLoader";
 import { useWait } from "../components/hooks";
 import { getHotkeyHandler } from "@mantine/hooks";
-import { VisibilityToggleIcon } from "../components/util";
+import VisibilityToggle from "../components/VisibilityToggle";
+import PageLayout from "@/components/layouts/PageLayout";
 
 interface State {
   loading: boolean;
@@ -104,7 +93,7 @@ function Login() {
           variant="filled"
           label={t("password")}
           placeholder={t("enterPassword")}
-          visibilityToggleIcon={VisibilityToggleIcon}
+          visibilityToggleIcon={VisibilityToggle}
           defaultValue={state.password}
           onChange={(ev) => { setState({ ...state, password: ev.target.value }) }}
           withAsterisk={true}
@@ -182,44 +171,34 @@ function Login() {
   useEffect(() => { state.stage === "verify" && verifyLogin() }, []);
 
   return (
-    <Flex mx="md">
-      <Flex direction="column" gap="md" css={widthLimit}>
-        <Header />
+    <PageLayout
+      title={t("route.login.title")}
+      description={t("route.login.description")}
+    >
+      <Flex justify="center">
+        <Card shadow="sm" p="md" radius="md" withBorder sx={fullWidth}>
+          {state.loading && <OverlayLoader />}
 
-        <Title order={2} align="center">
-          {t("route.login.title")}
-        </Title>
-        <Text color="dimmed" size="md" align="center" weight={500}>
-          {t("route.login.description")}
-        </Text>
-
-        <Flex justify="center">
-          <Card shadow="sm" p="md" radius="md" withBorder css={fullWidth}>
-            {state.loading && <OverlayLoader />}
-
-            <Flex direction="column" gap="md">
-              {/*Use Component() instead of <Component /> to avoid state-loss*/}
-              {state.stage === "login" && loginStage()}
-              {state.stage === "verify" && verifyLoginStage()}
-            </Flex>
-          </Card>
-        </Flex>
-
-        {state.stage !== "verify" &&
-          <>
-            <Anchor color="blue" align="center" onClick={gotoSignup}>
-              {t("dontHaveAnAccount")}
-            </Anchor>
-
-            <Anchor color="blue" align="center" onClick={gotoChangePassword}>
-              {t("forgotYourPassword")}
-            </Anchor>
-          </>
-        }
-
-        <Footer />
+          <Flex direction="column" gap="md">
+            {/*Use Component() instead of <Component /> to avoid state-loss*/}
+            {state.stage === "login" && loginStage()}
+            {state.stage === "verify" && verifyLoginStage()}
+          </Flex>
+        </Card>
       </Flex>
-    </Flex>
+
+      {state.stage !== "verify" &&
+        <>
+          <Anchor color="blue" align="center" onClick={gotoSignup}>
+            {t("dontHaveAnAccount")}
+          </Anchor>
+
+          <Anchor color="blue" align="center" onClick={gotoChangePassword}>
+            {t("forgotYourPassword")}
+          </Anchor>
+        </>
+      }
+    </PageLayout>
   )
 }
 

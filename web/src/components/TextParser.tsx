@@ -104,7 +104,7 @@ function EmojiPiece({ emoji }: { emoji: string }) {
   return (
     <img
       src={src}
-      css={emojiCSS}
+      style={emojiCSS}
       alt={emoji}
       draggable={false}
     />

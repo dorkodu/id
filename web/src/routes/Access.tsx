@@ -3,13 +3,12 @@ import { IconAlertCircle, IconArrowLeft } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
-import OverlayLoader from "../components/cards/OverlayLoader";
-import Footer from "../components/Footer";
-import Header from "../components/Header";
+import OverlayLoader from "../components/loaders/OverlayLoader";
 import { useWait } from "../components/hooks";
 import { useAppStore } from "../stores/appStore";
 import { useUserStore } from "../stores/userStore";
-import { fullWidth, widthLimit } from "../styles/css";
+import { fullWidth } from "../styles/css";
+import PageLayout from "@/components/layouts/PageLayout";
 
 interface State {
   loading: boolean;
@@ -56,77 +55,65 @@ function Access() {
   if (!authorized) { return <></> }
 
   return (
-    <Flex mx="md">
-      <Flex direction="column" gap="md" css={widthLimit}>
-        <Header />
+    <PageLayout
+      title={t("route.access.title")}
+      description={t("route.access.description")}
+    >
+      <Card shadow="sm" p="md" radius="md" withBorder sx={fullWidth}>
+        {state.loading && <OverlayLoader />}
 
-        <Title order={2} align="center">
-          {t("route.access.title")}
-        </Title>
-        <Text color="dimmed" size="md" align="center" weight={500}>
-          {t("route.access.description")}
-        </Text>
+        <Flex direction="column" gap="md">
+          {state.service && authorized &&
+            <>
+              <Title order={4} align="center">{state.service}</Title>
+              <Text>
+                <Trans t={t} i18nKey="route.access.serviceRequirements" />
+              </Text>
 
-        <Flex justify="center">
-          <Card shadow="sm" p="md" radius="md" withBorder css={fullWidth}>
-            {state.loading && <OverlayLoader />}
+              <Button onClick={accept}>
+                {t("accept")}
+              </Button>
 
-            <Flex direction="column" gap="md">
-              {state.service && authorized &&
-                <>
-                  <Title order={4} align="center">{state.service}</Title>
-                  <Text>
-                    <Trans t={t} i18nKey="route.access.serviceRequirements" />
-                  </Text>
+              <Button onClick={reject} variant="default">
+                {t("reject")}
+              </Button>
+            </>
+          }
 
-                  <Button onClick={accept}>
-                    {t("accept")}
-                  </Button>
+          {state.status === false &&
+            <Alert
+              icon={<IconAlertCircle size={24} />}
+              title={t("error.text")}
+              color="red"
+              variant="light"
+            >
+              {t("error.default")}
+            </Alert>
+          }
 
-                  <Button onClick={reject} variant="default">
-                    {t("reject")}
-                  </Button>
-                </>
-              }
-
-              {state.status === false &&
-                <Alert
-                  icon={<IconAlertCircle size={24} />}
-                  title={t("error.text")}
-                  color="red"
-                  variant="light"
-                >
-                  {t("error.default")}
-                </Alert>
-              }
-
-              {!state.service &&
-                <>
-                  <Flex>
-                    <Anchor size={15} onClick={goBack}>
-                      <Flex align="center" gap="xs">
-                        <IconArrowLeft size={16} stroke={2.5} />
-                        <Text>{t("goBack")}</Text>
-                      </Flex>
-                    </Anchor>
+          {!state.service &&
+            <>
+              <Flex>
+                <Anchor size={15} onClick={goBack}>
+                  <Flex align="center" gap="xs">
+                    <IconArrowLeft size={16} stroke={2.5} />
+                    <Text>{t("goBack")}</Text>
                   </Flex>
-                  <Alert
-                    icon={<IconAlertCircle size={24} />}
-                    title={t("error.text")}
-                    color="red"
-                    variant="light"
-                  >
-                    {t("error.accessServiceNotFound")}
-                  </Alert>
-                </>
-              }
-            </Flex>
-          </Card>
+                </Anchor>
+              </Flex>
+              <Alert
+                icon={<IconAlertCircle size={24} />}
+                title={t("error.text")}
+                color="red"
+                variant="light"
+              >
+                {t("error.accessServiceNotFound")}
+              </Alert>
+            </>
+          }
         </Flex>
-
-        <Footer />
-      </Flex>
-    </Flex>
+      </Card>
+    </PageLayout>
   )
 }
 
