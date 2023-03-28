@@ -2,23 +2,48 @@ version: '3.8'
 name: id_dev
 
 services:
-  id_next:
+  id_api:
     build:
       context: .
-      dockerfile: ./next/Dockerfile.dev
+      dockerfile: ./api/Dockerfile.dev
     env_file:
       - ./.env
     environment:
       - NODE_ENV=development
       - VIRTUAL_HOST=${VIRTUAL_HOST:-id.dorkodu.com}
-      - VIRTUAL_PORT=${PORT:-8000}
+      - VIRTUAL_PORT=${API_PORT:-8001}
       - LETSENCRYPT_HOST=${LETSENCRYPT_HOST:-id.dorkodu.com}
       - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL:-hey@dorkodu.com}
+      - VIRTUAL_PATH=/api
     expose:
-      - ${PORT:-8000}
+      - ${API_PORT:-8001}
     volumes:
-      - ./next:/id/next
-      - next_node_modules:/id/next/node_modules
+      - ./api:/id/api
+      - api_node_modules:/id/api/node_modules
+    restart: always
+    networks:
+      - app
+      - nginx-proxy
+
+  id_web:
+    build:
+      context: .
+      dockerfile: ./web/Dockerfile.dev
+    env_file:
+      - ./.env
+    environment:
+      - NODE_ENV=development
+      - VIRTUAL_HOST=${VIRTUAL_HOST:-id.dorkodu.com}
+      - VIRTUAL_PORT=${WEB_PORT:-8000}
+      - LETSENCRYPT_HOST=${LETSENCRYPT_HOST:-id.dorkodu.com}
+      - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL:-hey@dorkodu.com}
+      - VIRTUAL_PATH=/
+    expose:
+      - ${WEB_PORT:-8000}
+    volumes:
+      - ./web:/id/web
+      - ./api:/id/api
+      - web_node_modules:/id/web/node_modules
     restart: always
     networks:
       - app
@@ -47,7 +72,8 @@ services:
 
 volumes:
   pgdata:
-  next_node_modules:
+  api_node_modules:
+  web_node_modules:
 
 networks:
   nginx-proxy:
