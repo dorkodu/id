@@ -44,7 +44,7 @@ function ConfirmChangeEmail() {
 
   return (
     <Flex mx="md">
-      <Flex direction="column" gap="md" css={widthLimit}>
+      <Flex direction="column" gap="md" sx={widthLimit}>
         <Header />
 
         <Title order={2} align="center">
@@ -55,7 +55,7 @@ function ConfirmChangeEmail() {
         </Text>
 
         <Flex justify="center">
-          <Card shadow="sm" p="md" radius="md" withBorder css={fullWidth}>
+          <Card shadow="sm" p="md" radius="md" withBorder sx={fullWidth}>
             <Flex direction="column" gap="md">
               {state.loading && <Flex justify="center"><Loader /></Flex>}
 

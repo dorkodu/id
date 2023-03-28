@@ -1,6 +1,4 @@
 import { IUser } from "@api/types/user";
-import { tokens } from "@dorkodu/prism";
-import { css } from "@emotion/react";
 import {
   createStyles,
   Avatar,
@@ -25,7 +23,6 @@ import {
   IconUserCircle,
   IconAlertCircle,
 } from "@tabler/icons-react";
-import { date } from "../lib/date";
 import UserAvatar from "@assets/avatar.webp";
 import { useUserStore } from "../stores/userStore";
 import { useEffect, useState } from "react";
@@ -37,6 +34,7 @@ import OverlayLoader from "./cards/OverlayLoader";
 import { useFocusWithin } from "@mantine/hooks";
 import InputRequirements, { getRequirement, getRequirementError } from "./popovers/InputRequirements";
 import { useWait } from "./hooks";
+import i18n from "../lib/i18n";
 
 const useStyles = createStyles((theme) => ({
   icon: {
@@ -123,7 +121,7 @@ function User({ user }: Props) {
   }, [nameFocused, usernameFocused, bioFocused]);
 
   return (
-    <Card shadow="sm" p="md" m="md" radius="md" withBorder css={css`overflow: visible;`}>
+    <Card shadow="sm" p="md" m="md" radius="md" withBorder sx={{ overflow: "visible" }}>
       <Flex direction="column">
         <Flex justify="space-between" mb="xs">
           <Avatar src={UserAvatar} size={100} radius="md" />
@@ -162,17 +160,17 @@ function User({ user }: Props) {
           </Flex>
         </Flex>
 
-        <Text size="xl" weight={600} css={wrapContent}>
+        <Text size="xl" weight={600} sx={wrapContent}>
           <TextParser text={user.name} types={[PieceType.Emoji]} />
         </Text>
 
         <Flex>
-          <Text style={{ color: tokens.color.gray(50), fontWeight: 750 }}>@</Text>
-          <Text size="md" weight={500} css={wrapContent}>{user.username}</Text>
+          <Text style={{ fontWeight: 750 }}>@</Text>
+          <Text size="md" weight={500} sx={wrapContent}>{user.username}</Text>
         </Flex>
 
         <Flex align="center" gap="md">
-          <Text size="sm" color="dimmed" css={wrapContent}>
+          <Text size="sm" color="dimmed" sx={wrapContent}>
             <TextParser text={user.bio} />
           </Text>
         </Flex>
@@ -184,7 +182,7 @@ function User({ user }: Props) {
 
         <Flex align="center" gap="md">
           <IconCalendar className={styles.icon} />
-          <Text size="sm" color="dimmed">{date(user.joinedAt).format("ll")}</Text>
+          <Text size="sm" color="dimmed">{new Intl.DateTimeFormat(i18n.language, { dateStyle: "medium" }).format(user.joinedAt)}</Text>
         </Flex>
       </Flex>
 

@@ -1,29 +1,17 @@
-import { ActionIcon, Card, Divider, Flex, Menu, Text, } from "@mantine/core";
-
-import { date } from "../lib/date";
+import { ActionIcon, Card, CSSObject, Divider, Flex, Menu, Text, } from "@mantine/core";
 import { util } from "../lib/util";
-
-import {
-  IconCalendarTime,
-  IconClock,
-  IconDeviceDesktop,
-  IconDots,
-  IconNetwork,
-  IconPlugConnected,
-  IconTrash,
-} from "@tabler/icons-react";
-import { tokens } from "@dorkodu/prism";
-import { css } from "@emotion/react";
+import { IconCalendarTime, IconClock, IconDeviceDesktop, IconDots, IconNetwork, IconPlugConnected, IconTrash } from "@tabler/icons-react";
 import { IAccess } from "@api/types/access";
 import { useUserStore } from "../stores/userStore";
 import { useTranslation } from "react-i18next";
+import i18n from "../lib/i18n";
 
 interface Props {
   access: IAccess;
 }
 
-const flexNoShrink = css`flex-shrink: 0;`;
-const fullWidth = css`width: 100%;`;
+const flexNoShrink = { flexShrink: 0 } satisfies CSSObject;
+const fullWidth = { width: "100%" } satisfies CSSObject;
 
 function Access({ access }: Props) {
   const { t } = useTranslation();
@@ -34,9 +22,9 @@ function Access({ access }: Props) {
     <Card shadow="sm" p="md" m="md" radius="md" withBorder>
       <Flex direction="column" gap="xs">
         <Flex gap="xs" align="center">
-          <Flex gap="xs" align="center" justify="space-betweens" css={fullWidth}>
-            <IconClock color={tokens.color.gray(60)} css={flexNoShrink} />
-            <Text>{date(access.createdAt).format("lll")}</Text>
+          <Flex gap="xs" align="center" justify="space-betweens" sx={fullWidth}>
+            <IconClock style={flexNoShrink} />
+            <Text>{new Intl.DateTimeFormat(i18n.language, { dateStyle: "medium", timeStyle: "short" }).format(access.createdAt)}</Text>
           </Flex>
 
           <Menu shadow="md" radius="md" position="bottom-end">
@@ -59,28 +47,28 @@ function Access({ access }: Props) {
         <Divider />
 
         <Flex gap="xs" align="center">
-          <IconCalendarTime color={tokens.color.gray(60)} css={flexNoShrink} />
-          <Text>{date(access.expiresAt).format("lll")}</Text>
+          <IconCalendarTime style={flexNoShrink} />
+          <Text>{new Intl.DateTimeFormat(i18n.language, { dateStyle: "medium", timeStyle: "short" }).format(access.expiresAt)}</Text>
         </Flex>
 
         <Divider />
 
         <Flex gap="xs" align="center">
-          <IconNetwork color={tokens.color.gray(60)} css={flexNoShrink} />
+          <IconNetwork style={flexNoShrink} />
           <Text>{access.ip}</Text>
         </Flex>
 
         <Divider />
 
         <Flex gap="xs" align="center">
-          <IconDeviceDesktop color={tokens.color.gray(60)} css={flexNoShrink} />
+          <IconDeviceDesktop style={flexNoShrink} />
           <Text>{util.parseUserAgent(access.userAgent)}</Text>
         </Flex>
 
         <Divider />
 
         <Flex gap="xs" align="center">
-          <IconPlugConnected color={tokens.color.gray(60)} css={flexNoShrink} />
+          <IconPlugConnected style={flexNoShrink} />
           <Text>{access.service}</Text>
         </Flex>
       </Flex>

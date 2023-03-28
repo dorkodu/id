@@ -7,14 +7,12 @@
     "build": "tsc && vite build"
   },
   "dependencies": {
-    "@dorkodu/prism": "latest",
     "@dorkodu/sage-client": "^0.1.4",
     "@emotion/react": "^11.10.5",
     "@mantine/core": "^5.10.1",
     "@mantine/form": "^5.10.1",
     "@mantine/hooks": "^5.10.1",
     "@tabler/icons-react": "^2.10.0",
-    "dayjs": "^1.11.7",
     "emoji-regex": "^10.2.1",
     "i18next": "^22.0.5",
     "i18next-browser-languagedetector": "^7.0.1",
@@ -30,8 +28,6 @@
     "zustand": "^4.1.4"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.12",
-    "@emotion/babel-plugin": "^11.10.5",
     "@types/react": "^18.0.22",
     "@types/react-dom": "^18.0.7",
     "@vitejs/plugin-react": "^2.2.0",

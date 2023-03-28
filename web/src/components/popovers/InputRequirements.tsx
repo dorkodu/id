@@ -1,4 +1,3 @@
-import { css } from "@emotion/react";
 import { Flex, Popover, Text } from "@mantine/core";
 import { IconX } from "@tabler/icons-react";
 import { TFunction } from "i18next";
@@ -41,7 +40,7 @@ function Requirement({ label }: { label: string }) {
   return (
     <Text color="red" size="sm">
       <Flex direction="row" align="center" gap="xs">
-        <IconX size={14} css={css`flex-shrink:0;`} />
+        <IconX size={14} style={{ flexShrink: 0 }} />
         {label}
       </Flex>
     </Text>

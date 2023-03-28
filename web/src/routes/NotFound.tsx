@@ -13,7 +13,7 @@ function NotFound() {
 
   return (
     <Flex mx="md">
-      <Flex direction="column" gap="md" css={widthLimit}>
+      <Flex direction="column" gap="md" sx={widthLimit}>
         <Header />
 
         <Title order={2} align="center">

@@ -235,7 +235,7 @@ function CreateAccount() {
 
   return (
     <Flex mx="md">
-      <Flex direction="column" gap="md" css={widthLimit}>
+      <Flex direction="column" gap="md" sx={widthLimit}>
         <Header />
 
         <Title order={2} align="center">
@@ -246,7 +246,7 @@ function CreateAccount() {
         </Text>
 
         <Flex justify="center">
-          <Card shadow="sm" p="md" radius="md" withBorder css={fullWidth}>
+          <Card shadow="sm" p="md" radius="md" withBorder sx={fullWidth}>
             {state.loading && <OverlayLoader />}
 
             <Flex direction="column" gap="md">

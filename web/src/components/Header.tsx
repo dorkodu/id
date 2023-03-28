@@ -6,17 +6,15 @@ import { clickable } from "../styles/css";
 function Header() {
   const navigate = useNavigate();
 
-  const gotoWelcome = () => navigate("/welcome");
-
   return (
-    <Flex justify="center" >
+    <Flex justify="center" mb="-md">
       <img
         src={IDIcon}
         alt="Dorkodu ID"
         width={100}
         height={100}
-        onClick={gotoWelcome}
-        css={clickable}
+        onClick={() => navigate("/welcome")}
+        style={clickable}
       />
     </Flex>
   )

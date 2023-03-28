@@ -26,7 +26,7 @@ function Footer() {
   return (
     <Flex direction="column">
       <Flex direction="column" align="center" gap="xs">
-        <Divider css={widthLimit} />
+        <Divider sx={widthLimit} />
 
         <Flex gap="xs" justify="center" wrap="wrap">{items}</Flex>
 
