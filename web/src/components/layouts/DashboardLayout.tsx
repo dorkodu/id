@@ -1,4 +1,4 @@
-import { ActionIcon, Anchor, AppShell, Button, Card, createStyles, Flex, Footer, Header, Indicator, MediaQuery, Text, useMantineTheme } from "@mantine/core";
+import { ActionIcon, Anchor, AppShell, Button, Card, createStyles, Flex, Footer, Header, Indicator, MediaQuery, ScrollArea, Text, useMantineTheme } from "@mantine/core";
 import { IconArrowLeft, IconHome, IconMenu2 } from "@tabler/icons-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { clickable } from "@/styles/css";
@@ -133,9 +133,12 @@ function DefaultNavbar() {
   return (
     <Flex direction="column" w={300} className={classes.navbar}>
       <div style={{ position: "fixed", width: "inherit" }}>
-        <Flex direction="column" py="md" pl="md" gap="xs">
-          <ButtonNavbar icon={<IconHome />} path={"/dashboard"} name={"Dashboard"} />
-        </Flex>
+        {/* TODO: Magic number alert! 64px = header height */}
+        <ScrollArea sx={{ height: "calc(100vh - 64px)" }}>
+          <Flex direction="column" py="md" pl="md" gap="xs">
+            <ButtonNavbar icon={<IconHome />} path={"/dashboard"} name={"Dashboard"} />
+          </Flex>
+        </ScrollArea>
       </div>
     </Flex>
   )
@@ -147,26 +150,29 @@ function DefaultAside() {
   return (
     <Flex direction="column" w={300} className={classes.aside}>
       <div style={{ position: "fixed", width: "inherit" }}>
-        <Flex direction="column" py="md" pr="md" gap="xs">
-          <Card withBorder>
-            <Flex direction="column" gap="md" align="center">
+        {/* TODO: Magic number alert! 64px = header height */}
+        <ScrollArea sx={{ height: "calc(100vh - 64px)" }}>
+          <Flex direction="column" py="md" pr="md" gap="xs">
+            <Card withBorder>
+              <Flex direction="column" gap="md" align="center">
 
-              <Anchor href="https://dorkodu.com" align="center">
-                <img
-                  src={DorkoduLogo}
-                  alt="Dorkodu"
-                  draggable={false}
-                  style={{ width: "75%" }}
-                />
-              </Anchor>
+                <Anchor href="https://dorkodu.com" align="center">
+                  <img
+                    src={DorkoduLogo}
+                    alt="Dorkodu"
+                    draggable={false}
+                    style={{ width: "75%" }}
+                  />
+                </Anchor>
 
-              <Text color="dimmed" weight={450}>
-                <b>Dorkodu</b> &copy; {new Date().getFullYear()}
-              </Text>
+                <Text color="dimmed" weight={450}>
+                  <b>Dorkodu</b> &copy; {new Date().getFullYear()}
+                </Text>
 
-            </Flex>
-          </Card>
-        </Flex>
+              </Flex>
+            </Card>
+          </Flex>
+        </ScrollArea>
       </div>
     </Flex>
   )
