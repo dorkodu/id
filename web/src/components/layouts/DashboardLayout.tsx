@@ -89,7 +89,7 @@ function DefaultHeader() {
             height={32}
             draggable={false}
             style={clickable}
-            onClick={() => navigate("/home")}
+            onClick={() => navigate("/welcome")}
           />
 
           <ActionIcon
