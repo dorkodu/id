@@ -11,7 +11,6 @@ import UpdateSW from "./components/modals/UpdateSW";
 import { useRegisterSW } from "virtual:pwa-register/react";
 import { ScrollRestoration } from "react-router-dom"
 
-
 function App() {
   const location = useLocation();
 
