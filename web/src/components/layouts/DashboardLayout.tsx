@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useAppStore } from "../../stores/appStore";
 import IDBrandLight from "@/assets/id_brand-light.svg";
 import IDBrandDark from "@/assets/id_brand-dark.svg";
+import { clickable } from "@/styles/css";
 
 const width = { maxWidth: "768px", margin: "0 auto" } satisfies CSSObject
 
@@ -28,15 +29,14 @@ export default function DashboardLayout({ children }: React.PropsWithChildren) {
               <IconArrowLeft />
             </ActionIcon>
 
-            <ActionIcon size={64}>
-              <img
-                src={theme.colorScheme === "dark" ? IDBrandLight : IDBrandDark}
-                alt="Dorkodu ID"
-                width={64} height={64}
-                onClick={gotoWelcome}
-                draggable={false}
-              />
-            </ActionIcon>
+            <img
+              src={theme.colorScheme === "dark" ? IDBrandLight : IDBrandDark}
+              alt="Dorkodu ID"
+              height={32}
+              draggable={false}
+              style={clickable}
+              onClick={gotoWelcome}
+            />
 
             <ActionIcon
               color={route === "menu" ? "green" : "dark"}
