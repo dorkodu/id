@@ -6,6 +6,7 @@ import IDBrandLight from "@/assets/id_brand-light.svg";
 import IDBrandDark from "@/assets/id_brand-dark.svg";
 import DorkoduLogo from "@/assets/dorkodu_logo.svg";
 import { useMediaQuery } from "@mantine/hooks";
+import { useTranslation } from "react-i18next";
 
 const useStyles = createStyles((theme) => ({
   header: {
@@ -133,6 +134,7 @@ function DefaultFooter() {
 
 function DefaultNavbar() {
   const { classes } = useStyles();
+  const { t } = useTranslation();
 
   return (
     <Flex direction="column" w={300} className={classes.navbar}>
@@ -141,7 +143,7 @@ function DefaultNavbar() {
           {/* TODO: Magic number alert! 96px = header (64px) + padding y (16px * 2) */}
           <ScrollArea sx={{ height: "calc(100vh - 96px)" }}>
             <Flex direction="column" gap="xs">
-              <ButtonNavbar icon={<IconHome />} path={"/dashboard"} name={"Dashboard"} />
+              <ButtonNavbar icon={<IconHome />} path={"/dashboard"} name={t("routes.dashboard")} />
             </Flex>
           </ScrollArea>
         </Flex>
