@@ -6,9 +6,9 @@ RUN mkdir -p /id/api
 RUN npm install -g pnpm && pnpm config set --global store-dir /root/.local/share/pnpm/store/v3
 
 COPY ./api/pnpm-lock.yaml /id/api
-RUN cd api && pnpm fetch
+RUN cd api && pnpm fetch --offline --no-frozen-lockfile
 COPY ./api /id/api
-RUN cd api && pnpm install --offline --no-frozen-lockfile
+RUN cd api && pnpm install
 
 WORKDIR /id/api
 CMD [ "pnpm", "run", "dev" ]
