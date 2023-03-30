@@ -8,6 +8,7 @@ specifiers:
   '@mantine/form': ^6.0.5
   '@mantine/hooks': ^6.0.5
   '@tabler/icons-react': ^2.10.0
+  '@types/identicon.js': ^2.3.1
   '@types/react': ^18.0.22
   '@types/react-dom': ^18.0.7
   '@vitejs/plugin-react': ^2.2.0
@@ -15,6 +16,7 @@ specifiers:
   i18next: ^22.0.5
   i18next-browser-languagedetector: ^7.0.1
   i18next-resources-to-backend: ^1.1.1
+  identicon.js: ^2.3.3
   immer: ^9.0.16
   react: ^18.2.0
   react-dom: ^18.2.0
@@ -43,6 +45,7 @@ dependencies:
   i18next: 22.0.5
   i18next-browser-languagedetector: 7.0.1
   i18next-resources-to-backend: 1.1.1
+  identicon.js: 2.3.3
   immer: 9.0.16
   react: 18.2.0
   react-dom: 18.2.0_react@18.2.0
@@ -54,6 +57,7 @@ dependencies:
   zustand: 4.3.6_immer@9.0.16+react@18.2.0
 
 devDependencies:
+  '@types/identicon.js': 2.3.1
   '@types/react': 18.0.24
   '@types/react-dom': 18.0.8
   '@vitejs/plugin-react': 2.2.0_vite@3.2.5
@@ -1789,6 +1793,10 @@ packages:
     resolution: {integrity: sha512-WulqXMDUTYAXCjZnk6JtIHPigp55cVtDgDrO2gHRwhyJto21+1zbVCtOYB2L1F9w4qCQ0rOGWBnBe0FNTiEJIQ==}
     dev: true
 
+  /@types/identicon.js/2.3.1:
+    resolution: {integrity: sha512-QyPIfllzfVTHVJ/xX5+cOKpWuX7Zv0EKQbzTCbIn6QjMOg4bn1j73Av1LIIvRqkDV+TErJuonwZg/IOl4tbPDQ==}
+    dev: true
+
   /@types/node/18.11.18:
     resolution: {integrity: sha512-DHQpWGjyQKSHj3ebjFI/wRKcqQcdR+MoFBygntYOZytCqNfkd2ZC4ARDJ2DQqhjH5p85Nnd3jhUJIXrszFX/JA==}
     dev: true
@@ -2790,6 +2798,10 @@ packages:
   /idb/7.1.1:
     resolution: {integrity: sha512-gchesWBzyvGHRO9W8tzUWFDycow5gwjvFKfyV9FF32Y7F50yZMp7mP+T2mJIWFx49zicqyC4uefHM17o6xKIVQ==}
     dev: true
+
+  /identicon.js/2.3.3:
+    resolution: {integrity: sha512-/qgOkXKZ7YbeCYbawJ9uQQ3XJ3uBg9VDpvHjabCAPp6aRMhjLaFAxG90+1TxzrhKaj6AYpVGrx6UXQfQA41UEA==}
+    dev: false
 
   /immer/9.0.16:
     resolution: {integrity: sha512-qenGE7CstVm1NrHQbMh8YaSzTZTFNP3zPqr3YU0S0UY441j4bJTg4A2Hh5KAhwgaiU6ZZ1Ar6y/2f4TblnMReQ==}

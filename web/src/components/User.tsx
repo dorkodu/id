@@ -23,7 +23,6 @@ import {
   IconUserCircle,
   IconAlertCircle,
 } from "@tabler/icons-react";
-import UserAvatar from "@/assets/avatar.webp";
 import { useUserStore } from "../stores/userStore";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -35,6 +34,7 @@ import { useFocusWithin } from "@mantine/hooks";
 import InputRequirements, { getRequirement, getRequirementError } from "./popovers/InputRequirements";
 import { useWait } from "./hooks";
 import i18n from "../lib/i18n";
+import { util } from "@/lib/util";
 
 const useStyles = createStyles((theme) => ({
   icon: {
@@ -124,7 +124,7 @@ function User({ user }: Props) {
     <Card shadow="sm" p="md" m="md" radius="md" withBorder sx={{ overflow: "visible" }}>
       <Flex direction="column">
         <Flex justify="space-between" mb="xs">
-          <Avatar src={UserAvatar} size={100} radius="md" />
+          <Avatar src={util.generateAvatar(user.username + user.id)} size={100} radius="md" />
 
           <Flex direction="row" align="flex-start">
             <Menu shadow="md" radius="md" position="bottom-end">
