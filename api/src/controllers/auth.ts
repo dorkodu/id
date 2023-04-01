@@ -73,20 +73,20 @@ const signup = sage.resource(
     else if (usernameUsed) return { error: ErrorCode.UsernameUsed };
     else if (emailUsed) return { error: ErrorCode.EmailUsed };
 
-    // Create data necessary (sent_at & expires_at are set after email is sent)
-    const tkn = token.create();
-    const row = {
-      id: snowflake.id("email_confirm_signup"),
-      username: username,
-      email: email,
-      selector: tkn.selector,
-      validator: crypto.sha256(tkn.validator),
-      issued_at: date.utc(),
-      sent_at: -1,
-      expires_at: -1,
-    };
-
     (async () => {
+      // Create data necessary (sent_at & expires_at are set after email is sent)
+      const tkn = token.create();
+      const row = {
+        id: snowflake.id("email_confirm_signup"),
+        username: username,
+        email: email,
+        selector: tkn.selector,
+        validator: crypto.sha256(tkn.validator),
+        issued_at: date.utc(),
+        sent_at: -1,
+        expires_at: -1,
+      };
+
       const sent = await mailer.sendConfirmSignup(email, tkn.full);
       if (!sent) return;
 
@@ -126,10 +126,8 @@ const confirmSignup = sage.resource(
       WHERE selector=${parsedToken.selector}
     `;
     if (!result0) return { error: ErrorCode.Default };
-    if (util.intParse(result0.sentAt, -1) === -1)
-      return { error: ErrorCode.Default };
-    if (!token.check(result0, parsedToken.validator))
-      return { error: ErrorCode.Default };
+    if (util.intParse(result0.sentAt, -1) === -1) return { error: ErrorCode.Default };
+    if (!token.check(result0, parsedToken.validator)) return { error: ErrorCode.Default };
 
     const row = {
       id: snowflake.id("users"),

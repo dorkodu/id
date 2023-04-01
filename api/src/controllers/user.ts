@@ -20,6 +20,9 @@ import { snowflake } from "../lib/snowflake";
 import { util } from "../lib/util";
 import { ErrorCode } from "../types/error_codes";
 
+// TODO: Think of a race condition between a hacker & a user. 
+// Only solution currently looks like a ticket to admins.
+
 const getUser = sage.resource(
   {} as SchemaContext,
   undefined,
@@ -27,10 +30,7 @@ const getUser = sage.resource(
     const info = await auth.getAuthInfo(ctx);
     if (!info) return { error: ErrorCode.Default };
 
-    const [result] = await pg`
-      SELECT id, name, username, bio, email, joined_at
-      FROM users WHERE id=${info.userId}
-    `;
+    const [result] = await pg`SELECT id, name, username, bio, email, joined_at FROM users WHERE id=${info.userId}`;
     const parsed = iUserSchema.safeParse(result);
     if (!parsed.success) return { error: ErrorCode.Default };
 
@@ -50,26 +50,30 @@ const editProfile = sage.resource(
 
     const { name, username, bio } = parsed.data;
 
-    // Check if username is already used by someone else
-    const [result0]: [{ exists: boolean }?] = await pg`
-      SELECT EXISTS (
-        SELECT * FROM users
-        WHERE id!=${info.userId} AND username_ci=${username.toLowerCase()}
-      )
-    `;
-    if (!result0) return { error: ErrorCode.Default };
-    if (result0.exists) return { error: ErrorCode.UsernameUsed };
+    const result = await pg.begin(async (pg) => {
+      // Check if username is already used by someone else
+      const [result0]: [{ exists: boolean }?] = await pg`
+        SELECT EXISTS (
+          SELECT * FROM users
+          WHERE id!=${info.userId} AND username_ci=${username.toLowerCase()}
+        )
+      `;
+      if (!result0) return { error: ErrorCode.Default };
+      if (result0.exists) return { error: ErrorCode.UsernameUsed };
 
-    // Set name, username & bio
-    const result1 = await pg`
-      UPDATE users
-      SET name=${name}, bio=${bio}, 
-      username=${username}, username_ci=${username.toLowerCase()}
-      WHERE id=${info.userId}
-    `;
-    if (result1.count === 0) return { error: ErrorCode.Default };
+      // Set name, username & bio
+      const result1 = await pg`
+        UPDATE users
+        SET name=${name}, bio=${bio}, 
+        username=${username}, username_ci=${username.toLowerCase()}
+        WHERE id=${info.userId}
+      `;
+      if (result1.count === 0) return { error: ErrorCode.Default };
 
-    return { data: {} };
+      return { data: {} };
+    });
+
+    return result;
   }
 );
 
@@ -85,25 +89,23 @@ const initiateEmailChange = sage.resource(
 
     const { newEmail } = parsed.data;
 
-    const [result0]: [{ emailCi: string }?] = await pg`
-      SELECT email_ci FROM users WHERE id=${info.userId}
-    `;
+    const [result0]: [{ emailCi: string }?] = await pg`SELECT email_ci FROM users WHERE id=${info.userId}`;
     if (!result0) return { error: ErrorCode.Default };
     if (result0.emailCi === newEmail.toLowerCase()) return { error: ErrorCode.Default };
 
-    const tkn = token.create();
-    const row = {
-      id: snowflake.id("email_confirm_email"),
-      userId: info.userId,
-      email: newEmail,
-      selector: tkn.selector,
-      validator: crypto.sha256(tkn.validator),
-      issuedAt: date.utc(),
-      sentAt: -1,
-      expiresAt: -1,
-    };
-
     (async () => {
+      const tkn = token.create();
+      const row = {
+        id: snowflake.id("email_confirm_email"),
+        userId: info.userId,
+        email: newEmail,
+        selector: tkn.selector,
+        validator: crypto.sha256(tkn.validator),
+        issuedAt: date.utc(),
+        sentAt: -1,
+        expiresAt: -1,
+      };
+
       const sent = await mailer.sendConfirmEmailChange(newEmail, tkn.full);
       if (!sent) return;
 

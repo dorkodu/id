@@ -26,11 +26,11 @@ const getAccessToken = sage.resource(
 
     const { userId, userAgent, ip, service } = result0;
 
-    const accessToken = await access.queryCreateAccessToken(userId, userAgent, ip, service);
-    if (!accessToken) return { error: ErrorCode.Default };
-
     if (!(await access.queryExpireAccessCode(result0.id, result0.userId)))
       return { error: ErrorCode.Default };
+
+    const accessToken = await access.queryCreateAccessToken(userId, userAgent, ip, service);
+    if (!accessToken) return { error: ErrorCode.Default };
 
     return { data: { token: accessToken } };
   }
