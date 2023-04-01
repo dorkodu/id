@@ -1,6 +1,6 @@
 import { ActionIcon, Anchor, AppShell, Button, Card, createStyles, Flex, Footer, Header, Indicator, MediaQuery, ScrollArea, Text, useMantineTheme } from "@mantine/core";
 import { IconArrowLeft, IconHome, IconMenu2 } from "@tabler/icons-react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { clickable } from "@/styles/css";
 import IDBrandLight from "@/assets/id_brand-light.svg";
 import IDBrandDark from "@/assets/id_brand-dark.svg";
@@ -50,7 +50,7 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-export default function DefaultLayout({ children }: React.PropsWithChildren) {
+export default function DefaultLayout() {
   const matches = useMediaQuery('(max-width: 640px)');
 
   return (
@@ -63,7 +63,7 @@ export default function DefaultLayout({ children }: React.PropsWithChildren) {
         <Flex direction="row">
           <DefaultNavbar />
           {/* Remove padding-bottom created by mantine footer on the desktop layout */}
-          <Flex direction="column" style={{ flexGrow: 1, marginBottom: matches ? 0 : "-64px" }}>{children}</Flex>
+          <Flex direction="column" style={{ flexGrow: 1, marginBottom: matches ? 0 : "-64px" }}><Outlet /></Flex>
           <DefaultAside />
         </Flex>
       </AppShell>

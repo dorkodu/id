@@ -1,8 +1,7 @@
 import { ColorScheme, ColorSchemeProvider, MantineProvider } from "@mantine/core";
 import { useLocalStorage } from "@mantine/hooks";
-import { Suspense, useEffect } from "react";
+import { useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
-import CenterLoader from "./components/loaders/CenterLoader";
 import OverlayLoader from "./components/loaders/OverlayLoader";
 import { useAppStore } from "./stores/appStore";
 import { useUserStore } from "./stores/userStore";
@@ -55,11 +54,9 @@ function App() {
     <>
       <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
         <MantineProvider theme={{ ...theme, colorScheme }} withNormalizeCSS withGlobalStyles>
-          <Suspense fallback={<CenterLoader />}>
-            {(loading.auth || loading.locale) && <OverlayLoader full={true} />}
-            {!loading.auth && <Outlet />}
-            {needRefresh && <UpdateSW updateSW={updateServiceWorker} />}
-          </Suspense>
+          {(loading.auth || loading.locale) && <OverlayLoader full={true} />}
+          {!loading.auth && <Outlet />}
+          {needRefresh && <UpdateSW updateSW={updateServiceWorker} />}
         </MantineProvider>
       </ColorSchemeProvider>
 

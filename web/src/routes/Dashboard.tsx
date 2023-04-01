@@ -12,7 +12,6 @@ import CardAlert from "../components/cards/CardAlert";
 import { useAppStore } from "../stores/appStore";
 import { ISession } from "@api/types/session";
 import { IAccess } from "@api/types/access";
-import DashboardLayout from "@/components/layouts/DashboardLayout";
 
 export default function Dashboard() {
   const state = useAppStore(state => state.options.dashboard);
@@ -176,59 +175,57 @@ export default function Dashboard() {
   }, [state.feed, state.sessionOrder, state.accessOrder]);
 
   return (
-    <DashboardLayout>
-      <InfiniteScroll
-        refresh={fetchRoute}
-        next={() => fetcher(state.feed, false, true)}
-        hasMore={getHasMore(state.feed)}
-      >
-        {(!user || !currentSession) ?
-          <>
-            {dashboardProps.status === false &&
-              <CardAlert
-                title={t("error.text")}
-                content={t("error.default")}
-                type="error"
-              />
-            }
-          </>
-
-          :
-
-          <>
-            <User user={user} />
-
-            <Session session={currentSession} currentSession />
-
-            <CardPanel
-              segments={[
-                {
-                  value: state.feed,
-                  setValue: changeFeed,
-                  label: t("show"),
-                  data: [
-                    { label: t("sessions"), value: "sessions" },
-                    { label: t("accesses"), value: "accesses" },
-                  ]
-                },
-                {
-                  value: getOrder(),
-                  setValue: changeOrder,
-                  label: t("order"),
-                  data: [
-                    { label: t("newer"), value: "newer" },
-                    { label: t("older"), value: "older" },
-                  ]
-                },
-              ]}
+    <InfiniteScroll
+      refresh={fetchRoute}
+      next={() => fetcher(state.feed, false, true)}
+      hasMore={getHasMore(state.feed)}
+    >
+      {(!user || !currentSession) ?
+        <>
+          {dashboardProps.status === false &&
+            <CardAlert
+              title={t("error.text")}
+              content={t("error.default")}
+              type="error"
             />
+          }
+        </>
 
-            {state.feed === "sessions" && sessions.map((s) => <Session key={s.id} session={s} />)}
-            {state.feed === "accesses" && accesses.map((a) => <Access key={a.id} access={a} />)}
+        :
 
-          </>
-        }
-      </InfiniteScroll>
-    </DashboardLayout>
+        <>
+          <User user={user} />
+
+          <Session session={currentSession} currentSession />
+
+          <CardPanel
+            segments={[
+              {
+                value: state.feed,
+                setValue: changeFeed,
+                label: t("show"),
+                data: [
+                  { label: t("sessions"), value: "sessions" },
+                  { label: t("accesses"), value: "accesses" },
+                ]
+              },
+              {
+                value: getOrder(),
+                setValue: changeOrder,
+                label: t("order"),
+                data: [
+                  { label: t("newer"), value: "newer" },
+                  { label: t("older"), value: "older" },
+                ]
+              },
+            ]}
+          />
+
+          {state.feed === "sessions" && sessions.map((s) => <Session key={s.id} session={s} />)}
+          {state.feed === "accesses" && accesses.map((a) => <Access key={a.id} access={a} />)}
+
+        </>
+      }
+    </InfiniteScroll>
   )
 }
