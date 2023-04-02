@@ -1,4 +1,4 @@
-import { ActionIcon, Anchor, AppShell, Button, Card, createStyles, Flex, Footer, Header, Indicator, MediaQuery, ScrollArea, Text, useMantineTheme } from "@mantine/core";
+import { ActionIcon, Anchor, AppShell, Button, Card, createStyles, Flex, Footer, Group, Header, Indicator, MediaQuery, ScrollArea, Text, useMantineTheme } from "@mantine/core";
 import { IconArrowLeft, IconHome, IconMenu2 } from "@tabler/icons-react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { clickable } from "@/styles/css";
@@ -117,7 +117,7 @@ function DefaultFooter() {
   return (
     <Footer className={classes.footer} px="md" pb="md" height={64} withBorder={false}>
       <Card sx={{ height: "100%" }} shadow="sm" p="md" radius="md" withBorder>
-        <Flex sx={{ height: "100%" }} align="center" justify="space-evenly">
+        <Group sx={{ height: "100%" }} align="center" position="center" spacing="lg" noWrap>
 
           <ActionIcon
             color={location.pathname === "/dashboard" ? "green" : "dark"}
@@ -126,7 +126,7 @@ function DefaultFooter() {
             <IconHome />
           </ActionIcon>
 
-        </Flex>
+        </Group>
       </Card>
     </Footer>
   )
