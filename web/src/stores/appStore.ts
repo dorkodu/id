@@ -3,14 +3,14 @@ import create from "zustand";
 import { immer } from "zustand/middleware/immer";
 import i18n from "../lib/i18n";
 
-interface State {
+export interface AppStoreState {
   loading: {
     auth: boolean;
     locale: boolean;
   };
 
   redirect: string | undefined;
-  route: "menu" | "any";
+  route: "dashboard" | "sessions" | "accesses" | "menu" | "any";
 
   options: {
     sessions: { order: "newer" | "older" };
@@ -18,7 +18,7 @@ interface State {
   }
 }
 
-interface Action {
+export interface AppStoreAction {
   setAuthLoading: (loading: boolean) => void;
   setLocaleLoading: (loading: boolean) => void;
   changeLocale: (lang: string) => void;
@@ -26,7 +26,7 @@ interface Action {
   setRedirect: (redirect: string | undefined) => void;
 }
 
-const initialState: State = {
+const initialState: AppStoreState = {
   loading: {
     auth: true,
     locale: true,
@@ -42,7 +42,7 @@ const initialState: State = {
 };
 
 export const useAppStore = create(
-  immer<State & Action>((set, _get) => ({
+  immer<AppStoreState & AppStoreAction>((set, _get) => ({
     ...initialState,
 
     setAuthLoading: (loading) => {

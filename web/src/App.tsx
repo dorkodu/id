@@ -44,7 +44,10 @@ function App() {
 
   // Check the current route on change & set useAppStore.route accordingly
   useEffect(() => {
-    if (location.pathname.indexOf("/menu") !== -1) useAppStore.setState(s => { s.route = "menu" });
+    if (location.pathname.indexOf("/dashboard") !== -1) useAppStore.setState(s => { s.route = "dashboard" });
+    else if (location.pathname.indexOf("/sessions") !== -1) useAppStore.setState(s => { s.route = "sessions" });
+    else if (location.pathname.indexOf("/accesses") !== -1) useAppStore.setState(s => { s.route = "accesses" });
+    else if (location.pathname.indexOf("/menu") !== -1) useAppStore.setState(s => { s.route = "menu" });
     else useAppStore.setState(s => { s.route = "any" });
   }, [location.pathname]);
 
