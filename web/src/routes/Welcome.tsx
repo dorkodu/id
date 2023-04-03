@@ -31,10 +31,7 @@ function Welcome() {
     >
       <Flex direction="column" gap="md" sx={fullWidth}>
         {authorized &&
-          <Button
-            variant="filled"
-            onClick={gotoDashboard}
-            radius="md">
+          <Button variant="filled" onClick={gotoDashboard} radius="md">
             {t("continueToDashboard")}
           </Button>
         }

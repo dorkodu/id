@@ -133,9 +133,7 @@ function CreateAccount() {
               />
             </InputRequirements>
 
-            <Button onClick={signup} radius="md">
-              {t("continue_")}
-            </Button>
+            <Button onClick={signup} radius="md">{t("continue_")}</Button>
           </>
         }
 
@@ -197,9 +195,7 @@ function CreateAccount() {
           />
         </InputRequirements>
 
-        <Button onClick={confirmSignup} radius="md">
-          {t("finish")}
-        </Button>
+        <Button onClick={confirmSignup} radius="md">{t("finish")}</Button>
 
         {state.status === "error" &&
           <Alert

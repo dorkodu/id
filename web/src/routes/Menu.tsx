@@ -20,13 +20,7 @@ function Menu() {
 
         <Divider />
 
-        <Button
-          radius="md"
-          fullWidth
-          variant="default"
-          leftIcon={<IconLogout />}
-          onClick={logout}
-        >
+        <Button radius="md" fullWidth variant="default" leftIcon={<IconLogout />} onClick={logout}>
           {t("logout")}
         </Button>
 
