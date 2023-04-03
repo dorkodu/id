@@ -172,6 +172,8 @@
   "updating": "Uygulama güncelleniyor!",
 
   "routes": {
-    "dashboard": "Kontrol Paneli"
+    "dashboard": "Kontrol Paneli",
+    "sessions": "Oturumlar",
+    "accesses": "Erişimler"
   }
 }

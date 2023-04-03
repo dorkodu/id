@@ -172,6 +172,8 @@
   "updating": "Updating the app!",
 
   "routes": {
-    "dashboard": "Dashboard"
+    "dashboard": "Dashboard",
+    "sessions": "Sessions",
+    "accesses": "Accesses"
   }
 }

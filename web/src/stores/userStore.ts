@@ -49,7 +49,7 @@ interface Action {
   queryInitiatePasswordChange: (username: string, email: string) => Promise<boolean>;
   queryConfirmPasswordChange: (newPassword: string, token: string) => Promise<boolean>;
 
-  queryGetCurrentSession: () => Promise<void>;
+  queryGetCurrentSession: () => Promise<boolean>;
   queryGetSessions: (type: "newer" | "older", refresh?: boolean) => Promise<{ status: boolean, length: number }>;
   queryTerminateSession: (sessionId: string) => Promise<void>;
 
@@ -332,10 +332,10 @@ export const useUserStore = create(
         (query) => request(query)
       );
 
-      if (!res?.a.data || res.a.error) return;
-      set((state) => {
-        state.currentSession = res.a.data;
-      });
+      const status = !(!res?.a.data || res.a.error);
+      const currentSession = res?.a.data;
+      set((state) => { state.currentSession = currentSession });
+      return status;
     },
 
     queryGetSessions: async (type, refresh) => {

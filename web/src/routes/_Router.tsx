@@ -16,6 +16,8 @@ const LazyConfirmChangePassword = React.lazy(useWait(() => import("./ConfirmChan
 const LazyChangePassword = React.lazy(useWait(() => import("./ChangePassword")));
 
 const LazyDashboard = React.lazy(useWait(() => import("./Dashboard")));
+const LazySessions = React.lazy(useWait(() => import("./Sessions")));
+const LazyAccesses = React.lazy(useWait(() => import("./Accesses")));
 const LazyMenu = React.lazy(useWait(() => import("./Menu")));
 const LazyChangeEmail = React.lazy(useWait(() => import("./ChangeEmail")));
 
@@ -37,6 +39,8 @@ const ConfirmChangePassword = <Suspense fallback={<CenterLoader />}><LazyConfirm
 const ChangePassword = <Suspense fallback={<CenterLoader />}><LazyChangePassword /></Suspense>
 
 const Dashboard = <Suspense fallback={<CenterLoader />}><LazyDashboard /></Suspense>
+const Sessions = <Suspense fallback={<CenterLoader />}><LazySessions /></Suspense>
+const Accesses = <Suspense fallback={<CenterLoader />}><LazyAccesses /></Suspense>
 const Menu = <Suspense fallback={<CenterLoader />}><LazyMenu /></Suspense>
 const ChangeEmail = <Suspense fallback={<CenterLoader />}><LazyChangeEmail /></Suspense>
 
@@ -62,6 +66,8 @@ export const router = createBrowserRouter(
       <Route element={<RequireAuth />}>
         <Route element={<Suspense fallback={<CenterLoader />}><DashboardLayout /></Suspense>}>
           <Route path="/dashboard" element={Dashboard} />
+          <Route path="/sessions" element={Sessions} />
+          <Route path="/accesses" element={Accesses} />
           <Route path="/menu" element={Menu} />
         </Route>
         <Route path="/change-email" element={ChangeEmail} />

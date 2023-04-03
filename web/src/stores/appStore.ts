@@ -13,11 +13,8 @@ interface State {
   route: "menu" | "any";
 
   options: {
-    dashboard: {
-      feed: "sessions" | "accesses";
-      sessionOrder: "newer" | "older";
-      accessOrder: "newer" | "older";
-    }
+    sessions: { order: "newer" | "older" };
+    accesses: { order: "newer" | "older" };
   }
 }
 
@@ -39,11 +36,8 @@ const initialState: State = {
   route: "any",
 
   options: {
-    dashboard: {
-      feed: "sessions",
-      sessionOrder: "newer",
-      accessOrder: "newer",
-    }
+    sessions: { order: "newer" },
+    accesses: { order: "newer" },
   }
 };
 

@@ -1,5 +1,5 @@
 import { ActionIcon, Anchor, AppShell, Button, Card, createStyles, Flex, Footer, Group, Header, Indicator, MediaQuery, ScrollArea, Text, useMantineTheme } from "@mantine/core";
-import { IconArrowLeft, IconHome, IconMenu2 } from "@tabler/icons-react";
+import { IconArrowLeft, IconHome, IconKey, IconMenu2, IconPlugConnected } from "@tabler/icons-react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { clickable } from "@/styles/css";
 import IDBrandLight from "@/assets/id_brand-light.svg";
@@ -119,11 +119,16 @@ function DefaultFooter() {
       <Card sx={{ height: "100%" }} shadow="sm" p="md" radius="md" withBorder>
         <Group sx={{ height: "100%" }} align="center" position="center" spacing="lg" noWrap>
 
-          <ActionIcon
-            color={location.pathname === "/dashboard" ? "green" : "dark"}
-            onClick={() => navigate("/dashboard")}
-          >
+          <ActionIcon color={location.pathname === "/dashboard" ? "green" : "dark"} onClick={() => navigate("/dashboard")}>
             <IconHome />
+          </ActionIcon>
+
+          <ActionIcon color={location.pathname === "/sessions" ? "green" : "dark"} onClick={() => navigate("/sessions")}>
+            <IconKey />
+          </ActionIcon>
+
+          <ActionIcon color={location.pathname === "/accesses" ? "green" : "dark"} onClick={() => navigate("/accesses")}>
+            <IconPlugConnected />
           </ActionIcon>
 
         </Group>
@@ -144,6 +149,8 @@ function DefaultNavbar() {
           <ScrollArea sx={{ height: "calc(100vh - 96px)" }}>
             <Flex direction="column" gap="xs">
               <ButtonNavbar icon={<IconHome />} path={"/dashboard"} name={t("routes.dashboard")} />
+              <ButtonNavbar icon={<IconKey />} path={"/sessions"} name={t("routes.sessions")} />
+              <ButtonNavbar icon={<IconPlugConnected />} path={"/accesses"} name={t("routes.accesses")} />
             </Flex>
           </ScrollArea>
         </Flex>
