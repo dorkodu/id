@@ -174,7 +174,7 @@ function Login() {
     >
       <Flex justify="center">
         <Card shadow="sm" p="md" radius="md" withBorder sx={fullWidth}>
-          {state.loading && <OverlayLoader py="md" />}
+          {state.loading && <OverlayLoader />}
 
           <Flex direction="column" gap="md">
             {/*Use Component() instead of <Component /> to avoid state-loss*/}
