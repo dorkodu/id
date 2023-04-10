@@ -187,8 +187,8 @@ const login = sage.resource(
     const ip = util.getIP(ctx.req);
     const ua = userAgent.get(ctx.req);
 
-    // If there is no session & no login verification with this ip
-    // for the given user, send an email link which expires in 10 minutes
+    // If there is no session with this ip for the
+    // given user, send an email link which expires in 10 minutes
     const [result1]: [{ exists: boolean }?] = await pg`
       SELECT EXISTS (
         SELECT * FROM sessions WHERE user_id=${result0.id} AND ip=${ip}
@@ -197,39 +197,28 @@ const login = sage.resource(
     if (!result1) return { error: ErrorCode.Default };
 
     if (!result1.exists) {
-      const [result2]: [{ exists: boolean }?] = await pg`
-        SELECT EXISTS (
-          SELECT * FROM email_verify_login
-          WHERE user_id=${result0.id} AND ip=${ip} AND verified=TRUE
-        )
-      `;
-      if (!result2) return { error: ErrorCode.Default };
+      const tkn = token.create();
+      const row = {
+        id: snowflake.id("email_verify_login"),
+        userId: result0.id,
+        selector: tkn.selector,
+        validator: crypto.sha256(tkn.validator),
+        issuedAt: date.utc(),
+        sentAt: -1,
+        expiresAt: -1,
+        ip: ip,
+      };
 
-      if (!result2.exists) {
-        const tkn = token.create();
-        const row = {
-          id: snowflake.id("email_verify_login"),
-          userId: result0.id,
-          selector: tkn.selector,
-          validator: crypto.sha256(tkn.validator),
-          issuedAt: date.utc(),
-          sentAt: -1,
-          expiresAt: -1,
-          verified: false,
-          ip: ip,
-        };
+      (async () => {
+        const sent = await mailer.sendVerifyLogin(result0.email, tkn.full, ip, ua);
+        if (!sent) return;
 
-        (async () => {
-          const sent = await mailer.sendVerifyLogin(result0.email, tkn.full, ip, ua);
-          if (!sent) return;
+        row.sentAt = date.utc();
+        row.expiresAt = date.minute(10);
+        await pg`INSERT INTO email_verify_login ${pg(row)}`;
+      })();
 
-          row.sentAt = date.utc();
-          row.expiresAt = date.minute(10);
-          await pg`INSERT INTO email_verify_login ${pg(row)}`;
-        })();
-
-        return { error: ErrorCode.LoginNewLocation };
-      }
+      return { error: ErrorCode.LoginNewLocation };
     }
 
     if (!(await queryCreateSession(ctx.req, ctx.res, result0.id)))
@@ -242,7 +231,7 @@ const login = sage.resource(
 const verifyLogin = sage.resource(
   {} as SchemaContext,
   {} as z.infer<typeof verifyLoginSchema>,
-  async (arg, _ctx): Promise<{ data?: {}; error?: ErrorCode }> => {
+  async (arg, ctx): Promise<{ data?: {}; error?: ErrorCode }> => {
     const parsed = verifyLoginSchema.safeParse(arg);
     if (!parsed.success) return { error: ErrorCode.Default };
 
@@ -250,28 +239,25 @@ const verifyLogin = sage.resource(
     const parsedToken = rawToken ? token.parse(rawToken) : undefined;
     if (!parsedToken) return { error: ErrorCode.Default };
 
-    const [result0]: [
-      {
-        id: string;
-        validator: Buffer;
-        sentAt: string;
-        expiresAt: string;
-      }?
-    ] = await pg`
-      SELECT id, validator, sent_at, expires_at FROM email_verify_login
+    const [result0]: [{
+      id: string;
+      validator: Buffer;
+      sentAt: string;
+      expiresAt: string;
+      userId: string;
+    }?] = await pg`
+      SELECT id, validator, sent_at, expires_at, user_id FROM email_verify_login
       WHERE selector=${parsedToken.selector}
     `;
     if (!result0) return { error: ErrorCode.Default };
-    if (util.intParse(result0.sentAt, -1) === -1)
-      return { error: ErrorCode.Default };
-    if (!token.check(result0, parsedToken.validator))
-      return { error: ErrorCode.Default };
+    if (util.intParse(result0.sentAt, -1) === -1) return { error: ErrorCode.Default };
+    if (!token.check(result0, parsedToken.validator)) return { error: ErrorCode.Default };
 
-    const result1 = await pg`
-      UPDATE email_verify_login SET verified=TRUE
-      WHERE id=${result0.id}
-    `;
-    if (result1.count === 0) return { error: ErrorCode.Default };
+    // Expire the email_verify_login
+    await pg`UPDATE email_verify_login SET expires_at=${date.utc()} WHERE id=${result0.id}`;
+
+    // Create a session for the user and assing a session cookie
+    if (!(await queryCreateSession(ctx.req, ctx.res, result0.userId))) return { error: ErrorCode.Default };
 
     return { data: {} };
   }

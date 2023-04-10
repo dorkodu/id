@@ -1,5 +1,5 @@
 import { Alert, Anchor, Button, Card, Flex, PasswordInput, Text, TextInput } from "@mantine/core";
-import { IconAlertCircle, IconArrowLeft, IconCircleCheck, IconInfoCircle } from "@tabler/icons-react";
+import { IconAlertCircle, IconArrowLeft, IconInfoCircle } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useUserStore } from "../stores/userStore";
@@ -27,7 +27,7 @@ function Login() {
   const [searchParams] = useSearchParams();
 
   const [state, setState] = useState<State>({
-    loading: false,
+    loading: !!searchParams.get("token"),
     status: undefined,
     info: "",
     password: "",
@@ -59,11 +59,15 @@ function Login() {
   }
 
   const verifyLogin = async () => {
-    if (state.loading) return;
-
     setState({ ...state, loading: true });
-    const status = await useWait(() => queryVerifyLogin(state.token))();
+    const status = await useWait(() => queryVerifyLogin(state.token), 0, 1000)();
     setState({ ...state, loading: false, status: status ? "ok" : "error" });
+
+    if (!status) return;
+
+    const redirect = useAppStore.getState().redirect;
+    if (!redirect) navigate("/dashboard");
+    else navigate(redirect);
   }
 
   const loginStage = () => {
@@ -78,31 +82,35 @@ function Login() {
           </Anchor>
         </Flex>
 
-        <TextInput
-          variant="filled"
-          type="text"
-          label={t("usernameOrEmail")}
-          placeholder={t("enterUsernameOrEmail")}
-          defaultValue={state.info}
-          onChange={(ev) => { setState({ ...state, info: ev.target.value }) }}
-          withAsterisk={true}
-          onKeyDown={getHotkeyHandler([["Enter", login]])}
-        />
+        {state.status !== "verify" &&
+          <>
+            <TextInput
+              variant="filled"
+              type="text"
+              label={t("usernameOrEmail")}
+              placeholder={t("enterUsernameOrEmail")}
+              defaultValue={state.info}
+              onChange={(ev) => { setState({ ...state, info: ev.target.value }) }}
+              withAsterisk={true}
+              onKeyDown={getHotkeyHandler([["Enter", login]])}
+            />
 
-        <PasswordInput
-          variant="filled"
-          label={t("password")}
-          placeholder={t("enterPassword")}
-          visibilityToggleIcon={VisibilityToggle}
-          defaultValue={state.password}
-          onChange={(ev) => { setState({ ...state, password: ev.target.value }) }}
-          withAsterisk={true}
-          onKeyDown={getHotkeyHandler([["Enter", login]])}
-        />
+            <PasswordInput
+              variant="filled"
+              label={t("password")}
+              placeholder={t("enterPassword")}
+              visibilityToggleIcon={VisibilityToggle}
+              defaultValue={state.password}
+              onChange={(ev) => { setState({ ...state, password: ev.target.value }) }}
+              withAsterisk={true}
+              onKeyDown={getHotkeyHandler([["Enter", login]])}
+            />
 
-        <Button onClick={login} radius="md">
-          {t("login")}
-        </Button>
+            <Button onClick={login} radius="md">
+              {t("login")}
+            </Button>
+          </>
+        }
 
         {state.status === "verify" &&
           <Alert
@@ -143,17 +151,6 @@ function Login() {
           </Flex>
         }
 
-        {state.status === "ok" &&
-          <Alert
-            icon={<IconCircleCheck size={24} />}
-            title={t("success.text")}
-            color="green"
-            variant="light"
-          >
-            {t("success.locationVerified")}
-          </Alert>
-        }
-
         {state.status === "error" &&
           <Alert
             icon={<IconAlertCircle size={24} />}
@@ -177,7 +174,7 @@ function Login() {
     >
       <Flex justify="center">
         <Card shadow="sm" p="md" radius="md" withBorder sx={fullWidth}>
-          {state.loading && <OverlayLoader />}
+          {state.loading && <OverlayLoader py="md" />}
 
           <Flex direction="column" gap="md">
             {/*Use Component() instead of <Component /> to avoid state-loss*/}

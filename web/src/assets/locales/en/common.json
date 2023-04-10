@@ -3,7 +3,6 @@
     "text": "Success",
     "emailVerified": "Email is verified. You can close this tab and continue to create your account.",
     "emailReverted": "Email is reverted.",
-    "locationVerified": "Location is verified. You can close this tab and continue to log in.",
     "emailChanged": "Email is changed.",
     "passwordChanged": "Your password is changed. All your sessions and accesses are terminated. Please log in."
   },
@@ -20,7 +19,7 @@
   "info": {
     "text": "Info",
     "confirmSignup": "Mail is sent. Please check inbox or spam folder to finish creating your account. You can close this tab.",
-    "newLocation": "A new location is detected. Please check inbox or spam folder to verify your location, then try again.",
+    "newLocation": "A new location is detected. Please check inbox or spam folder to verify your location.",
     "changeEmail": "Mail is sent. Please check inbox or spam folder to change your email.",
     "changePassword": "Mail is sent. Please check inbox or spam folder to change your password."
   },

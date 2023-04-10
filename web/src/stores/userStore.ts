@@ -206,8 +206,7 @@ export const useUserStore = create(
         switch (res.a.error) {
           case ErrorCode.LoginNewLocation: return "verify";
           case ErrorCode.Default:
-          default:
-            return "error";
+          default: return "error";
         }
       }
 
@@ -222,8 +221,9 @@ export const useUserStore = create(
         (query) => request(query)
       );
 
-      if (!res?.a.data || res.a.error) return false;
-      return true;
+      const status = !(!res?.a.data || res.a.error);
+      set(state => { state.authorized = status });
+      return status;
     },
 
     queryLogout: async () => {

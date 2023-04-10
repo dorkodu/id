@@ -3,7 +3,6 @@
     "text": "Başarı",
     "emailVerified": "E-posta doğrulandı. Bu sekmeyi kapatabilir ve hesabınızı oluşturmaya devam edebilirsiniz.",
     "emailReverted": "E-posta geri alındı.",
-    "locationVerified": "Konum doğrulandı. Bu sekmeyi kapatabilir ve oturum açmaya devam edebilirsiniz.",
     "emailChanged": "E-posta değiştirildi.",
     "passwordChanged": "Şifreniz değiştirildi. Tüm oturumlarınız ve erişimleriniz sonlandırıldı. Lütfen giriş yapın."
   },
@@ -20,7 +19,7 @@
   "info": {
     "text": "Bilgi",
     "confirmSignup": "Posta gönderildi. Hesabınızı oluşturmak için lütfen gelen kutusunu veya spam klasörünü kontrol edin. Bu sekmeyi kapatabilirsiniz.",
-    "newLocation": "Yeni bir konum algılandı. Lütfen konumunuzu doğrulamak için gelen kutusunu veya spam klasörünü kontrol edin ve ardından tekrar deneyin.",
+    "newLocation": "Yeni bir konum algılandı. Lütfen konumunuzu doğrulamak için gelen kutusunu veya spam klasörünü kontrol edin.",
     "changeEmail": "Posta gönderildi. E-postanızı değiştirmek için lütfen gelen kutusunu veya spam klasörünü kontrol edin.",
     "changePassword": "Posta gönderildi. Lütfen şifrenizi değiştirmek için gelen kutusunu veya spam klasörünü kontrol edin."
   },
