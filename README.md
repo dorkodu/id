@@ -69,16 +69,12 @@
 
 Your Digital Life, One Account.
 
-* It’s easy to learn, and fun to master. For all ages. We made turn-based strategy games for everyone.
-* t’s multiplayer. Against bots, offline local players on the same device, or online with other players.
-* It has a rich map generation, unlocking the endless potential of war and peace.
-* It has bots, with different difficulty levels.
-* It encourages players to think tactically and take advantage of different terrains.
-* And more...
+Connect with ID, and get the most out of all the Dorkodu apps you use.
 
-We also developed a fully finished and polished version of our game.
-<br />
-You can play the game here: [https://lordsandlands.dorkodu.com](https://lordsandlands.dorkodu.com)
+* Get a personalized experience.
+* Be verified everywhere.
+* Your life's information in one place.
+* All apps are always connected.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
