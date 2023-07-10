@@ -225,7 +225,7 @@ Project Link: [https://github.com/dorkodu/id](https://github.com/dorkodu/id)
 [license-url]: https://github.com/dorkodu/id/blob/master/LICENSE.txt
 
 [product-screenshot-welcome]: www/id.dorkodu.com_welcome.png
-[product-screenshot-dashboard]: WWW/id.dorkodu.com_dashboard.png
+[product-screenshot-dashboard]: www/id.dorkodu.com_dashboard.png
 
 [Typescript]: 	https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white
 [Typescript-url]: https://typescriptlang.org
