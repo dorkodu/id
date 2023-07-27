@@ -36,6 +36,7 @@ function TextParser({ text, types }: Props) {
     let key = 0;
     for (let i = 0; i < text.length;) {
       const piece = pieces.shift();
+      if (piece && piece.index < i) continue;
 
       if (piece) {
         const diff = piece.index - i;
